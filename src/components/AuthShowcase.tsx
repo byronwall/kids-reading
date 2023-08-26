@@ -2,6 +2,8 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 import { api } from "~/utils/api";
 
+import { Button } from "./ui/button";
+
 export function AuthShowcase() {
   const { data: sessionData } = useSession();
   const [email, setEmail] = useState("");
@@ -34,12 +36,11 @@ export function AuthShowcase() {
         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
         {secretMessage && <span> - {secretMessage}</span>}
       </p>
-      <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold  no-underline transition hover:bg-white/20"
+      <Button
         onClick={sessionData ? () => void signOut() : () => void signIn()}
       >
         {sessionData ? "Sign out" : "Sign in"}
-      </button>
+      </Button>
       <form onSubmit={handleRegister} className="flex flex-col gap-4">
         <label className="flex flex-col gap-1">
           <span className="text-lg font-medium">Email:</span>
@@ -59,12 +60,7 @@ export function AuthShowcase() {
             className="rounded-md border border-gray-300 px-3 py-2"
           />
         </label>
-        <button
-          type="submit"
-          className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-        >
-          Register
-        </button>
+        <Button type="submit">Register</Button>
       </form>
     </div>
   );
