@@ -4,7 +4,7 @@ import { api } from "~/utils/api";
 import { AuthShowcase } from "../components/AuthShowcase";
 
 export default function Home() {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const hello = api.authRouter.hello.useQuery({ text: "from tRPC" });
 
   return (
     <>
