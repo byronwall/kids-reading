@@ -14,13 +14,7 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
-// Necessary for Next auth
+// ---- AUTH RELATED THINGS ---- //
 model Account {
     id                String  @id @default(cuid())
     userId            String
@@ -47,6 +41,14 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
 model User {
     id            String    @id @default(cuid())
     name          String?
@@ -56,12 +58,107 @@ model User {
     password      String?
     accounts      Account[]
     sessions      Session[]
+    profiles      Profile[]
 }
 
-model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+// ---- USER DATA RELATED THINGS ---- //
 
-    @@unique([identifier, token])
+model Profile {
+    id        String               @id @default(cuid())
+    name      String
+    user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String
+    results   ProfileWordResult[]
+    summaries ProfileWordSummary[]
+}
+
+// ---- WORD and CORE DATA ---- //
+
+model Word {
+    id   String @id @default(cuid())
+    word String
+
+    // this will grow into columns so it's easier to query?
+    metaInfo  Json
+    questions Question[]
+    results   ProfileWordResult[]
+    summaries ProfileWordSummary[]
+
+    @@unique([word])
+}
+
+model Sentence {
+    id String @id @default(cuid())
+
+    // this will include things like difficulty, etc
+    metaInfo Json
+
+    // this will include punctuation
+    fullSentence String
+
+    // asume that words will be in the database -- application error if not
+    words     String[]
+    questions Question[]
+}
+
+enum QuestionType {
+    WORD
+    SENTENCE
+}
+
+model Question {
+    id String @id @default(cuid())
+
+    type QuestionType
+
+    // this will grow into columns so it's easier to query?
+    metaInfo Json
+
+    wordId String?
+    word   Word?   @relation(fields: [wordId], references: [id])
+
+    sentenceId String?
+    sentence   Sentence? @relation(fields: [sentenceId], references: [id])
+
+    results ProfileWordResult[]
+}
+
+model ProfileWordResult {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+
+    // this will grow into columns so it's easier to query?
+    metaInfo Json
+
+    profileId String
+    profile   Profile @relation(fields: [profileId], references: [id])
+
+    wordId String
+    word   Word   @relation(fields: [wordId], references: [id])
+
+    questionId String
+    question   Question @relation(fields: [questionId], references: [id])
+
+    // score will range from 0 to 100, 100 being the best
+    score Int @default(0)
+}
+
+model ProfileWordSummary {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+
+    // this will grow into columns so it's easier to query?
+    metaInfo Json
+
+    profileId String
+    profile   Profile @relation(fields: [profileId], references: [id])
+
+    wordId String
+    word   Word   @relation(fields: [wordId], references: [id])
+
+    // score will start at 100 and increment/decrement when right wrong?
+    totalScore Int @default(0)
+
+    // will be determined from a spaced repetition algorithm
+    nextReviewDate DateTime @default(now())
 }
