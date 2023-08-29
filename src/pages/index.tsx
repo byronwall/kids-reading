@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>kids reading</title>
+        <title>Kids Reading</title>
         <meta name="description" content="Kids Reading" />
         <link rel="icon" href="/favicon.svg" />
       </Head>
