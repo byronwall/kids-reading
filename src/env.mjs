@@ -21,7 +21,7 @@ export const env = createEnv({
       process.env.VERCEL ? z.string().min(1) : z.string().url()
     ),
     JWT_SECRET: z.string().min(1),
-    NEXT_PUBLIC_VERCEL_URL: z.string().url(),
+    NEXT_PUBLIC_VERCEL_URL: z.string(),
   },
 
   /**
