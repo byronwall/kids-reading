@@ -16,8 +16,8 @@ export default function Home() {
     <>
       <Head>
         <title>kids reading</title>
-        <meta name="description" content="kids reading" />
-        <link rel="icon" href="/favicon.ico" />
+        <meta name="description" content="Kids Reading" />
+        <link rel="icon" href="/favicon.svg" />
       </Head>
       <div className="flex min-h-screen flex-col pb-20">
         <header className="bg-background container z-40">

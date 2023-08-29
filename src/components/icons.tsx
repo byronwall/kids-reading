@@ -23,13 +23,14 @@ import {
   Twitter,
   User,
   X,
+  BookOpen as Book,
   type LucideIcon,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
 export const Icons = {
-  logo: Command,
+  logo: Book,
   close: X,
   spinner: Loader2,
   chevronLeft: ChevronLeft,
