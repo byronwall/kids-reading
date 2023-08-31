@@ -11,7 +11,6 @@ import Provider from "./_trpc/Provider";
 import { NextAuthProvider } from "./authProvider";
 
 import { UserMenuOrLogin } from "../components/UserMenuOrLogin";
-import { AuthShowcase } from "../components/AuthShowcase";
 
 export const metadata: Metadata = {
   title: "Kids Reading",
@@ -45,8 +44,6 @@ export default async function RootLayout({
                 </div>
               </header>
               <main className="flex-1">{children}</main>
-
-              <AuthShowcase />
             </div>
           </Provider>
         </NextAuthProvider>
