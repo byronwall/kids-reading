@@ -1,8 +1,13 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcrypt";
-import { GetServerSidePropsContext } from "next";
-import { DefaultSession, getServerSession, NextAuthOptions } from "next-auth";
+import { type GetServerSidePropsContext } from "next";
+import {
+  type DefaultSession,
+  getServerSession,
+  type NextAuthOptions,
+} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
@@ -63,7 +68,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        if (!credentials || !credentials.email || !credentials.password) {
+        if (!credentials?.email || !credentials.password) {
           return null;
         }
 
@@ -75,7 +80,7 @@ export const authOptions: NextAuthOptions = {
 
         console.log("authorize called", { credentials, user });
 
-        if (!user || !user.password) {
+        if (!user?.password) {
           return null;
         }
 

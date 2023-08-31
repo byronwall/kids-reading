@@ -1,20 +1,26 @@
+"use client";
+
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState } from "react";
-import { api } from "~/utils/api";
+
+import { trpc } from "~/app/_trpc/client";
 
 import { Button } from "./ui/button";
 
 export function AuthShowcase() {
   const { data: sessionData } = useSession();
+
+  console.log("sessionData", sessionData);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { data: secretMessage } = api.authRouter.getSecretMessage.useQuery(
+  const { data: secretMessage } = trpc.authRouter.getSecretMessage.useQuery(
     undefined,
     { enabled: sessionData?.user !== undefined }
   );
 
-  const mutateCreateUser = api.authRouter.createUser.useMutation();
+  const mutateCreateUser = trpc.authRouter.createUser.useMutation();
 
   const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -41,6 +47,7 @@ export function AuthShowcase() {
       >
         {sessionData ? "Sign out" : "Sign in"}
       </Button>
+      
       <form onSubmit={handleRegister} className="flex flex-col gap-4">
         <label className="flex flex-col gap-1">
           <span className="text-lg font-medium">Email:</span>

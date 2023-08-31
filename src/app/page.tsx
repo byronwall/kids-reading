@@ -1,16 +1,11 @@
-import { MainNav } from "~/components/main-nav";
-import { buttonVariants } from "~/components/ui/button";
-import { marketingConfig } from "~/config/marketing";
-import { cn } from "~/lib/utils";
-import Head from "next/head";
 import Link from "next/link";
-import { api } from "~/utils/api";
 
-import { AuthShowcase } from "../components/AuthShowcase";
+import { buttonVariants } from "~/components/ui/button";
 import { siteConfig } from "~/config/site";
+import { cn } from "~/lib/utils";
 
 export default function Home() {
-  const hello = api.authRouter.hello.useQuery({ text: "from tRPC" });
+  console.log("loading index page");
 
   return (
     <section className="space-y-2 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-16">
