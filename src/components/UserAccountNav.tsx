@@ -12,6 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 
+import { Icons } from "./icons";
+
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
   user: Pick<User, "name" | "image" | "email">;
 }
@@ -20,9 +22,9 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <button className="bg-primary-foreground flex h-10 w-10 items-center justify-center overflow-hidden rounded-full">
-          image
-        </button>
+        <div className="bg-primary-foreground flex h-10 w-10 items-center justify-center overflow-hidden rounded-full">
+          <Icons.user className="h-6 w-6" />
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <div className="flex items-center justify-start gap-2 p-2">
@@ -51,7 +53,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
           onSelect={(event) => {
             event.preventDefault();
             void signOut({
-              callbackUrl: `${window.location.origin}/login`,
+              callbackUrl: `${window.location.origin}`,
             });
           }}
         >

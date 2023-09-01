@@ -1,9 +1,9 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 
-import { buttonVariants } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
 import { UserAccountNav } from "./UserAccountNav";
@@ -16,15 +16,17 @@ export function UserMenuOrLogin() {
   return (
     <nav>
       {needsAuth ? (
-        <Link
-          href="/login"
-          className={cn(
-            buttonVariants({ variant: "secondary", size: "sm" }),
-            "px-4"
-          )}
-        >
-          Login
-        </Link>
+        <div className="flex gap-2">
+          <Button
+            className={cn(buttonVariants({ variant: "secondary" }), "px-4")}
+            onClick={() => signIn()}
+          >
+            Login
+          </Button>
+          <Button>
+            <Link href="/register">Sign up</Link>
+          </Button>
+        </div>
       ) : (
         <UserAccountNav user={session.user} />
       )}

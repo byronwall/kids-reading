@@ -43,7 +43,11 @@ export default async function RootLayout({
                   <UserMenuOrLogin />
                 </div>
               </header>
-              <main className="flex-1">{children}</main>
+              <main className="flex-1">
+                <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
+                  {children}
+                </div>
+              </main>
             </div>
           </Provider>
         </NextAuthProvider>
