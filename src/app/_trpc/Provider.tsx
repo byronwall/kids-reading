@@ -9,7 +9,7 @@ import { trpc } from "./client";
 export const commonTrpcConfig = {
   links: [
     httpBatchLink({
-      url: "http://localhost:3000/api/trpc",
+      url: "/api/trpc",
     }),
   ],
   transformer: superjson,
