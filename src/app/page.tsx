@@ -1,31 +1,20 @@
-import Link from "next/link";
+import { WordQuestionPractice } from "~/components/WordQuestionPractice";
+import { getServerAuthSession } from "~/server/auth";
 
-import { buttonVariants } from "~/components/ui/button";
-import { siteConfig } from "~/config/site";
-import { cn } from "~/lib/utils";
+export default async function Home() {
+  const session = await getServerAuthSession();
 
-export default function Home() {
-  console.log("loading index page");
+  if (!session) {
+    return (
+      <section className="flex flex-col items-center gap-4">
+        <h1>A site to help with kid's reading.</h1>
+      </section>
+    );
+  }
 
   return (
     <section className="flex flex-col items-center gap-4">
-      <h1>A site to help with kid's reading.</h1>
-      <p className="text-muted-foreground max-w-[42rem] leading-normal sm:text-xl sm:leading-8">
-        A nice little site.
-      </p>
-      <div className="space-x-4">
-        <Link href="/login" className={cn(buttonVariants({ size: "lg" }))}>
-          Get Started
-        </Link>
-        <Link
-          href={siteConfig.links.github}
-          target="_blank"
-          rel="noreferrer"
-          className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
-        >
-          GitHub
-        </Link>
-      </div>
+      <WordQuestionPractice />
     </section>
   );
 }
