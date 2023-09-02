@@ -1,11 +1,10 @@
 import "~/styles/globals.css";
 
-import { getServerSession } from "next-auth";
 import { type Metadata } from "next";
 
 import { MainNav } from "~/components/main-nav";
 import { marketingConfig } from "~/config/marketing";
-import { authOptions } from "~/server/auth";
+import { getServerAuthSession } from "~/server/auth";
 
 import Provider from "./_trpc/Provider";
 import { NextAuthProvider } from "./authProvider";
@@ -29,7 +28,7 @@ export default async function RootLayout({
 }) {
   console.log("session and page props");
 
-  const session = await getServerSession(authOptions);
+  const session = await getServerAuthSession();
 
   return (
     <html>

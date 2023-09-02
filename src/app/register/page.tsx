@@ -1,12 +1,11 @@
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
 
 import { RegisterNewUser } from "~/components/RegisterNewUser";
-import { authOptions } from "~/server/auth";
+import { getServerAuthSession } from "~/server/auth";
 
 export default async function RegisterPage() {
   // this ensures that if a user is already logged in, they can't see this page
-  const session = await getServerSession(authOptions);
+  const session = await getServerAuthSession();
 
   if (session) {
     redirect("/");

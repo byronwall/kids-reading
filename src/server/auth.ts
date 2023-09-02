@@ -108,9 +108,13 @@ export const authOptions: NextAuthOptions = {
  *
  * @see https://next-auth.js.org/configuration/nextjs
  */
-export const getServerAuthSession = (ctx: {
+export const getServerAuthSession = (ctx?: {
   req: GetServerSidePropsContext["req"];
   res: GetServerSidePropsContext["res"];
 }) => {
+  if (!ctx) {
+    return getServerSession(authOptions);
+  }
+
   return getServerSession(ctx.req, ctx.res, authOptions);
 };
