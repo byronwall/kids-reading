@@ -64,11 +64,11 @@ model User {
 // ---- USER DATA RELATED THINGS ---- //
 
 model Profile {
-    id        String               @id @default(cuid())
+    id        String                  @id @default(cuid())
     name      String
-    user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user      User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId    String
-    results   ProfileWordResult[]
+    results   ProfileQuestionResult[]
     summaries ProfileWordSummary[]
 }
 
@@ -81,7 +81,7 @@ model Word {
     // this will grow into columns so it's easier to query?
     metaInfo  Json
     questions Question[]
-    results   ProfileWordResult[]
+
     summaries ProfileWordSummary[]
 
     @@unique([word])
@@ -120,10 +120,10 @@ model Question {
     sentenceId String?
     sentence   Sentence? @relation(fields: [sentenceId], references: [id])
 
-    results ProfileWordResult[]
+    results ProfileQuestionResult[]
 }
 
-model ProfileWordResult {
+model ProfileQuestionResult {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
 
@@ -132,9 +132,6 @@ model ProfileWordResult {
 
     profileId String
     profile   Profile @relation(fields: [profileId], references: [id])
-
-    wordId String
-    word   Word   @relation(fields: [wordId], references: [id])
 
     questionId String
     question   Question @relation(fields: [questionId], references: [id])
