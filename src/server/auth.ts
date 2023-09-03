@@ -35,7 +35,6 @@ export const authOptions: NextAuthOptions = {
         // session.user.role = user.role; <-- put other properties on the session here
       }
 
-      console.log("session callback returning", session);
       return session;
     },
     jwt({ token, user, trigger, session }) {
@@ -89,8 +88,6 @@ export const authOptions: NextAuthOptions = {
           },
         });
 
-        console.log("authorize called", { credentials, user });
-
         if (!user?.password) {
           return null;
         }
@@ -101,10 +98,7 @@ export const authOptions: NextAuthOptions = {
           user.password
         );
 
-        console.log("passwordsMatch", passwordsMatch);
-
         if (passwordsMatch) {
-          console.log("passwords match returning user", user);
           return user;
         }
 
