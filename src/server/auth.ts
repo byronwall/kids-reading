@@ -1,4 +1,5 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { type Profile } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { type GetServerSidePropsContext } from "next";
 import {
@@ -15,8 +16,7 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      activeProfile: Profile;
     };
   }
 }
@@ -31,12 +31,22 @@ export const authOptions: NextAuthOptions = {
     session({ session, user, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.activeProfile = token.activeProfile as Profile;
         // session.user.role = user.role; <-- put other properties on the session here
       }
+
       return session;
     },
-    jwt({ token, user }) {
+    jwt({ token, user, trigger, session }) {
       // Add auth_time to token on signin in
+
+      if (trigger === "update") {
+        if ("activeProfile" in session) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          token.activeProfile = session.activeProfile;
+        }
+      }
+
       if (user !== undefined) {
         token.auth_time = Math.floor(Date.now() / 1000);
         token.id = user.id;
@@ -78,8 +88,6 @@ export const authOptions: NextAuthOptions = {
           },
         });
 
-        console.log("authorize called", { credentials, user });
-
         if (!user?.password) {
           return null;
         }
@@ -90,10 +98,7 @@ export const authOptions: NextAuthOptions = {
           user.password
         );
 
-        console.log("passwordsMatch", passwordsMatch);
-
         if (passwordsMatch) {
-          console.log("passwords match returning user", user);
           return user;
         }
 
