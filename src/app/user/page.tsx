@@ -12,6 +12,8 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
+import { useActiveProfile } from "~/hooks/useActiveProfile";
+import { cn } from "~/utils";
 
 import { trpc } from "../_trpc/client";
 
@@ -37,6 +39,8 @@ export default function UserPage() {
 
     await utils.userRouter.getAllProfiles.invalidate();
   };
+
+  const { setActiveProfile, activeProfile } = useActiveProfile();
 
   return (
     <div>
@@ -78,9 +82,22 @@ export default function UserPage() {
                   className="flex items-center justify-between py-3 pl-3 pr-4 text-sm"
                 >
                   <div className="flex w-0 flex-1 items-center">
-                    <span className="ml-2 w-0 flex-1 truncate">
+                    <span
+                      className={cn("ml-2 w-0 flex-1 truncate", {
+                        "bg-slate-400": profile.id === activeProfile?.id,
+                      })}
+                    >
                       {profile.name}
                     </span>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        void setActiveProfile(profile);
+                      }}
+                      className="ml-2"
+                    >
+                      Set Active
+                    </Button>
                   </div>
                 </li>
               ))}
