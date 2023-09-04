@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { addDays } from "date-fns";
+
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -62,12 +65,20 @@ export const questionRouter = createTRPCRouter({
         },
       },
       include: {
-        word: true,
+        word: {
+          include: {
+            summaries: {
+              where: {
+                profileId,
+              },
+            },
+          },
+        },
       },
     });
 
     // send back the list of questions
-    return { questions, wordsToSchedule };
+    return questions;
   }),
 
   scheduleRandomQuestions: protectedProcedure.mutation(async ({ ctx }) => {
@@ -100,4 +111,77 @@ export const questionRouter = createTRPCRouter({
       message: `${wordsToSchedule.length} words scheduled successfully!`,
     };
   }),
+
+  createResultAndUpdateSummary: protectedProcedure
+    .input(
+      z.object({
+        questionId: z.string(),
+        score: z.number(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { questionId, score } = input;
+
+      const profileId = ctx.session.user.activeProfile.id;
+
+      // find the question
+      const question = await prisma.question.findUnique({
+        where: {
+          id: questionId,
+        },
+      });
+
+      // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+      if (!question || question.wordId === null) {
+        throw new Error(`Question with ID ${questionId} not found`);
+      }
+
+      // create the result
+      await prisma.profileQuestionResult.create({
+        data: {
+          questionId,
+          score,
+          profileId,
+          metaInfo: {},
+        },
+      });
+
+      // find the summary
+      const summary = await prisma.profileWordSummary.findFirst({
+        where: {
+          profileId,
+          wordId: question.wordId,
+        },
+      });
+
+      if (!summary) {
+        throw new Error(
+          `Summary for profile ${profileId} and word ${question.wordId} not found`
+        );
+      }
+
+      // update the summary
+      const nextReviewDate = summary.nextReviewDate ?? new Date();
+
+      const factor = score > 50 ? 2 : 0.5;
+      const interval = summary.interval ?? 1;
+      const newInterval = Math.round(interval * factor);
+
+      // add interval in days to review data using date-fns
+      const nextReviewDateWithInterval = addDays(nextReviewDate, newInterval);
+
+      await prisma.profileWordSummary.update({
+        where: {
+          id: summary.id,
+        },
+        data: {
+          nextReviewDate: nextReviewDateWithInterval,
+          interval: newInterval,
+        },
+      });
+
+      return {
+        message: `Result created successfully!`,
+      };
+    }),
 });

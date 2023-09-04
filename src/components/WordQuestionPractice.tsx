@@ -9,16 +9,16 @@ import { Button } from "./ui/button";
 import { Icons } from "./icons";
 
 export function WordQuestionPractice() {
+  const utils = trpc.useContext();
+
   const { data: scheduledQuestions } =
     trpc.questionRouter.getScheduledQuestions.useQuery();
 
-  const firstQuestion = scheduledQuestions?.questions[0];
+  const firstQuestion = scheduledQuestions?.[0];
 
   // summary item for that word
 
-  const wordSummary = scheduledQuestions?.wordsToSchedule.find(
-    (word) => word.wordId === firstQuestion?.wordId
-  );
+  const wordSummary = firstQuestion?.word?.summaries[0];
 
   console.log("word summary", { wordSummary, scheduledQuestions });
 
@@ -28,11 +28,27 @@ export function WordQuestionPractice() {
 
   const [fontSize, setFontSize] = useLocalStorage("fontSize", 5);
 
+  const recordResultMutation =
+    trpc.questionRouter.createResultAndUpdateSummary.useMutation();
+
+  const handleResult = async (result: number) => {
+    if (!firstQuestion) {
+      return;
+    }
+
+    await recordResultMutation.mutateAsync({
+      questionId: firstQuestion.id,
+      score: result,
+    });
+
+    await utils.questionRouter.getScheduledQuestions.invalidate();
+  };
+
   return (
     <div>
       {scheduledQuestions && (
         <div>
-          <h2>Question count {scheduledQuestions.questions.length}</h2>
+          <h2>Question count {scheduledQuestions.length}</h2>
 
           <Card>
             <CardHeader>
@@ -68,9 +84,15 @@ export function WordQuestionPractice() {
                 </div>
                 <div>interval: {interval} days</div>
                 <div className="flex gap-1">
-                  <Button variant={"destructive"}>hard {"6"}</Button>
-                  <Button variant={"default"}>good</Button>
-                  <Button variant={"outline"}>skip</Button>
+                  <Button
+                    variant={"destructive"}
+                    onClick={() => handleResult(0)}
+                  >
+                    hard
+                  </Button>
+                  <Button variant={"default"} onClick={() => handleResult(100)}>
+                    good
+                  </Button>
                 </div>
               </div>
             </CardContent>
