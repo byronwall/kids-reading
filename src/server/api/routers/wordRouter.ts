@@ -21,8 +21,6 @@ export const wordRouter = createTRPCRouter({
   addWords: protectedProcedure.input(z.string()).mutation(async ({ input }) => {
     const words = input.split(/,|\n/).map((word) => word.trim());
 
-    console.log("addWords mutation called", { words });
-
     // check if word already exists
     const existingWords = await prisma.word.findMany({
       where: {
