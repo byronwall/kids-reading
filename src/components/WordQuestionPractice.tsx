@@ -1,36 +1,80 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 import { trpc } from "~/app/_trpc/client";
 
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
+import { Icons } from "./icons";
 
 export function WordQuestionPractice() {
-  // get all words
-  const { data: words } = trpc.wordRouter.getAllWords.useQuery();
+  const { data: scheduledQuestions } =
+    trpc.questionRouter.getScheduledQuestions.useQuery();
 
-  const [randomIdx, setRandomIdx] = useState(0);
+  const firstQuestion = scheduledQuestions?.questions[0];
 
-  // pick a random word to show
-  const randomWord = useMemo(() => {
-    return words ? words[Math.floor(Math.random() * words.length)] : null;
-  }, [randomIdx, words]);
+  // summary item for that word
 
-  // give a button to change the word
-  function handleButtonClick() {
-    setRandomIdx((idx) => idx + 1);
-  }
+  const wordSummary = scheduledQuestions?.wordsToSchedule.find(
+    (word) => word.wordId === firstQuestion?.wordId
+  );
 
-  // TODO: allow changing text size - save to local storage (phone needs bigger)
+  console.log("word summary", { wordSummary, scheduledQuestions });
+
+  const interval = wordSummary?.interval ?? 1;
+
+  // store the font size in local storage - useLocalstorage
+
+  const [fontSize, setFontSize] = useLocalStorage("fontSize", 5);
 
   return (
     <div>
-      <h1>practice a word</h1>
-      {randomWord && (
+      {scheduledQuestions && (
         <div>
-          <h2>{randomWord.word}</h2>
-          <Button onClick={handleButtonClick}>Change Word</Button>
+          <h2>Question count {scheduledQuestions.questions.length}</h2>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>practice a word</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex gap-1">
+                  <Button
+                    onClick={() => {
+                      setFontSize(fontSize + 1);
+                    }}
+                    variant={"outline"}
+                  >
+                    <Icons.zoomIn />
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setFontSize(Math.max(fontSize - 1, 1));
+                    }}
+                    variant={"outline"}
+                  >
+                    <Icons.zoomOut />
+                  </Button>
+                </div>
+
+                <div
+                  style={{
+                    fontSize: `${fontSize}rem`,
+                  }}
+                >
+                  {firstQuestion?.word?.word}
+                </div>
+                <div>interval: {interval} days</div>
+                <div className="flex gap-1">
+                  <Button variant={"destructive"}>hard {"6"}</Button>
+                  <Button variant={"default"}>good</Button>
+                  <Button variant={"outline"}>skip</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>

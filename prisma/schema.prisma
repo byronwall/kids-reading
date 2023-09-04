@@ -158,4 +158,7 @@ model ProfileWordSummary {
 
     // will be determined from a spaced repetition algorithm
     nextReviewDate DateTime @default(now())
+
+    // interval stored in days
+    interval Int @default(1)
 }

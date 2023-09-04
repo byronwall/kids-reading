@@ -24,6 +24,8 @@ import {
   X,
   BookOpen as Book,
   ChevronDown,
+  ZoomIn,
+  ZoomOut,
   type LucideIcon,
 } from "lucide-react";
 
@@ -52,6 +54,8 @@ export const Icons = {
   moon: Moon,
   laptop: Laptop,
   chevronDown: ChevronDown,
+  zoomIn: ZoomIn,
+  zoomOut: ZoomOut,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
