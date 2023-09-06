@@ -58,6 +58,34 @@ export default function Home() {
 
   const { data: questions } = trpc.questionRouter.getAllQuestions.useQuery();
 
+  const wordsToMakeSentence = questions?.map((question) => question.word?.word);
+
+  const {
+    data: newSentences,
+    refetch,
+    isInitialLoading: isLoadingSentences,
+  } = trpc.sentencesRouter.getNewSentencesForWords.useQuery(
+    wordsToMakeSentence ?? [],
+    {
+      enabled: false,
+    }
+  );
+
+  const addSentencesMutation =
+    trpc.sentencesRouter.addSentencesAndWords.useMutation();
+
+  const handleAddSentences = async (sentences: string[]) => {
+    await addSentencesMutation.mutateAsync({
+      sentences,
+    });
+
+    // invalidate the query so that it will refetch
+    await utils.sentencesRouter.getAllSentences.invalidate();
+  };
+
+  const { data: allSentences } =
+    trpc.sentencesRouter.getAllSentences.useQuery();
+
   return (
     <section className="">
       <h1>admin</h1>
@@ -85,6 +113,79 @@ export default function Home() {
           <Icons.add className="ml-2 h-5 w-5" />
         </Button>
         <p>Number of questions: {questions?.length ?? 0}</p>
+      </div>
+      <div>
+        <h2>sentences</h2>
+        <Button onClick={() => refetch()} disabled={isLoadingSentences}>
+          Generate sentences for words
+          <Icons.add className="ml-2 h-5 w-5" />
+        </Button>
+        {isLoadingSentences && (
+          <p>
+            loading... <Icons.spinner className="ml-2 h-5 w-5 animate-spin" />
+          </p>
+        )}
+        {!isLoadingSentences && newSentences?.length && (
+          <div>
+            <div>
+              <Button onClick={() => handleAddSentences(newSentences)}>
+                Add all sentences
+                <Icons.add className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+            <div>
+              {newSentences?.map((sentence) => (
+                <div
+                  key={sentence}
+                  className="flex items-center justify-between"
+                >
+                  <span>{sentence}</span>
+                  <button
+                    onClick={() => handleAddSentences([sentence])}
+                    className="text-green-500 hover:text-green-700"
+                  >
+                    <Icons.add className="h-5 w-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        <div>
+          <h3>all sentences</h3>
+          <ul className="space-y-2">
+            {allSentences?.map((sentence) => (
+              <li
+                key={sentence.id}
+                className="flex items-center justify-between"
+              >
+                <div className="flex flex-col">
+                  <span>{sentence.fullSentence}</span>
+                  <span className="text-sm text-gray-500">
+                    {sentence.words.map((word) => word.word).join(", ")}
+                  </span>
+                </div>
+                <div>
+                  <Button
+                    onClick={() => alert("delete not implemented")}
+                    className="text-red-500 hover:text-red-700"
+                    variant={"ghost"}
+                  >
+                    <Icons.trash className="h-5 w-5" />
+                  </Button>
+                  <Button
+                    onClick={() => alert("edit not implemented")}
+                    className="text-blue-500 hover:text-blue-700"
+                    variant={"ghost"}
+                  >
+                    <Icons.pencil className="h-5 w-5" />
+                  </Button>
+                </div>
+              </li>
+            ))}
+            {allSentences?.length === 0 && <p>no sentences</p>}
+          </ul>
+        </div>
       </div>
       <div>
         <h2>all words</h2>

@@ -83,6 +83,7 @@ model Word {
     questions Question[]
 
     summaries ProfileWordSummary[]
+    sentences Sentence[]
 
     @@unique([word])
 }
@@ -97,7 +98,9 @@ model Sentence {
     fullSentence String
 
     // asume that words will be in the database -- application error if not
-    words     String[]
+    // connect to words using a many sentences : many words
+    words Word[]
+
     questions Question[]
 }
 

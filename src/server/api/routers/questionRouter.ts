@@ -35,7 +35,12 @@ export const questionRouter = createTRPCRouter({
   }),
 
   getAllQuestions: publicProcedure.query(async () => {
-    const questions = await prisma.question.findMany({});
+    // include words
+    const questions = await prisma.question.findMany({
+      include: {
+        word: true,
+      },
+    });
 
     return questions;
   }),

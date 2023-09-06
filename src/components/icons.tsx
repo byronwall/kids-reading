@@ -26,6 +26,7 @@ import {
   ChevronDown,
   ZoomIn,
   ZoomOut,
+  Pencil,
   type LucideIcon,
 } from "lucide-react";
 
@@ -56,6 +57,7 @@ export const Icons = {
   chevronDown: ChevronDown,
   zoomIn: ZoomIn,
   zoomOut: ZoomOut,
+  pencil: Pencil,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

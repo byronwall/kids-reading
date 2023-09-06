@@ -22,6 +22,7 @@ export const env = createEnv({
     ),
     JWT_SECRET: z.string().min(1),
     NEXT_PUBLIC_VERCEL_URL: z.string(),
+    OPENAI_API_KEY: z.string().min(1),
   },
 
   /**
@@ -44,6 +45,7 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     JWT_SECRET: process.env.JWT_SECRET,
     NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
