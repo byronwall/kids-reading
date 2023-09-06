@@ -63,7 +63,7 @@ export default function Home() {
   const {
     data: newSentences,
     refetch,
-    isFetching: isLoadingSentences,
+    isInitialLoading: isLoadingSentences,
   } = trpc.sentencesRouter.getNewSentencesForWords.useQuery(
     wordsToMakeSentence ?? [],
     {
@@ -78,7 +78,13 @@ export default function Home() {
     await addSentencesMutation.mutateAsync({
       sentences,
     });
+
+    // invalidate the query so that it will refetch
+    await utils.sentencesRouter.getAllSentences.invalidate();
   };
+
+  const { data: allSentences } =
+    trpc.sentencesRouter.getAllSentences.useQuery();
 
   return (
     <section className="">
@@ -145,6 +151,41 @@ export default function Home() {
             </div>
           </div>
         )}
+        <div>
+          <h3>all sentences</h3>
+          <ul className="space-y-2">
+            {allSentences?.map((sentence) => (
+              <li
+                key={sentence.id}
+                className="flex items-center justify-between"
+              >
+                <div className="flex flex-col">
+                  <span>{sentence.fullSentence}</span>
+                  <span className="text-sm text-gray-500">
+                    {sentence.words.map((word) => word.word).join(", ")}
+                  </span>
+                </div>
+                <div>
+                  <Button
+                    onClick={() => alert("delete not implemented")}
+                    className="text-red-500 hover:text-red-700"
+                    variant={"ghost"}
+                  >
+                    <Icons.trash className="h-5 w-5" />
+                  </Button>
+                  <Button
+                    onClick={() => alert("edit not implemented")}
+                    className="text-blue-500 hover:text-blue-700"
+                    variant={"ghost"}
+                  >
+                    <Icons.pencil className="h-5 w-5" />
+                  </Button>
+                </div>
+              </li>
+            ))}
+            {allSentences?.length === 0 && <p>no sentences</p>}
+          </ul>
+        </div>
       </div>
       <div>
         <h2>all words</h2>

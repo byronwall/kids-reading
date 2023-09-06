@@ -9,6 +9,16 @@ import { getWordsForSentence } from "./getWordsForSentence";
 const prisma = new PrismaClient();
 
 export const sentencesRouter = createTRPCRouter({
+  getAllSentences: protectedProcedure.query(async () => {
+    const sentences = await prisma.sentence.findMany({
+      include: {
+        words: true,
+      },
+    });
+
+    return sentences;
+  }),
+
   getNewSentencesForWords: protectedProcedure
     // input array is string or undefined
     .input(z.array(z.string().optional()))
