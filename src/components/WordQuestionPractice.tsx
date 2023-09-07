@@ -18,9 +18,7 @@ export function WordQuestionPractice() {
 
   // summary item for that word
 
-  const wordSummary = firstQuestion?.word?.summaries[0];
-
-  console.log("word summary", { wordSummary, scheduledQuestions });
+  const wordSummary = firstQuestion;
 
   const interval = wordSummary?.interval ?? 1;
 
@@ -29,7 +27,7 @@ export function WordQuestionPractice() {
   const [fontSize, setFontSize] = useLocalStorage("fontSize", 5);
 
   const recordResultMutation =
-    trpc.questionRouter.createResultAndUpdateSummary.useMutation();
+    trpc.questionRouter.createResultAndUpdateSummaryForWord.useMutation();
 
   const handleResult = async (result: number) => {
     if (!firstQuestion) {
@@ -37,16 +35,28 @@ export function WordQuestionPractice() {
     }
 
     await recordResultMutation.mutateAsync({
-      questionId: firstQuestion.id,
+      wordId: firstQuestion.wordId,
       score: result,
     });
 
     await utils.questionRouter.getScheduledQuestions.invalidate();
   };
 
+  const { data: minTimeForNextQuestion } =
+    trpc.questionRouter.getMinTimeForNextQuestion.useQuery();
+
   return (
     <div>
-      {scheduledQuestions && (
+      {scheduledQuestions && scheduledQuestions.length === 0 && (
+        <div>
+          <h2>no questions available</h2>
+          <div>
+            next question available on {minTimeForNextQuestion?.toDateString()}.
+            You can also go to the admin page to schedule more words.
+          </div>
+        </div>
+      )}
+      {scheduledQuestions && scheduledQuestions?.length > 0 && (
         <div>
           <h2>Question count {scheduledQuestions.length}</h2>
 
@@ -83,6 +93,10 @@ export function WordQuestionPractice() {
                   {firstQuestion?.word?.word}
                 </div>
                 <div>interval: {interval} days</div>
+                <div>
+                  scheduled review:{" "}
+                  {firstQuestion?.nextReviewDate.toDateString()}
+                </div>
                 <div className="flex gap-1">
                   <Button
                     variant={"destructive"}
