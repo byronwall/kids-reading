@@ -25,6 +25,26 @@ export const questionRouter = createTRPCRouter({
     return wordsToSchedule;
   }),
 
+  getMinTimeForNextQuestion: protectedProcedure.query(async ({ ctx }) => {
+    const profileId = ctx.session.user.activeProfile.id;
+
+    // get words from ProfileWordSummary
+    
+    const minNextReviewDate = await prisma.profileWordSummary.findFirst({
+      where: {
+        profileId,
+      },
+      select: {
+        nextReviewDate: true,
+      },
+      orderBy: {
+        nextReviewDate: "asc",
+      },
+    });
+
+    return minNextReviewDate?.nextReviewDate;
+  }),
+
   scheduleRandomQuestions: protectedProcedure.mutation(async ({ ctx }) => {
     // TODO: long term this is replaced by "plans"
     const profileId = ctx.session.user.activeProfile.id;

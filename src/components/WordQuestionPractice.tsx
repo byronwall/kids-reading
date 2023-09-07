@@ -20,8 +20,6 @@ export function WordQuestionPractice() {
 
   const wordSummary = firstQuestion;
 
-  console.log("word summary", { wordSummary, scheduledQuestions });
-
   const interval = wordSummary?.interval ?? 1;
 
   // store the font size in local storage - useLocalstorage
@@ -44,9 +42,21 @@ export function WordQuestionPractice() {
     await utils.questionRouter.getScheduledQuestions.invalidate();
   };
 
+  const { data: minTimeForNextQuestion } =
+    trpc.questionRouter.getMinTimeForNextQuestion.useQuery();
+
   return (
     <div>
-      {scheduledQuestions && (
+      {scheduledQuestions && scheduledQuestions.length === 0 && (
+        <div>
+          <h2>no questions available</h2>
+          <div>
+            next question available on {minTimeForNextQuestion?.toDateString()}.
+            You can also go to the admin page to schedule more words.
+          </div>
+        </div>
+      )}
+      {scheduledQuestions && scheduledQuestions?.length > 0 && (
         <div>
           <h2>Question count {scheduledQuestions.length}</h2>
 
