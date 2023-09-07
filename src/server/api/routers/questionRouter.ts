@@ -1,50 +1,10 @@
 import { z } from "zod";
 import { addDays } from "date-fns";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
 
 export const questionRouter = createTRPCRouter({
-  createQuestionsForWords: protectedProcedure.mutation(async () => {
-    // find all words that do not have associated questions
-    const wordsWithoutQuestions = await prisma.word.findMany({
-      where: {
-        questions: {
-          none: {},
-        },
-      },
-    });
-
-    // add those questions to the database and return the count
-    const createdQuestions = await prisma.question.createMany({
-      data: wordsWithoutQuestions.map((word) => ({
-        type: "WORD",
-        metaInfo: {},
-        sentenceId: null,
-        wordId: word.id,
-      })),
-    });
-
-    return {
-      message: `${createdQuestions.count} questions created successfully!`,
-    };
-  }),
-
-  getAllQuestions: publicProcedure.query(async () => {
-    // include words
-    const questions = await prisma.question.findMany({
-      include: {
-        word: true,
-      },
-    });
-
-    return questions;
-  }),
-
   getScheduledQuestions: protectedProcedure.query(async ({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
 
@@ -62,31 +22,11 @@ export const questionRouter = createTRPCRouter({
       },
     });
 
-    // find the questions that are relevant for those words
-    const questions = await prisma.question.findMany({
-      where: {
-        wordId: {
-          in: wordsToSchedule.map((word) => word.wordId),
-        },
-      },
-      include: {
-        word: {
-          include: {
-            summaries: {
-              where: {
-                profileId,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    // send back the list of questions
-    return questions;
+    return wordsToSchedule;
   }),
 
   scheduleRandomQuestions: protectedProcedure.mutation(async ({ ctx }) => {
+    // TODO: long term this is replaced by "plans"
     const profileId = ctx.session.user.activeProfile.id;
 
     // pick 20 random words that do not exist in the summary table for the current profile
@@ -117,51 +57,47 @@ export const questionRouter = createTRPCRouter({
     };
   }),
 
-  createResultAndUpdateSummary: protectedProcedure
+  createResultAndUpdateSummaryForWord: protectedProcedure
     .input(
       z.object({
-        questionId: z.string(),
+        wordId: z.string(),
         score: z.number(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { questionId, score } = input;
+      const { wordId, score } = input;
+
+      if (!wordId) {
+        throw new Error("wordId must be provided");
+      }
 
       const profileId = ctx.session.user.activeProfile.id;
-
-      // find the question
-      const question = await prisma.question.findUnique({
-        where: {
-          id: questionId,
-        },
-      });
-
-      // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-      if (!question || question.wordId === null) {
-        throw new Error(`Question with ID ${questionId} not found`);
-      }
 
       // create the result
       await prisma.profileQuestionResult.create({
         data: {
-          questionId,
+          wordId,
+          sentenceId: null,
           score,
           profileId,
           metaInfo: {},
         },
       });
 
+      if (wordId) {
+      }
+
       // find the summary
       const summary = await prisma.profileWordSummary.findFirst({
         where: {
           profileId,
-          wordId: question.wordId,
+          wordId,
         },
       });
 
       if (!summary) {
         throw new Error(
-          `Summary for profile ${profileId} and word ${question.wordId} not found`
+          `Summary for profile ${profileId} and word ${wordId} not found`
         );
       }
 

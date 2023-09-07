@@ -25,9 +25,6 @@ export default function Home() {
     onSuccess,
   });
 
-  const createQuestionMutation =
-    trpc.questionRouter.createQuestionsForWords.useMutation();
-
   const { data: allWords } = trpc.wordRouter.getAllWords.useQuery();
 
   const handleSave = async () => {
@@ -45,10 +42,6 @@ export default function Home() {
     setWords(event.target.value);
   };
 
-  const handleCreateQuestions = async () => {
-    await createQuestionMutation.mutateAsync();
-  };
-
   const scheduleMutation =
     trpc.questionRouter.scheduleRandomQuestions.useMutation();
 
@@ -56,9 +49,7 @@ export default function Home() {
     await scheduleMutation.mutateAsync();
   };
 
-  const { data: questions } = trpc.questionRouter.getAllQuestions.useQuery();
-
-  const wordsToMakeSentence = questions?.map((question) => question.word?.word);
+  const wordsToMakeSentence = allWords?.map((c) => c.word) ?? [];
 
   const {
     data: newSentences,
@@ -104,15 +95,11 @@ export default function Home() {
       </div>
       <div>
         <h2>questions</h2>
-        <Button onClick={handleCreateQuestions}>
-          Create questions for words
-          <Icons.add className="ml-2 h-5 w-5" />
-        </Button>
+
         <Button onClick={handleSchedule}>
           Schedule 20 random words for profile
           <Icons.add className="ml-2 h-5 w-5" />
         </Button>
-        <p>Number of questions: {questions?.length ?? 0}</p>
       </div>
       <div>
         <h2>sentences</h2>

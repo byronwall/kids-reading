@@ -18,7 +18,7 @@ export function WordQuestionPractice() {
 
   // summary item for that word
 
-  const wordSummary = firstQuestion?.word?.summaries[0];
+  const wordSummary = firstQuestion;
 
   console.log("word summary", { wordSummary, scheduledQuestions });
 
@@ -29,7 +29,7 @@ export function WordQuestionPractice() {
   const [fontSize, setFontSize] = useLocalStorage("fontSize", 5);
 
   const recordResultMutation =
-    trpc.questionRouter.createResultAndUpdateSummary.useMutation();
+    trpc.questionRouter.createResultAndUpdateSummaryForWord.useMutation();
 
   const handleResult = async (result: number) => {
     if (!firstQuestion) {
@@ -37,7 +37,7 @@ export function WordQuestionPractice() {
     }
 
     await recordResultMutation.mutateAsync({
-      questionId: firstQuestion.id,
+      wordId: firstQuestion.wordId,
       score: result,
     });
 
