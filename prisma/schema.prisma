@@ -79,11 +79,11 @@ model Word {
     word String
 
     // this will grow into columns so it's easier to query?
-    metaInfo  Json
-    questions Question[]
+    metaInfo Json
 
     summaries ProfileWordSummary[]
     sentences Sentence[]
+    results   ProfileQuestionResult[]
 
     @@unique([word])
 }
@@ -99,30 +99,7 @@ model Sentence {
 
     // asume that words will be in the database -- application error if not
     // connect to words using a many sentences : many words
-    words Word[]
-
-    questions Question[]
-}
-
-enum QuestionType {
-    WORD
-    SENTENCE
-}
-
-model Question {
-    id String @id @default(cuid())
-
-    type QuestionType
-
-    // this will grow into columns so it's easier to query?
-    metaInfo Json
-
-    wordId String?
-    word   Word?   @relation(fields: [wordId], references: [id])
-
-    sentenceId String?
-    sentence   Sentence? @relation(fields: [sentenceId], references: [id])
-
+    words   Word[]
     results ProfileQuestionResult[]
 }
 
@@ -136,8 +113,11 @@ model ProfileQuestionResult {
     profileId String
     profile   Profile @relation(fields: [profileId], references: [id])
 
-    questionId String
-    question   Question @relation(fields: [questionId], references: [id])
+    wordId String?
+    word   Word?   @relation(fields: [wordId], references: [id])
+
+    sentenceId String?
+    sentence   Sentence? @relation(fields: [sentenceId], references: [id])
 
     // score will range from 0 to 100, 100 being the best
     score Int @default(0)
