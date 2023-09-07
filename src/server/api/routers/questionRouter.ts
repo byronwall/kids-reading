@@ -102,14 +102,14 @@ export const questionRouter = createTRPCRouter({
       }
 
       // update the summary
-      const nextReviewDate = summary.nextReviewDate ?? new Date();
 
       const factor = score > 50 ? 2 : 0.5;
       const interval = summary.interval ?? 1;
       const newInterval = Math.round(interval * factor);
 
       // add interval in days to review data using date-fns
-      const nextReviewDateWithInterval = addDays(nextReviewDate, newInterval);
+      // new date is today plus interval
+      const nextReviewDateWithInterval = addDays(new Date(), newInterval);
 
       await prisma.profileWordSummary.update({
         where: {

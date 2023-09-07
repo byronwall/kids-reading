@@ -83,6 +83,10 @@ export function WordQuestionPractice() {
                   {firstQuestion?.word?.word}
                 </div>
                 <div>interval: {interval} days</div>
+                <div>
+                  scheduled review:{" "}
+                  {firstQuestion?.nextReviewDate.toDateString()}
+                </div>
                 <div className="flex gap-1">
                   <Button
                     variant={"destructive"}
