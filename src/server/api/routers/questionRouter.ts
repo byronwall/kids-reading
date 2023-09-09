@@ -5,31 +5,55 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
 
 export const questionRouter = createTRPCRouter({
-  getScheduledQuestions: protectedProcedure.query(async ({ ctx }) => {
+  getPossibleSentences: protectedProcedure.query(async ({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
+    const wordsToFind = await getWordsForProfile(profileId);
 
-    // get words from ProfileWordSummary
-    const wordsToSchedule = await prisma.profileWordSummary.findMany({
+    // search for sentences that include those words
+    const sentences = await prisma.sentence.findMany({
       where: {
-        nextReviewDate: {
-          lte: new Date(),
+        words: {
+          some: {
+            id: {
+              in: wordsToFind.map((word) => word.wordId),
+            },
+          },
         },
-
-        profileId,
       },
       include: {
-        word: true,
+        words: {
+          include: {
+            summaries: true,
+          },
+        },
       },
     });
 
-    return wordsToSchedule;
+    // sort the sentences by the number of words that are in the sentence
+    sentences.sort((a, b) => {
+      const aWords = a.words.filter((word) =>
+        wordsToFind.some((wordToFind) => wordToFind.wordId === word.id)
+      );
+      const bWords = b.words.filter((word) =>
+        wordsToFind.some((wordToFind) => wordToFind.wordId === word.id)
+      );
+
+      return aWords.length - bWords.length;
+    });
+
+    return sentences;
+  }),
+
+  getScheduledQuestions: protectedProcedure.query(async ({ ctx }) => {
+    const profileId = ctx.session.user.activeProfile.id;
+    return await getWordsForProfile(profileId);
   }),
 
   getMinTimeForNextQuestion: protectedProcedure.query(async ({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
 
     // get words from ProfileWordSummary
-    
+
     const minNextReviewDate = await prisma.profileWordSummary.findFirst({
       where: {
         profileId,
@@ -146,3 +170,21 @@ export const questionRouter = createTRPCRouter({
       };
     }),
 });
+
+async function getWordsForProfile(profileId: string) {
+  // get words from ProfileWordSummary
+  const wordsToSchedule = await prisma.profileWordSummary.findMany({
+    where: {
+      nextReviewDate: {
+        lte: new Date(),
+      },
+
+      profileId,
+    },
+    include: {
+      word: true,
+    },
+  });
+
+  return wordsToSchedule;
+}

@@ -43,7 +43,7 @@ export default async function RootLayout({
                 </div>
               </header>
               <main className="flex-1">
-                <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
+                <div className="container flex max-w-[96rem] flex-col items-center gap-4 text-center">
                   {children}
                 </div>
               </main>
