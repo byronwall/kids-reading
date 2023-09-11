@@ -6,5 +6,9 @@ export const marketingConfig: MarketingConfig = {
       title: "Admin",
       href: "/admin",
     },
+    {
+      title: "Stats",
+      href: "/stats",
+    },
   ],
 };

@@ -5,6 +5,43 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
 
 export const questionRouter = createTRPCRouter({
+  getUserStats: protectedProcedure.query(async ({ ctx }) => {
+    const profileId = ctx.session.user.activeProfile.id;
+
+    // query for all results sorted by newest first
+    const results = await prisma.profileQuestionResult.findMany({
+      where: {
+        profileId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        word: true,
+        sentence: true,
+      },
+      take: 100,
+    });
+
+    // also get all of the summaries, sorted by nextReviewDate
+    const summaries = await prisma.profileWordSummary.findMany({
+      where: {
+        profileId,
+      },
+      orderBy: {
+        nextReviewDate: "asc",
+      },
+      include: {
+        word: true,
+      },
+    });
+
+    return {
+      results,
+      summaries,
+    };
+  }),
+
   getPossibleSentences: protectedProcedure.query(async ({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
     const wordsToFind = await getWordsForProfile(profileId);
