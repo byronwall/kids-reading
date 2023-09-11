@@ -27,12 +27,16 @@ import {
   ZoomIn,
   ZoomOut,
   Pencil,
+  ThumbsUp,
+  ThumbsDown,
   type LucideIcon,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  thumbsUp: ThumbsUp,
+  thumbsDown: ThumbsDown,
   logo: Book,
   close: X,
   spinner: Loader2,
