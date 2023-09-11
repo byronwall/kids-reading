@@ -5,31 +5,92 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
 
 export const questionRouter = createTRPCRouter({
-  getScheduledQuestions: protectedProcedure.query(async ({ ctx }) => {
+  getUserStats: protectedProcedure.query(async ({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
 
-    // get words from ProfileWordSummary
-    const wordsToSchedule = await prisma.profileWordSummary.findMany({
+    // query for all results sorted by newest first
+    const results = await prisma.profileQuestionResult.findMany({
       where: {
-        nextReviewDate: {
-          lte: new Date(),
-        },
-
         profileId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        word: true,
+        sentence: true,
+      },
+      take: 100,
+    });
+
+    // also get all of the summaries, sorted by nextReviewDate
+    const summaries = await prisma.profileWordSummary.findMany({
+      where: {
+        profileId,
+      },
+      orderBy: {
+        nextReviewDate: "asc",
       },
       include: {
         word: true,
       },
     });
 
-    return wordsToSchedule;
+    return {
+      results,
+      summaries,
+    };
+  }),
+
+  getPossibleSentences: protectedProcedure.query(async ({ ctx }) => {
+    const profileId = ctx.session.user.activeProfile.id;
+    const wordsToFind = await getWordsForProfile(profileId);
+
+    // search for sentences that include those words
+    const sentences = await prisma.sentence.findMany({
+      where: {
+        words: {
+          some: {
+            id: {
+              in: wordsToFind.map((word) => word.wordId),
+            },
+          },
+        },
+      },
+      include: {
+        words: {
+          include: {
+            summaries: true,
+          },
+        },
+      },
+    });
+
+    // sort the sentences by the number of words that are in the sentence
+    sentences.sort((a, b) => {
+      const aWords = a.words.filter((word) =>
+        wordsToFind.some((wordToFind) => wordToFind.wordId === word.id)
+      );
+      const bWords = b.words.filter((word) =>
+        wordsToFind.some((wordToFind) => wordToFind.wordId === word.id)
+      );
+
+      return aWords.length - bWords.length;
+    });
+
+    return sentences;
+  }),
+
+  getScheduledQuestions: protectedProcedure.query(async ({ ctx }) => {
+    const profileId = ctx.session.user.activeProfile.id;
+    return await getWordsForProfile(profileId);
   }),
 
   getMinTimeForNextQuestion: protectedProcedure.query(async ({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
 
     // get words from ProfileWordSummary
-    
+
     const minNextReviewDate = await prisma.profileWordSummary.findFirst({
       where: {
         profileId,
@@ -77,6 +138,32 @@ export const questionRouter = createTRPCRouter({
     };
   }),
 
+  createResultForSentence: protectedProcedure
+    .input(
+      z.object({
+        sentenceId: z.string(),
+        results: z.array(
+          z.object({
+            wordId: z.string(),
+            score: z.number().optional(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { sentenceId, results } = input;
+      const profileId = ctx.session.user.activeProfile.id;
+
+      for (const result of results) {
+        await submitResultAndUpdateSchedule(
+          result.wordId,
+          result.score,
+          profileId,
+          sentenceId
+        );
+      }
+    }),
+
   createResultAndUpdateSummaryForWord: protectedProcedure
     .input(
       z.object({
@@ -94,55 +181,84 @@ export const questionRouter = createTRPCRouter({
       const profileId = ctx.session.user.activeProfile.id;
 
       // create the result
-      await prisma.profileQuestionResult.create({
-        data: {
-          wordId,
-          sentenceId: null,
-          score,
-          profileId,
-          metaInfo: {},
-        },
-      });
-
-      if (wordId) {
-      }
-
-      // find the summary
-      const summary = await prisma.profileWordSummary.findFirst({
-        where: {
-          profileId,
-          wordId,
-        },
-      });
-
-      if (!summary) {
-        throw new Error(
-          `Summary for profile ${profileId} and word ${wordId} not found`
-        );
-      }
-
-      // update the summary
-
-      const factor = score > 50 ? 2 : 0.5;
-      const interval = summary.interval ?? 1;
-      const newInterval = Math.round(interval * factor);
-
-      // add interval in days to review data using date-fns
-      // new date is today plus interval
-      const nextReviewDateWithInterval = addDays(new Date(), newInterval);
-
-      await prisma.profileWordSummary.update({
-        where: {
-          id: summary.id,
-        },
-        data: {
-          nextReviewDate: nextReviewDateWithInterval,
-          interval: newInterval,
-        },
-      });
+      await submitResultAndUpdateSchedule(wordId, score, profileId, undefined);
 
       return {
         message: `Result created successfully!`,
       };
     }),
 });
+
+async function submitResultAndUpdateSchedule(
+  wordId: string,
+  score: number | undefined,
+  profileId: string,
+  sentenceId: string | undefined
+) {
+  await prisma.profileQuestionResult.create({
+    data: {
+      wordId,
+      sentenceId,
+      score: score ?? -1, // will use -1 to flag a skipped entry for now
+      profileId,
+      metaInfo: {},
+    },
+  });
+
+  if (score === undefined) {
+    // this is meant to be a skip - so do not proceed with the summary edit
+    return;
+  }
+
+  // find the summary
+  const summary = await prisma.profileWordSummary.findFirst({
+    where: {
+      profileId,
+      wordId,
+    },
+  });
+
+  // update the summary
+  const factor = score > 50 ? 2 : 0.5;
+  const interval = summary?.interval ?? 1;
+  const newInterval = Math.round(interval * factor);
+
+  // add interval in days to review data using date-fns
+  // new date is today plus interval
+  const nextReviewDateWithInterval = addDays(new Date(), newInterval);
+
+  await prisma.profileWordSummary.upsert({
+    where: {
+      id: summary?.id ?? "NONE",
+    },
+    update: {
+      nextReviewDate: nextReviewDateWithInterval,
+      interval: newInterval,
+    },
+    create: {
+      nextReviewDate: nextReviewDateWithInterval,
+      interval: newInterval,
+      metaInfo: {},
+      profileId,
+      wordId,
+    },
+  });
+}
+
+async function getWordsForProfile(profileId: string) {
+  // get words from ProfileWordSummary
+  const wordsToSchedule = await prisma.profileWordSummary.findMany({
+    where: {
+      nextReviewDate: {
+        lte: new Date(),
+      },
+
+      profileId,
+    },
+    include: {
+      word: true,
+    },
+  });
+
+  return wordsToSchedule;
+}

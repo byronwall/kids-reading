@@ -1,4 +1,4 @@
-import { WordQuestionPractice } from "~/components/WordQuestionPractice";
+import { QuestionPractice } from "~/components/QuestionPractice";
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function Home() {
@@ -14,7 +14,7 @@ export default async function Home() {
 
   return (
     <section className="flex flex-col items-center gap-4">
-      <WordQuestionPractice />
+      <QuestionPractice />
     </section>
   );
 }
