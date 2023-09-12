@@ -177,7 +177,7 @@ export function SentenceQuestionPractice() {
                     rowGap: 0,
                     lineHeight: `${fontSize}rem`,
                   }}
-                  className="flex flex-wrap "
+                  className="flex flex-wrap py-2"
                 >
                   {wordsToRender.map((wordToRender, idx) => (
                     <WordInSentence
