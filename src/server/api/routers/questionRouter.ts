@@ -66,6 +66,9 @@ export const questionRouter = createTRPCRouter({
       },
     });
 
+    // shuffle sentences
+    sentences.sort(() => Math.random() - 0.5);
+
     // sort the sentences by the number of words that are in the sentence
     sentences.sort((a, b) => {
       const aWords = a.words.filter((word) =>

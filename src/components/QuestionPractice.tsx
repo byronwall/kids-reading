@@ -6,10 +6,10 @@ import { SentenceQuestionPractice } from "./SentenceQuestionPractice";
 export function QuestionPractice() {
   return (
     <div>
-      <Tabs defaultValue="words">
+      <Tabs defaultValue="sentences">
         <TabsList>
-          <TabsTrigger value="words">Words</TabsTrigger>
           <TabsTrigger value="sentences">Sentences</TabsTrigger>
+          <TabsTrigger value="words">Words</TabsTrigger>
         </TabsList>
         <TabsContent value="words">
           <WordQuestionPractice />
