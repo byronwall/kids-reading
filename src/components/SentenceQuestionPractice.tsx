@@ -16,7 +16,7 @@ type WordWithSentence =
 
 export type WordToRender = {
   displayWord: string;
-  word: WordWithSentence["words"][0];
+  word: WordWithSentence["words"][0] | undefined;
   score: number | undefined;
 };
 
@@ -26,7 +26,18 @@ export function SentenceQuestionPractice() {
   const { data: sentencesToUse, isLoading: isLoadingSentences } =
     trpc.questionRouter.getPossibleSentences.useQuery();
 
-  const firstSentence = sentencesToUse?.[0];
+  const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
+
+  const firstSentence =
+    sentencesToUse?.[activeQuestionIndex % (sentencesToUse?.length || 1)];
+
+  const handleNextQuestion = () => {
+    setActiveQuestionIndex((prevIndex) => prevIndex + 1);
+  };
+
+  const handlePreviousQuestion = () => {
+    setActiveQuestionIndex((prevIndex) => prevIndex - 1);
+  };
 
   const [fontSize, setFontSize] = useLocalStorage("sentenceFontSize", 5);
 
@@ -48,7 +59,11 @@ export function SentenceQuestionPractice() {
       );
 
       if (!wordToRender) {
-        throw new Error(`word not found: ${word}`);
+        return {
+          displayWord: _word,
+          word: undefined,
+          score: undefined,
+        };
       }
 
       // check if summary exists -- if so, score = 100, else score = undefined
@@ -72,7 +87,7 @@ export function SentenceQuestionPractice() {
   const handleScore = (word: WordToRender, score: number | undefined) => {
     // update the score
     const newWordsToRender = wordsToRender.map((wordToRender) => {
-      if (wordToRender.word.word === word.word.word) {
+      if (wordToRender.word?.word === word.word?.word) {
         return {
           ...wordToRender,
           score,
@@ -99,10 +114,13 @@ export function SentenceQuestionPractice() {
 
     await submitSentenceMutation.mutateAsync({
       sentenceId: firstSentence?.id,
-      results: wordsToRender.map((c) => ({
-        wordId: c.word.id,
-        score: c.score,
-      })),
+      results: wordsToRender
+        // throw out words that don't have a word
+        .filter((c) => c.word !== undefined)
+        .map((c) => ({
+          wordId: c.word!.id,
+          score: c.score,
+        })),
     });
 
     // get the next sentence by invalidating query
@@ -171,6 +189,25 @@ export function SentenceQuestionPractice() {
                 <div>
                   <Button onClick={handleSubmitSentence}>
                     <div className="flex gap-2">Submit</div>
+                  </Button>
+                </div>
+
+                <div className="flex justify-center ">
+                  <Button
+                    onClick={handlePreviousQuestion}
+                    disabled={activeQuestionIndex === 0}
+                    variant={"outline"}
+                  >
+                    <Icons.chevronLeft />
+                  </Button>
+                  <Button
+                    onClick={handleNextQuestion}
+                    disabled={
+                      activeQuestionIndex === sentencesToUse?.length - 1
+                    }
+                    variant={"outline"}
+                  >
+                    <Icons.chevronRight />
                   </Button>
                 </div>
               </div>
