@@ -10,6 +10,7 @@ import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
 import { WordInSentence } from "./WordInSentence";
+import { ButtonLoading } from "./ButtonLoading";
 
 type WordWithSentence =
   RouterOutputs["questionRouter"]["getPossibleSentences"][0];
@@ -187,9 +188,12 @@ export function SentenceQuestionPractice() {
                   ))}
                 </div>
                 <div>
-                  <Button onClick={handleSubmitSentence}>
-                    <div className="flex gap-2">Submit</div>
-                  </Button>
+                  <ButtonLoading
+                    onClick={handleSubmitSentence}
+                    isLoading={submitSentenceMutation.isLoading}
+                  >
+                    Submit
+                  </ButtonLoading>
                 </div>
 
                 <div className="flex justify-center ">
