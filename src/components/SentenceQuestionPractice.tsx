@@ -174,6 +174,8 @@ export function SentenceQuestionPractice() {
                   style={{
                     fontSize: `${fontSize}rem`,
                     gap: `${fontSize / 4}rem`,
+                    rowGap: 0,
+                    lineHeight: `${fontSize}rem`,
                   }}
                   className="flex flex-wrap "
                 >
