@@ -1,7 +1,12 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
 
-import { LearningPlanCreateSchema, LessonCreateSchema } from "./inputSchemas";
+import {
+  LearningPlanCreateSchema,
+  LessonCreateSchema,
+  LessonEditWordsSchema,
+} from "./inputSchemas";
+import { getWordsForSentence } from "./getWordsForSentence";
 
 export const planRouter = createTRPCRouter({
   getAllLearningPlans: protectedProcedure.query(async () => {
@@ -61,6 +66,33 @@ export const planRouter = createTRPCRouter({
             connect: {
               id: learningPlanId,
             },
+          },
+        },
+      });
+
+      return lesson;
+    }),
+
+  editLessonWords: protectedProcedure
+    .input(LessonEditWordsSchema)
+    .mutation(async ({ input: { lessonId, words } }) => {
+      const allWords = getWordsForSentence(words);
+
+      const lesson = await prisma.lesson.update({
+        where: {
+          id: lessonId,
+        },
+        data: {
+          words: {
+            connectOrCreate: allWords.map((word) => ({
+              where: {
+                word,
+              },
+              create: {
+                word,
+                metaInfo: {},
+              },
+            })),
           },
         },
       });

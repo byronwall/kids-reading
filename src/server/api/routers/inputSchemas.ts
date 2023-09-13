@@ -12,3 +12,8 @@ export const LessonCreateSchema = z.object({
   description: z.string(),
   learningPlanId: z.string(),
 });
+
+export const LessonEditWordsSchema = z.object({
+  lessonId: z.string(),
+  words: z.string(),
+});
