@@ -1,7 +1,5 @@
 "use client";
 
-
-import { type RouterInputs } from "~/utils/api";
 import {
   Card,
   CardContent,
@@ -9,12 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { type RouterOutputs } from "~/utils/api";
 
 import { LearningPlanInputForm } from "./LearningPlanInputForm";
+import { LearningPlanCard } from "./LearningPlanCard";
 
 import { trpc } from "../_trpc/client";
 
-type LearningPlanInput = RouterInputs["planRouter"]["createLearningPlan"];
+export type LearningPlan =
+  RouterOutputs["planRouter"]["getAllLearningPlans"][0];
 
 export default function PlanPage() {
   const { data: learningPlans } =
@@ -38,7 +39,11 @@ export default function PlanPage() {
       </Card>
 
       <h2>All Learning Plans</h2>
-      <pre>{JSON.stringify(learningPlans, null, 2)}</pre>
+      <div className="flex flex-wrap">
+        {learningPlans?.map((learningPlan) => (
+          <LearningPlanCard key={learningPlan.id} learningPlan={learningPlan} />
+        ))}
+      </div>
     </div>
   );
 }
