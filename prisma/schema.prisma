@@ -85,6 +85,9 @@ model Word {
     sentences Sentence[]
     results   ProfileQuestionResult[]
 
+    // implicitly connect to lessons using a many words : many lessons
+    lesson Lesson[]
+
     @@unique([word])
 }
 
@@ -101,6 +104,9 @@ model Sentence {
     // connect to words using a many sentences : many words
     words   Word[]
     results ProfileQuestionResult[]
+
+    // implicitly connect to lessons using a many sentences : many lessons
+    lesson Lesson[]
 }
 
 model ProfileQuestionResult {
@@ -144,4 +150,35 @@ model ProfileWordSummary {
 
     // interval stored in days
     interval Int @default(1)
+}
+
+// ---- LESSON PLANS ---- //
+
+model LearningPlan {
+    id String @id @default(cuid())
+
+    name        String
+    description String
+
+    order Int
+
+    lessons Lesson[]
+}
+
+model Lesson {
+    id String @id @default(cuid())
+
+    name        String
+    description String
+
+    order Int
+
+    LearningPlan   LearningPlan? @relation(fields: [learningPlanId], references: [id])
+    learningPlanId String?
+
+    // implicitly connect to words using a many lessons : many words
+    words Word[]
+
+    // implicitly connect to sentences using a many lessons : many sentences
+    sentences Sentence[]
 }
