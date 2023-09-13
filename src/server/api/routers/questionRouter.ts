@@ -109,6 +109,54 @@ export const questionRouter = createTRPCRouter({
     return minNextReviewDate?.nextReviewDate;
   }),
 
+  scheduleNewWords: protectedProcedure
+    .input(z.object({ words: z.array(z.string()) }))
+    .mutation(async ({ ctx, input }) => {
+      const profileId = ctx.session.user.activeProfile.id;
+
+      const words = input.words;
+
+      // get all words that already have summaries
+      const existingWords = await prisma.profileWordSummary.findMany({
+        where: {
+          profileId,
+          word: {
+            word: {
+              in: words,
+            },
+          },
+        },
+        include: {
+          word: true,
+        },
+      });
+
+      // determine which input words are new
+      const existingWordsSet = new Set(
+        existingWords.map((word) => word.word.word)
+      );
+
+      const newWords = words.filter((word) => !existingWordsSet.has(word));
+
+      // query to get the word ids for the new words
+      const newWordIds = await prisma.word.findMany({
+        where: {
+          word: {
+            in: newWords,
+          },
+        },
+      });
+
+      // create summaries for the new words
+      await prisma.profileWordSummary.createMany({
+        data: newWordIds.map((word) => ({
+          profileId,
+          wordId: word.id,
+          metaInfo: {},
+        })),
+      });
+    }),
+
   scheduleRandomQuestions: protectedProcedure.mutation(async ({ ctx }) => {
     // TODO: long term this is replaced by "plans"
     const profileId = ctx.session.user.activeProfile.id;
