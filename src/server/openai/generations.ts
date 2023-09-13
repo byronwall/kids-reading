@@ -8,6 +8,13 @@ const openai = new OpenAI({
 });
 
 export async function generateSentenceWithWords(words: string[]) {
+  const content =
+    words.length > 0
+      ? `Please give me 10 very simple sentences using these words: ${words.join(
+          ", "
+        )}.  First grade level.`
+      : "Please give me 10 very simple sentences using long vowels, short vowels, and rhyming.  First grade level.";
+
   // probably need to get generic sentences and then filter by words:
   // give good enough about the focus and maybe have it target words too?
   // https://chat.openai.com/share/da6d2771-37db-4873-bfc5-9d7c02993835
@@ -38,8 +45,7 @@ These sentences are designed to emphasize phonetic similarity, making it easier 
     },
     {
       role: "user",
-      content:
-        "Please give me 20 very simple sentences using long vowels and rhyming.  First grade level.",
+      content: content,
     },
   ];
   console.log("start prompt to OpenAI", { messages });

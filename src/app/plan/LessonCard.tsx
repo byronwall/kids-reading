@@ -34,6 +34,16 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
     await utils.planRouter.getAllLearningPlans.invalidate();
   };
 
+  const createSentencesMutation =
+    trpc.sentencesRouter.generateAndAddNewSentencesForWords.useMutation();
+
+  const handleCreateSentences = async () => {
+    await createSentencesMutation.mutateAsync(lesson.words.map((c) => c.word));
+
+    // invalidate the query so that it will refetch
+    await utils.planRouter.getAllLearningPlans.invalidate();
+  };
+
   return (
     <li className="relative pl-8">
       <div className="absolute left-0 top-1/2 h-6 w-6 -translate-y-1/2 transform rounded-full bg-blue-500"></div>
@@ -47,6 +57,13 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
           isLoading={scheduleNewWordsMutation.isLoading}
         >
           <Icons.userPlus className="h-4 w-4" />
+        </ButtonLoading>
+        <ButtonLoading
+          variant={"outline"}
+          onClick={handleCreateSentences}
+          isLoading={createSentencesMutation.isLoading}
+        >
+          <Icons.listPlus className="h-4 w-4" />
         </ButtonLoading>
         <p>Words: {wordList}</p>
 

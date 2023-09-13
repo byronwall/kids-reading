@@ -49,18 +49,13 @@ export default function Home() {
     await scheduleMutation.mutateAsync();
   };
 
-  const wordsToMakeSentence = allWords?.map((c) => c.word) ?? [];
-
   const {
     data: newSentences,
     refetch,
     isInitialLoading: isLoadingSentences,
-  } = trpc.sentencesRouter.getNewSentencesForWords.useQuery(
-    wordsToMakeSentence ?? [],
-    {
-      enabled: false,
-    }
-  );
+  } = trpc.sentencesRouter.getNewSentencesForWords.useQuery([], {
+    enabled: false,
+  });
 
   const addSentencesMutation =
     trpc.sentencesRouter.addSentencesAndWords.useMutation();

@@ -30,6 +30,21 @@ export const sentencesRouter = createTRPCRouter({
       return sentences;
     }),
 
+  generateAndAddNewSentencesForWords: protectedProcedure
+    // input array is string or undefined
+    .input(z.array(z.string()))
+    .mutation(async ({ input }) => {
+      const words = input;
+
+      const sentences = await generateSentenceWithWords(words);
+
+      await processSentencesIntoDb(sentences);
+
+      return {
+        message: "Successfully added new words and sentences",
+      };
+    }),
+
   addSentencesAndWords: protectedProcedure
     .input(
       z.object({
@@ -39,47 +54,50 @@ export const sentencesRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const { sentences } = input;
 
-      type SentenceAug = {
-        sentence: string;
-        words: string[];
-      };
-
-      const sentencesAug: SentenceAug[] = sentences.map((sentence) => {
-        return {
-          sentence,
-          words: getWordsForSentence(sentence),
-        };
-      });
-
-      // now process the sentences -- need to link up the word IDs with some sort of query
-      // relevant example: https://www.prisma.io/docs/concepts/components/prisma-client/crud#create-a-deeply-nested-tree-of-records
-      // notes: need the include section; could only do create, not createMany
-
-      for (const sentence of sentencesAug) {
-        await prisma.sentence.create({
-          include: {
-            words: true,
-          },
-          data: {
-            fullSentence: sentence.sentence,
-            metaInfo: {},
-            words: {
-              connectOrCreate: sentence.words.map((word) => ({
-                where: {
-                  word,
-                },
-                create: {
-                  word,
-                  metaInfo: {},
-                },
-              })),
-            },
-          },
-        });
-      }
+      await processSentencesIntoDb(sentences);
 
       return {
         message: "Successfully added new words and sentences",
       };
     }),
 });
+
+type SentenceAug = {
+  sentence: string;
+  words: string[];
+};
+
+async function processSentencesIntoDb(sentences: string[]) {
+  const sentencesAug: SentenceAug[] = sentences.map((sentence) => {
+    return {
+      sentence,
+      words: getWordsForSentence(sentence),
+    };
+  });
+
+  // now process the sentences -- need to link up the word IDs with some sort of query
+  // relevant example: https://www.prisma.io/docs/concepts/components/prisma-client/crud#create-a-deeply-nested-tree-of-records
+  // notes: need the include section; could only do create, not createMany
+  for (const sentence of sentencesAug) {
+    await prisma.sentence.create({
+      include: {
+        words: true,
+      },
+      data: {
+        fullSentence: sentence.sentence,
+        metaInfo: {},
+        words: {
+          connectOrCreate: sentence.words.map((word) => ({
+            where: {
+              word,
+            },
+            create: {
+              word,
+              metaInfo: {},
+            },
+          })),
+        },
+      },
+    });
+  }
+}
