@@ -11,6 +11,9 @@ export const planRouter = createTRPCRouter({
           orderBy: {
             order: "asc",
           },
+          include: {
+            words: true,
+          },
         },
       },
       orderBy: {

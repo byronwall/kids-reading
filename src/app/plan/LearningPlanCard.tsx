@@ -27,12 +27,12 @@ export function LearningPlanCard({
           <ul className="space-y-4">
             {learningPlan.lessons.map((lesson) => (
               <li key={lesson.id} className="relative pl-8">
-                {/* Timeline dot */}
                 <div className="absolute left-0 top-1/2 h-6 w-6 -translate-y-1/2 transform rounded-full bg-blue-500"></div>
 
-                {/* Timeline content with card style */}
                 <div className="rounded-lg bg-white p-4 pl-2 shadow-lg">
-                  {lesson.name}
+                  <p>{lesson.name}</p>
+                  <p className="text-xs text-gray-500">{lesson.description}</p>
+                  <p>Words: {lesson.words.join(", ")} </p>
                 </div>
               </li>
             ))}
