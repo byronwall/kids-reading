@@ -56,9 +56,10 @@ model User {
     emailVerified DateTime?
     image         String?
     password      String?
-    accounts      Account[]
-    sessions      Session[]
-    profiles      Profile[]
+
+    accounts Account[]
+    sessions Session[]
+    profiles Profile[]
 }
 
 // ---- USER DATA RELATED THINGS ---- //
