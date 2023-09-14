@@ -32,11 +32,13 @@ import {
   UserPlus,
   type LucideIcon,
   ListPlus,
+  Baseline,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  baseline: Baseline,
   listPlus: ListPlus,
   userPlus: UserPlus,
   thumbsUp: ThumbsUp,

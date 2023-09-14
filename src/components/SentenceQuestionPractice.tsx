@@ -5,6 +5,14 @@ import { useEffect, useMemo, useState } from "react";
 
 import { trpc } from "~/app/_trpc/client";
 import { type RouterOutputs } from "~/utils/api";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
@@ -151,23 +159,68 @@ export function SentenceQuestionPractice() {
           <Card>
             <CardContent>
               <div className="flex flex-col items-center gap-1">
-                <div className="flex gap-1">
-                  <Button
-                    onClick={() => {
-                      setFontSize(fontSize + 1);
-                    }}
-                    variant={"outline"}
-                  >
-                    <Icons.zoomIn />
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setFontSize(Math.max(fontSize - 1, 1));
-                    }}
-                    variant={"outline"}
-                  >
-                    <Icons.zoomOut />
-                  </Button>
+                <div className="flex flex-wrap items-center gap-1">
+                  <div className="flex gap-1">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Icons.baseline />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel>Font Settings</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setFontSize(fontSize + 1);
+                          }}
+                          onSelect={(evt) => evt.preventDefault()}
+                        >
+                          <Icons.zoomIn /> <span>Larger font</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setFontSize(fontSize - 1);
+                          }}
+                          onSelect={(evt) => evt.preventDefault()}
+                        >
+                          <Icons.zoomOut /> <span>Smaller font</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <Button
+                      onClick={handlePreviousQuestion}
+                      disabled={activeQuestionIndex === 0}
+                      variant={"outline"}
+                      size="sm"
+                    >
+                      <Icons.chevronLeft />
+                    </Button>
+
+                    <div className="flex flex-col items-center px-2">
+                      <div>{activeQuestionIndex + 1}</div>
+                      <div>{sentencesToUse?.length ?? 0}</div>
+                    </div>
+
+                    <Button
+                      onClick={handleNextQuestion}
+                      disabled={
+                        activeQuestionIndex === sentencesToUse?.length - 1
+                      }
+                      variant={"outline"}
+                      size="sm"
+                    >
+                      <Icons.chevronRight />
+                    </Button>
+                  </div>
+                  <div className="flex">
+                    <ButtonLoading
+                      onClick={handleSubmitSentence}
+                      isLoading={submitSentenceMutation.isLoading}
+                    >
+                      Save
+                    </ButtonLoading>
+                  </div>
                 </div>
 
                 <div
@@ -188,33 +241,6 @@ export function SentenceQuestionPractice() {
                       }}
                     />
                   ))}
-                </div>
-                <div>
-                  <ButtonLoading
-                    onClick={handleSubmitSentence}
-                    isLoading={submitSentenceMutation.isLoading}
-                  >
-                    Submit
-                  </ButtonLoading>
-                </div>
-
-                <div className="flex justify-center ">
-                  <Button
-                    onClick={handlePreviousQuestion}
-                    disabled={activeQuestionIndex === 0}
-                    variant={"outline"}
-                  >
-                    <Icons.chevronLeft />
-                  </Button>
-                  <Button
-                    onClick={handleNextQuestion}
-                    disabled={
-                      activeQuestionIndex === sentencesToUse?.length - 1
-                    }
-                    variant={"outline"}
-                  >
-                    <Icons.chevronRight />
-                  </Button>
                 </div>
               </div>
             </CardContent>
