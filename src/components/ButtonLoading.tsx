@@ -3,7 +3,7 @@ import { Icons } from "./icons";
 
 type ButtonProps = Parameters<typeof Button>[0];
 
-export function ButtonLoading(props: ButtonProps & { isLoading: boolean }) {
+export function ButtonLoading(props: ButtonProps & { isLoading?: boolean }) {
   const { isLoading, children, ...rest } = props;
 
   return (

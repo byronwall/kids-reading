@@ -29,12 +29,16 @@ import {
   Pencil,
   ThumbsUp,
   ThumbsDown,
+  UserPlus,
   type LucideIcon,
+  ListPlus,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  listPlus: ListPlus,
+  userPlus: UserPlus,
   thumbsUp: ThumbsUp,
   thumbsDown: ThumbsDown,
   logo: Book,
