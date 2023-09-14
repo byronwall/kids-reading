@@ -3,6 +3,7 @@ import { prisma } from "~/server/db";
 
 import {
   LearningPlanCreateSchema,
+  LessonBulkImportWordsSchema,
   LessonCreateSchema,
   LessonEditWordsSchema,
 } from "./inputSchemas";
@@ -71,6 +72,61 @@ export const planRouter = createTRPCRouter({
       });
 
       return lesson;
+    }),
+
+  bulkImportLesson: protectedProcedure
+    .input(LessonBulkImportWordsSchema)
+    .mutation(async ({ input: { contents, learningPlanId } }) => {
+      // contents should be split into lines
+      const lines = contents.split("\n").filter((line) => line.length > 0);
+
+      // contents are encoded: | topic | sub topic | words
+
+      // combine the topic and sub topic into a single string
+      // also get the words
+      const data = lines.map((line) => {
+        const [topic, subTopic, words] = line
+          .split("|")
+          .map((s) => s.trim())
+          .filter((c) => c.length > 0);
+
+        if (!topic || !subTopic || !words)
+          throw new Error(`Invalid line: ${line}`);
+
+        return {
+          topic: `${topic} - ${subTopic}`,
+          words,
+        };
+      });
+
+      // turn those topics into lessons
+      await Promise.all(
+        data.map(({ topic, words }) =>
+          prisma.lesson.create({
+            data: {
+              name: topic,
+              description: "",
+              order: 0,
+              LearningPlan: {
+                connect: {
+                  id: learningPlanId,
+                },
+              },
+              words: {
+                connectOrCreate: getWordsForSentence(words).map((word) => ({
+                  where: {
+                    word,
+                  },
+                  create: {
+                    word,
+                    metaInfo: {},
+                  },
+                })),
+              },
+            },
+          })
+        )
+      );
     }),
 
   editLessonWords: protectedProcedure

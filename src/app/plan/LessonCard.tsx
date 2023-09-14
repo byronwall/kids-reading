@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Dialog,
   DialogContent,
@@ -45,45 +46,41 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
   };
 
   return (
-    <li className="relative pl-8">
-      <div className="absolute left-0 top-1/2 h-6 w-6 -translate-y-1/2 transform rounded-full bg-blue-500"></div>
+    <div className="rounded-lg bg-white p-4 pl-2 shadow-lg">
+      <p>{lesson.name}</p>
+      <p className="text-xs text-gray-500">{lesson.description}</p>
+      <ButtonLoading
+        variant={"outline"}
+        onClick={handleScheduleNewWords}
+        isLoading={scheduleNewWordsMutation.isLoading}
+      >
+        <Icons.userPlus className="h-4 w-4" />
+      </ButtonLoading>
+      <ButtonLoading
+        variant={"outline"}
+        onClick={handleCreateSentences}
+        isLoading={createSentencesMutation.isLoading}
+      >
+        <Icons.listPlus className="h-4 w-4" />
+      </ButtonLoading>
+      <p>Words: {wordList}</p>
 
-      <div className="rounded-lg bg-white p-4 pl-2 shadow-lg">
-        <p>{lesson.name}</p>
-        <p className="text-xs text-gray-500">{lesson.description}</p>
-        <ButtonLoading
-          variant={"outline"}
-          onClick={handleScheduleNewWords}
-          isLoading={scheduleNewWordsMutation.isLoading}
-        >
-          <Icons.userPlus className="h-4 w-4" />
-        </ButtonLoading>
-        <ButtonLoading
-          variant={"outline"}
-          onClick={handleCreateSentences}
-          isLoading={createSentencesMutation.isLoading}
-        >
-          <Icons.listPlus className="h-4 w-4" />
-        </ButtonLoading>
-        <p>Words: {wordList}</p>
-
-        <Dialog>
-          <DialogTrigger>
-            <Icons.pencil />
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit words in this lesson.</DialogTitle>
-              <DialogDescription>
-                <LessonEditWordsForm
-                  lessonId={lesson.id}
-                  defaultWords={wordList}
-                />
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </li>
+      <Dialog>
+        <DialogTrigger>
+          <Icons.pencil />
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit words in this lesson.</DialogTitle>
+            <DialogDescription>
+              <LessonEditWordsForm
+                lessonId={lesson.id}
+                defaultWords={wordList}
+              />
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

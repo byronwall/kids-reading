@@ -17,3 +17,8 @@ export const LessonEditWordsSchema = z.object({
   lessonId: z.string(),
   words: z.string(),
 });
+
+export const LessonBulkImportWordsSchema = z.object({
+  contents: z.string(),
+  learningPlanId: z.string(),
+});
