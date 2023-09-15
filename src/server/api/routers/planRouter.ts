@@ -10,7 +10,9 @@ import {
 import { getWordsForSentence } from "./getWordsForSentence";
 
 export const planRouter = createTRPCRouter({
-  getAllLearningPlans: protectedProcedure.query(async () => {
+  getAllLearningPlans: protectedProcedure.query(async ({ ctx }) => {
+    const profileId = ctx.session.user.activeProfile.id;
+
     const plans = await prisma.learningPlan.findMany({
       include: {
         lessons: {
@@ -18,7 +20,19 @@ export const planRouter = createTRPCRouter({
             order: "asc",
           },
           include: {
-            words: true,
+            words: {
+              // include the count of good and bad from results
+              include: {
+                results: {
+                  select: {
+                    score: true,
+                  },
+                  where: {
+                    profileId,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -27,7 +41,33 @@ export const planRouter = createTRPCRouter({
       },
     });
 
-    return plans;
+    // process the results to create a good count and bad count for each word
+    const plansWithAugmentedResults = plans.map((plan) => {
+      const lessonsWithAugmentedResults = plan.lessons.map((lesson) => {
+        const wordsWithAugmentedResults = lesson.words.map((word) => {
+          const goodCount = word.results.filter((r) => r.score > 50).length;
+          const badCount = word.results.filter((r) => r.score <= 50).length;
+
+          return {
+            ...word,
+            goodCount,
+            badCount,
+          };
+        });
+
+        return {
+          ...lesson,
+          words: wordsWithAugmentedResults,
+        };
+      });
+
+      return {
+        ...plan,
+        lessons: lessonsWithAugmentedResults,
+      };
+    });
+
+    return plansWithAugmentedResults;
   }),
 
   createLearningPlan: protectedProcedure
