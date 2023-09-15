@@ -10,6 +10,7 @@ import {
 } from "~/components/ui/dialog";
 import { Icons } from "~/components/icons";
 import { ButtonLoading } from "~/components/ButtonLoading";
+import { cn } from "~/utils";
 
 import { LessonEditWordsForm } from "./LessonEditWordsForm";
 import { type LearningPlan } from "./page";
@@ -21,7 +22,12 @@ export type Lesson = LearningPlan["lessons"][0];
 export function LessonCard({ lesson }: { lesson: Lesson }) {
   const utils = trpc.useContext();
 
-  const wordList = lesson.words.map((c) => c.word).join(", ");
+  const wordList = lesson.words
+    .map((c) => c.word + "(" + c.goodCount + "/" + c.badCount + ")")
+    .join(", ");
+
+  const lessonTotalGood = lesson.words.reduce((acc, c) => acc + c.goodCount, 0);
+  const lessonTotalBad = lesson.words.reduce((acc, c) => acc + c.badCount, 0);
 
   const scheduleNewWordsMutation =
     trpc.questionRouter.scheduleNewWords.useMutation();
@@ -47,8 +53,14 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
 
   return (
     <div className="rounded-lg bg-white p-4 pl-2 shadow-lg">
-      <p>{lesson.name}</p>
+      <p className="text-xl font-semibold">{lesson.name}</p>
       <p className="text-xs text-gray-500">{lesson.description}</p>
+      <div className="flex items-center justify-center gap-4">
+        <p className="text-xl text-blue-800">+{lessonTotalGood}</p>
+        <p className={cn("text-xl ", { "text-red-800": lessonTotalBad > 0 })}>
+          -{lessonTotalBad}
+        </p>
+      </div>
       <ButtonLoading
         variant={"outline"}
         onClick={handleScheduleNewWords}
@@ -63,7 +75,21 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
       >
         <Icons.listPlus className="h-4 w-4" />
       </ButtonLoading>
-      <p>Words: {wordList}</p>
+      <p className="flex flex-wrap items-center gap-x-2">
+        Words:
+        {lesson.words.map((c) => (
+          <span
+            key={c.word}
+            className={cn("text-sm", {
+              "text-blue-800": c.goodCount > c.badCount,
+              "text-red-800": c.badCount > c.goodCount,
+              "font-semibold": c.goodCount + c.badCount > 0,
+            })}
+          >
+            {c.word}
+          </span>
+        ))}
+      </p>
 
       <Dialog>
         <DialogTrigger>
