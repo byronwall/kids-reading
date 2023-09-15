@@ -271,8 +271,10 @@ async function submitResultAndUpdateSchedule(
 
   // update the summary
   const factor = score > 50 ? 2 : 0.5;
+
+  // max interval is 60 days
   const interval = summary?.interval ?? 1;
-  const newInterval = Math.round(interval * factor);
+  const newInterval = Math.max(Math.min(Math.round(interval * factor), 60), 1);
 
   // add interval in days to review data using date-fns
   // new date is today plus interval
