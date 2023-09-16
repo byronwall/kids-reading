@@ -25,7 +25,7 @@ export function getRelativeTime(date: Date | undefined): string {
     label = "now";
   } else if (days < 7) {
     label = `${days}d`;
-  } else if (weeks < 52) {
+  } else if (years < 1) {
     label = `${weeks}w`;
   } else {
     label = `${years}y`;
