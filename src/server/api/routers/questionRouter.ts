@@ -32,13 +32,50 @@ export const questionRouter = createTRPCRouter({
         nextReviewDate: "asc",
       },
       include: {
-        word: true,
+        word: {
+          // include the count of good and bad from results
+          include: {
+            results: {
+              select: {
+                score: true,
+              },
+              where: {
+                profileId,
+              },
+            },
+          },
+        },
       },
     });
 
+    // group the results by sentence id
+    const resultsBySentenceId = results.reduce((acc, result) => {
+      const sentenceId = result.sentence?.id ?? result.wordId ?? "NONE";
+
+      if (!acc[sentenceId]) {
+        acc[sentenceId] = [];
+      }
+
+      acc[sentenceId]!.push(result);
+
+      return acc;
+    }, {} as Record<string, typeof results>);
+
+    // augment the word summaries with the good and bad counts
+    const summariesWithAugmentedResults = summaries.map((summary) => {
+      const goodCount = summary.word.results.filter((r) => r.score > 50).length;
+      const badCount = summary.word.results.filter((r) => r.score <= 50).length;
+
+      return {
+        ...summary,
+        goodCount,
+        badCount,
+      };
+    });
+
     return {
-      results,
-      summaries,
+      results: Object.values(resultsBySentenceId),
+      summaries: summariesWithAugmentedResults,
     };
   }),
 
