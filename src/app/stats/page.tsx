@@ -1,6 +1,13 @@
 "use client";
 
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import {
   Table,
   TableBody,
   TableCell,
@@ -8,6 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+
+import { getRelativeTime } from "./getRelativeTime";
 
 import { trpc } from "../_trpc/client";
 
@@ -24,74 +33,86 @@ export default function StatsPage() {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <h1>Stats</h1>
+      <Card>
+        <CardHeader>
+          <CardTitle>Results Summary</CardTitle>
+          <CardDescription>
+            Recent sentences and words that were reported.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Bad Words</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Sentence</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {userResults.map((result, idx) => (
+                <TableRow key={idx}>
+                  <TableCell className="max-w-md font-semibold text-red-700">
+                    {result
+                      .filter((c) => c.score < 50)
+                      .map((r) => r.word?.word)
+                      .join(", ")}
+                  </TableCell>
+                  <TableCell title={result[0]?.createdAt.toLocaleString()}>
+                    {getRelativeTime(result[0]?.createdAt)}
+                  </TableCell>
+                  <TableCell>
+                    {result[0]?.sentence?.fullSentence ?? result[0]?.word?.word}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
-      <h2>Results History</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>Word Results and Schedule</CardTitle>
+          <CardDescription>
+            Shows all words, their aggregate counts, and next schedule.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Word</TableHead>
+                <TableHead>Next Review Date</TableHead>
+                <TableHead>Interval</TableHead>
+                <TableHead>Good Count</TableHead>
+                <TableHead>Bad Count</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {userSummary.map((summary) => (
+                <TableRow key={summary.id}>
+                  <TableCell>{summary.word?.word}</TableCell>
+                  <TableCell title={summary.nextReviewDate.toLocaleString()}>
+                    {getRelativeTime(summary.nextReviewDate)}
+                  </TableCell>
+                  <TableCell>{summary.interval}d</TableCell>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {/* <TableHead>Good Words</TableHead> */}
-            <TableHead>Bad Words</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Sentence</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {userResults.map((result, idx) => (
-            <TableRow key={idx}>
-              {/* <TableCell className="max-w-md">
-                {result
-                  .filter((c) => c.score > 50)
-                  .map((r) => r.word?.word)
-                  .join(", ")}
-              </TableCell> */}
-              <TableCell className="max-w-md font-semibold text-red-700">
-                {result
-                  .filter((c) => c.score < 50)
-                  .map((r) => r.word?.word)
-                  .join(", ")}
-              </TableCell>
-              <TableCell>{result[0]?.createdAt.toLocaleString()}</TableCell>
-              <TableCell>
-                {result[0]?.sentence?.fullSentence ?? result[0]?.word?.word}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                  <TableCell>
+                    {summary.goodCount > 0 && summary.goodCount}
+                  </TableCell>
 
-      <h2>Summary</h2>
-
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Word</TableHead>
-            <TableHead>Next Review Date</TableHead>
-            <TableHead>Interval</TableHead>
-            <TableHead>Good Count</TableHead>
-            <TableHead>Bad Count</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {userSummary.map((summary) => (
-            <TableRow key={summary.id}>
-              <TableCell>{summary.word?.word}</TableCell>
-              <TableCell>{summary.nextReviewDate.toLocaleString()}</TableCell>
-              <TableCell>{summary.interval}d</TableCell>
-
-              <TableCell>
-                {summary.goodCount > 0 && summary.goodCount}
-              </TableCell>
-
-              <TableCell className="font-semibold text-red-700">
-                {summary.badCount > 0 && summary.badCount}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                  <TableCell className="font-semibold text-red-700">
+                    {summary.badCount > 0 && summary.badCount}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
