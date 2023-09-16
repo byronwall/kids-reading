@@ -32,19 +32,31 @@ export default function StatsPage() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Word</TableHead>
-            <TableHead>Score</TableHead>
+            {/* <TableHead>Good Words</TableHead> */}
+            <TableHead>Bad Words</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Sentence</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {userResults.map((result) => (
-            <TableRow key={result.id}>
-              <TableCell>{result.word?.word}</TableCell>
-              <TableCell>{result.score}</TableCell>
-              <TableCell>{result.createdAt.toLocaleString()}</TableCell>
-              <TableCell>{result.sentence?.fullSentence}</TableCell>
+          {userResults.map((result, idx) => (
+            <TableRow key={idx}>
+              {/* <TableCell className="max-w-md">
+                {result
+                  .filter((c) => c.score > 50)
+                  .map((r) => r.word?.word)
+                  .join(", ")}
+              </TableCell> */}
+              <TableCell className="max-w-md font-semibold text-red-700">
+                {result
+                  .filter((c) => c.score < 50)
+                  .map((r) => r.word?.word)
+                  .join(", ")}
+              </TableCell>
+              <TableCell>{result[0]?.createdAt.toLocaleString()}</TableCell>
+              <TableCell>
+                {result[0]?.sentence?.fullSentence ?? result[0]?.word?.word}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -58,6 +70,8 @@ export default function StatsPage() {
             <TableHead>Word</TableHead>
             <TableHead>Next Review Date</TableHead>
             <TableHead>Interval</TableHead>
+            <TableHead>Good Count</TableHead>
+            <TableHead>Bad Count</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -65,7 +79,15 @@ export default function StatsPage() {
             <TableRow key={summary.id}>
               <TableCell>{summary.word?.word}</TableCell>
               <TableCell>{summary.nextReviewDate.toLocaleString()}</TableCell>
-              <TableCell>{summary.interval}</TableCell>
+              <TableCell>{summary.interval}d</TableCell>
+
+              <TableCell>
+                {summary.goodCount > 0 && summary.goodCount}
+              </TableCell>
+
+              <TableCell className="font-semibold text-red-700">
+                {summary.badCount > 0 && summary.badCount}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
