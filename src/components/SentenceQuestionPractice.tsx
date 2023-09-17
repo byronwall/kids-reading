@@ -60,9 +60,10 @@ export function SentenceQuestionPractice() {
 
     return words.map((_word) => {
       let word = _word.toLowerCase();
-      if (word.endsWith(".") || word.endsWith(",")) {
-        word = word.slice(0, -1);
-      }
+
+      // remove punctuation at the end
+      word = word.replace(/[.,?!]$/, "");
+
       const wordToRender = firstSentence?.words.find(
         (wordToCheck) => wordToCheck.word === word
       );
