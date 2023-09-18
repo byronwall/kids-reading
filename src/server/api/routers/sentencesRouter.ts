@@ -5,6 +5,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { generateSentenceWithWords } from "~/server/openai/generations";
 
 import { getWordsForSentence } from "./getWordsForSentence";
+import { AddSentenceSchema } from "./inputSchemas";
 
 const prisma = new PrismaClient();
 
@@ -37,6 +38,18 @@ export const sentencesRouter = createTRPCRouter({
       const words = input;
 
       const sentences = await generateSentenceWithWords(words);
+
+      await processSentencesIntoDb(sentences);
+
+      return {
+        message: "Successfully added new words and sentences",
+      };
+    }),
+
+  addSentencesFromString: protectedProcedure
+    .input(AddSentenceSchema)
+    .mutation(async ({ input }) => {
+      const sentences = input.rawInput.split("\n").filter(Boolean);
 
       await processSentencesIntoDb(sentences);
 

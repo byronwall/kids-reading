@@ -4,6 +4,8 @@ import { Button } from "~/components/ui/button";
 import { Icons } from "~/components/icons";
 import { trpc } from "~/app/_trpc/client";
 
+import { AddSentenceForm } from "./AddSentenceForm";
+
 export default function AdminSentences() {
   const utils = trpc.useContext();
 
@@ -33,7 +35,12 @@ export default function AdminSentences() {
   return (
     <div>
       <div>
-        <h1>create sentences</h1>
+        <h1>add sentence</h1>
+        <AddSentenceForm />
+      </div>
+
+      <div>
+        <h1>GPT create sentences</h1>
         <p>
           prompt = "Please give me 10 very simple sentences using long vowels,
           short vowels, and rhyming. First grade level.";
