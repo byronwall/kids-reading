@@ -13,3 +13,11 @@ h2 {
 .bg-popover {
   @apply bg-white;
 }
+
+.bg-accent {
+  @apply bg-gray-100;
+}
+
+.grid-sidebar {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-[160px_minmax(0,1fr)];
+}

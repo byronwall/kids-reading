@@ -26,8 +26,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log("session and page props");
-
   const session = await getServerAuthSession();
 
   return (
