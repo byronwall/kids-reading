@@ -22,9 +22,7 @@ import type * as z from "zod";
 
 const FormSchema = AddSentenceSchema;
 
-type Props = object;
-
-export function AddSentenceForm(props: Props) {
+export function AddSentenceForm() {
   const utils = trpc.useContext();
 
   const form = useForm<z.infer<typeof FormSchema>>({
