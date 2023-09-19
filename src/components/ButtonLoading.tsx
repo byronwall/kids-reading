@@ -7,7 +7,7 @@ export function ButtonLoading(props: ButtonProps & { isLoading?: boolean }) {
   const { isLoading, children, ...rest } = props;
 
   return (
-    <Button {...rest} disabled={isLoading}>
+    <Button disabled={isLoading} {...rest}>
       <div className="flex items-center gap-2">
         {children}
 

@@ -22,3 +22,12 @@ export const LessonBulkImportWordsSchema = z.object({
   contents: z.string(),
   learningPlanId: z.string(),
 });
+
+export const AddSentenceSchema = z.object({
+  rawInput: z.string(),
+});
+
+export const EditSentenceSchema = z.object({
+  id: z.string(),
+  newFullSentence: z.string(),
+});

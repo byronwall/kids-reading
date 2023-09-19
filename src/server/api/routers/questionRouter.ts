@@ -93,6 +93,7 @@ export const questionRouter = createTRPCRouter({
             },
           },
         },
+        isDeleted: false,
       },
       include: {
         words: {

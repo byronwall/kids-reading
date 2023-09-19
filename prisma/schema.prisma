@@ -108,6 +108,9 @@ model Sentence {
 
     // implicitly connect to lessons using a many sentences : many lessons
     lesson Lesson[]
+
+    // track deletion so sentences are not displayed in new questions
+    isDeleted Boolean @default(false)
 }
 
 model ProfileQuestionResult {

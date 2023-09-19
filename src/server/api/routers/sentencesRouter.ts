@@ -5,6 +5,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { generateSentenceWithWords } from "~/server/openai/generations";
 
 import { getWordsForSentence } from "./getWordsForSentence";
+import { AddSentenceSchema, EditSentenceSchema } from "./inputSchemas";
 
 const prisma = new PrismaClient();
 
@@ -13,6 +14,9 @@ export const sentencesRouter = createTRPCRouter({
     const sentences = await prisma.sentence.findMany({
       include: {
         words: true,
+      },
+      where: {
+        isDeleted: false,
       },
     });
 
@@ -42,6 +46,66 @@ export const sentencesRouter = createTRPCRouter({
 
       return {
         message: "Successfully added new words and sentences",
+      };
+    }),
+
+  addSentencesFromString: protectedProcedure
+    .input(AddSentenceSchema)
+    .mutation(async ({ input }) => {
+      const sentences = input.rawInput.split("\n").filter(Boolean);
+
+      await processSentencesIntoDb(sentences);
+
+      return {
+        message: "Successfully added new words and sentences",
+      };
+    }),
+
+  editSentence: protectedProcedure
+    .input(EditSentenceSchema)
+    .mutation(async ({ input }) => {
+      const { id, newFullSentence } = input;
+
+      // set the isDeleted flag to true for current sentence
+      await prisma.sentence.update({
+        where: {
+          id,
+        },
+        data: {
+          isDeleted: true,
+        },
+      });
+
+      // add the new sentence
+      await processSentencesIntoDb([newFullSentence]);
+
+      return {
+        message: "Successfully edited sentence",
+      };
+    }),
+
+  deleteSentence: protectedProcedure
+    .input(
+      z.object({
+        sentenceId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { sentenceId } = input;
+
+      // set the isDeleted flag to true
+
+      await prisma.sentence.update({
+        where: {
+          id: sentenceId,
+        },
+        data: {
+          isDeleted: true,
+        },
+      });
+
+      return {
+        message: "Successfully deleted sentence",
       };
     }),
 
@@ -79,6 +143,17 @@ async function processSentencesIntoDb(sentences: string[]) {
   // relevant example: https://www.prisma.io/docs/concepts/components/prisma-client/crud#create-a-deeply-nested-tree-of-records
   // notes: need the include section; could only do create, not createMany
   for (const sentence of sentencesAug) {
+    // check if fullSentence already present... if so, skip
+    const existingSentence = await prisma.sentence.findFirst({
+      where: {
+        fullSentence: sentence.sentence,
+      },
+    });
+
+    if (existingSentence) {
+      continue;
+    }
+
     await prisma.sentence.create({
       include: {
         words: true,
