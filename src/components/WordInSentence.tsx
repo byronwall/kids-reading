@@ -36,7 +36,10 @@ export function WordInSentence(props: {
       <Popover>
         <PopoverTrigger>
           <div className={"cursor-pointer " + color}>
-            {wordToRender.displayWord}
+            <div>{wordToRender.displayWord}</div>
+            <div className="text-sm text-gray-700">
+              {wordToRender.word?.summaries[0]?.interval ?? 1}
+            </div>
           </div>
         </PopoverTrigger>
         <PopoverContent>
