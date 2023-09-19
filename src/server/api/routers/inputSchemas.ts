@@ -26,3 +26,8 @@ export const LessonBulkImportWordsSchema = z.object({
 export const AddSentenceSchema = z.object({
   rawInput: z.string(),
 });
+
+export const EditSentenceSchema = z.object({
+  id: z.string(),
+  newFullSentence: z.string(),
+});

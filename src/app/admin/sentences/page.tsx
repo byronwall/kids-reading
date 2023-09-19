@@ -3,8 +3,10 @@
 import { Button } from "~/components/ui/button";
 import { Icons } from "~/components/icons";
 import { trpc } from "~/app/_trpc/client";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 
 import { AddSentenceForm } from "./AddSentenceForm";
+import { EditSentenceForm } from "./EditSentenceForm";
 
 export default function AdminSentences() {
   const utils = trpc.useContext();
@@ -26,6 +28,27 @@ export default function AdminSentences() {
   const handleAddSentences = async (sentences: string[]) => {
     await addSentencesMutation.mutateAsync({
       sentences,
+    });
+
+    // invalidate the query so that it will refetch
+    await utils.sentencesRouter.getAllSentences.invalidate();
+  };
+
+  const deleteSentenceMutation =
+    trpc.sentencesRouter.deleteSentence.useMutation();
+
+  const handleDeleteSentence = async (sentenceId: string) => {
+    // do a confirm check
+    const confirm = window.confirm(
+      "Are you sure you want to delete this sentence?"
+    );
+
+    if (!confirm) {
+      return;
+    }
+
+    await deleteSentenceMutation.mutateAsync({
+      sentenceId,
     });
 
     // invalidate the query so that it will refetch
@@ -94,19 +117,24 @@ export default function AdminSentences() {
               </div>
               <div>
                 <Button
-                  onClick={() => alert("delete not implemented")}
+                  onClick={() => handleDeleteSentence(sentence.id)}
                   className="text-red-500 hover:text-red-700"
                   variant={"ghost"}
                 >
                   <Icons.trash className="h-5 w-5" />
                 </Button>
-                <Button
-                  onClick={() => alert("edit not implemented")}
-                  className="text-blue-500 hover:text-blue-700"
-                  variant={"ghost"}
-                >
-                  <Icons.pencil className="h-5 w-5" />
-                </Button>
+
+                <Dialog>
+                  <DialogTrigger>
+                    <Icons.pencil className="h-5 w-5" />
+                  </DialogTrigger>
+                  <DialogContent>
+                    <EditSentenceForm
+                      sentenceId={sentence.id}
+                      originalFullSentence={sentence.fullSentence}
+                    />
+                  </DialogContent>
+                </Dialog>
               </div>
             </li>
           ))}
