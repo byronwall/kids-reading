@@ -109,14 +109,23 @@ export const questionRouter = createTRPCRouter({
 
     // sort the sentences by the number of words that are in the sentence
     sentences.sort((a, b) => {
-      const aWords = a.words.filter((word) =>
-        wordsToFind.some((wordToFind) => wordToFind.wordId === word.id)
-      );
-      const bWords = b.words.filter((word) =>
-        wordsToFind.some((wordToFind) => wordToFind.wordId === word.id)
-      );
+      // score = sum of 1/interval for each word
+      // higher score = more urgent
 
-      return aWords.length - bWords.length;
+      function getSentenceScore(sentence: typeof a) {
+        return sentence.words.reduce((acc, word) => {
+          const summary = word.summaries[0];
+          if (!summary) {
+            return acc + 1;
+          }
+          return acc + 1 / summary.interval;
+        }, 0);
+      }
+
+      const aScore = getSentenceScore(a);
+      const bScore = getSentenceScore(b);
+
+      return bScore - aScore;
     });
 
     return sentences;
