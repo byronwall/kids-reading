@@ -201,4 +201,7 @@ model ProfileLessonFocus {
 
     isFocused   Boolean @default(false)
     isCompleted Boolean @default(false)
+
+    // unique constraint
+    @@unique([profileId, lessonId])
 }
