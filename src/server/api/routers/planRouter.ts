@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
 
@@ -10,6 +12,71 @@ import {
 import { getWordsForSentence } from "./getWordsForSentence";
 
 export const planRouter = createTRPCRouter({
+  linkProfileToLesson: protectedProcedure
+    .input(
+      z.object({
+        lessonId: z.string(),
+      })
+    )
+    .mutation(async ({ input: { lessonId }, ctx }) => {
+      const profileId = ctx.session.user.activeProfile.id;
+
+      await prisma.profileLessonFocus.create({
+        data: {
+          lessonId,
+          profileId,
+        },
+      });
+
+      return true;
+    }),
+
+  setProfileLessonFocus: protectedProcedure
+    .input(
+      z.object({
+        lessonId: z.string(),
+        isFocused: z.boolean(),
+      })
+    )
+    .mutation(async ({ input: { lessonId, isFocused }, ctx }) => {
+      const profileId = ctx.session.user.activeProfile.id;
+
+      // if delinking - do an update only to ensure it exists - do not want to create a new one if it was not there before
+
+      if (isFocused) {
+        await prisma.profileLessonFocus.upsert({
+          where: {
+            profileId_lessonId: {
+              lessonId,
+              profileId,
+            },
+          },
+          update: {
+            isFocused,
+          },
+          create: {
+            lessonId,
+            profileId,
+            isFocused,
+          },
+        });
+      } else {
+        await prisma.profileLessonFocus.update({
+          where: {
+            profileId_lessonId: {
+              lessonId,
+              profileId,
+            },
+          },
+          data: {
+            isFocused,
+          },
+        });
+      }
+
+      return true;
+    }),
+
   getAllLearningPlans: protectedProcedure.query(async ({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
 
@@ -31,6 +98,14 @@ export const planRouter = createTRPCRouter({
                     profileId,
                   },
                 },
+              },
+            },
+
+            // return only 1 instead of array
+            ProfileLessonFocus: {
+              take: 1,
+              where: {
+                profileId,
               },
             },
           },
