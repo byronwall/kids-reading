@@ -1,4 +1,6 @@
 "use client";
+import Link from "next/link";
+
 import {
   Card,
   CardContent,
@@ -19,6 +21,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/components/ui/collapsible";
+import { slugify } from "~/utils";
 
 import { LessonInputForm } from "./LessonInputForm";
 import { type LearningPlan } from "./page";
@@ -30,10 +33,14 @@ export function LearningPlanCard({
 }: {
   learningPlan: LearningPlan;
 }) {
+  const url = slugify(`/plan/${learningPlan.name}`);
+
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>{learningPlan.name}</CardTitle>
+        <CardTitle>
+          <Link href={url}>{learningPlan.name}</Link>
+        </CardTitle>
         <CardDescription>{learningPlan.description}</CardDescription>
       </CardHeader>
       <CardContent>
