@@ -25,6 +25,13 @@ export default function PlanPage() {
     <div>
       <h1>Plan</h1>
 
+      <h2>All Learning Plans</h2>
+      <div className="flex flex-wrap p-4">
+        {learningPlans?.map((learningPlan) => (
+          <LearningPlanCard key={learningPlan.id} learningPlan={learningPlan} />
+        ))}
+      </div>
+
       <Card className="w-96">
         <CardHeader>
           <CardTitle>Add Learning Plan</CardTitle>
@@ -37,13 +44,6 @@ export default function PlanPage() {
           <LearningPlanInputForm />
         </CardContent>
       </Card>
-
-      <h2>All Learning Plans</h2>
-      <div className="flex flex-wrap">
-        {learningPlans?.map((learningPlan) => (
-          <LearningPlanCard key={learningPlan.id} learningPlan={learningPlan} />
-        ))}
-      </div>
     </div>
   );
 }

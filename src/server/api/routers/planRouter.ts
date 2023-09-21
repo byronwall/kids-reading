@@ -80,70 +80,76 @@ export const planRouter = createTRPCRouter({
       return true;
     }),
 
-  getAllLearningPlans: protectedProcedure.query(async ({ ctx }) => {
-    const profileId = ctx.session.user.activeProfile.id;
+  getSingleLearningPlan: protectedProcedure
+    .input(
+      z.object({
+        learningPlanName: z.string(),
+      })
+    )
+    .query(async ({ input: { learningPlanName }, ctx }) => {
+      const profileId = ctx.session.user.activeProfile.id;
 
-    const plans = await prisma.learningPlan.findMany({
-      include: {
-        lessons: {
-          orderBy: {
-            order: "asc",
-          },
-          include: {
-            words: {
-              // include the count of good and bad from results
-              include: {
-                results: {
-                  select: {
-                    score: true,
-                  },
-                  where: {
-                    profileId,
+      const plan = await prisma.learningPlan.findUnique({
+        where: {
+          name: learningPlanName,
+        },
+        include: {
+          lessons: {
+            orderBy: {
+              order: "asc",
+            },
+            include: {
+              words: {
+                // include the count of good and bad from results
+                include: {
+                  results: {
+                    select: {
+                      score: true,
+                    },
+                    where: {
+                      profileId,
+                    },
                   },
                 },
               },
             },
+          },
+        },
+      });
 
-            // return only 1 instead of array
-            ProfileLessonFocus: {
-              take: 1,
-              where: {
-                profileId,
+      if (!plan) throw new Error(`Plan not found: ${learningPlanName}`);
+
+      // get sentences that include those words
+      const sentences = await prisma.sentence.findMany({
+        where: {
+          words: {
+            some: {
+              id: {
+                in: plan.lessons.flatMap((lesson) =>
+                  lesson.words.map((word) => word.id)
+                ),
               },
             },
           },
         },
-      },
-      orderBy: {
-        order: "asc",
-      },
-    });
-
-    // process the results to create a good count and bad count for each word
-    const plansWithAugmentedResults = plans.map((plan) => {
-      const lessonsWithAugmentedResults = plan.lessons.map((lesson) => {
-        const wordsWithAugmentedResults = lesson.words.map((word) => {
-          const goodCount = word.results.filter((r) => r.score > 50).length;
-          const badCount = word.results.filter((r) => r.score <= 50).length;
-
-          return {
-            ...word,
-            goodCount,
-            badCount,
-          };
-        });
-
-        return {
-          ...lesson,
-          words: wordsWithAugmentedResults,
-        };
+        include: {
+          words: true,
+        },
       });
 
       return {
         ...plan,
-        lessons: lessonsWithAugmentedResults,
+        sentences,
       };
-    });
+    }),
+
+  getAllLearningPlans: protectedProcedure.query(async ({ ctx }) => {
+    const profileId = ctx.session.user.activeProfile.id;
+
+    const plans = await getDetailedPlansForProfile(profileId);
+
+    // process the results to create a good count and bad count for each word
+    const plansWithAugmentedResults = plans.map(augmentPlanWithScores);
 
     return plansWithAugmentedResults;
   }),
@@ -274,3 +280,70 @@ export const planRouter = createTRPCRouter({
       return lesson;
     }),
 });
+
+type PlanWithAugmentedResults = Awaited<
+  ReturnType<typeof getDetailedPlansForProfile>
+>[number];
+
+async function getDetailedPlansForProfile(profileId: string) {
+  return await prisma.learningPlan.findMany({
+    include: {
+      lessons: {
+        orderBy: {
+          order: "asc",
+        },
+        include: {
+          words: {
+            // include the count of good and bad from results
+            include: {
+              results: {
+                select: {
+                  score: true,
+                },
+                where: {
+                  profileId,
+                },
+              },
+            },
+          },
+
+          // return only 1 instead of array
+          ProfileLessonFocus: {
+            take: 1,
+            where: {
+              profileId,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
+}
+
+function augmentPlanWithScores(plan: PlanWithAugmentedResults) {
+  const lessonsWithAugmentedResults = plan.lessons.map((lesson) => {
+    const wordsWithAugmentedResults = lesson.words.map((word) => {
+      const goodCount = word.results.filter((r) => r.score > 50).length;
+      const badCount = word.results.filter((r) => r.score <= 50).length;
+
+      return {
+        ...word,
+        goodCount,
+        badCount,
+      };
+    });
+
+    return {
+      ...lesson,
+      words: wordsWithAugmentedResults,
+    };
+  });
+
+  return {
+    ...plan,
+    lessons: lessonsWithAugmentedResults,
+  };
+}
