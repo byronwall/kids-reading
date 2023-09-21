@@ -5,6 +5,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import { trpc } from "~/app/_trpc/client";
+import { cn } from "~/utils";
 
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
@@ -15,6 +17,8 @@ export function WordInSentence(props: {
   onUpdateScore: (score: number | undefined) => void;
 }) {
   const { wordToRender, onUpdateScore } = props;
+
+  const { data: focusedWords } = trpc.questionRouter.getFocusedWords.useQuery();
 
   // color map
   // score = undefined = blue; black  = 100; red = 0
@@ -31,13 +35,22 @@ export function WordInSentence(props: {
     wordToRender.score === undefined || wordToRender.score > 0;
   const showSkipButton = wordToRender.score !== undefined;
 
+  // check focus by matching ID
+  const isFocused = focusedWords?.some((c) => c.id === wordToRender.word?.id);
+
   return (
     <>
       <Popover>
         <PopoverTrigger>
-          <div className={"cursor-pointer " + color}>
-            <div>{wordToRender.displayWord}</div>
-            <div className="text-sm text-gray-700">
+          <div className={cn("cursor-pointer", color)}>
+            <div
+              className={cn({
+                "border-b-2 border-yellow-500": isFocused,
+              })}
+            >
+              {wordToRender.displayWord}
+            </div>
+            <div className={cn("text-sm text-gray-700")}>
               {wordToRender.word?.summaries[0]?.interval ?? 1}
             </div>
           </div>

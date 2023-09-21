@@ -79,9 +79,52 @@ export const questionRouter = createTRPCRouter({
     };
   }),
 
+  getFocusedWords: protectedProcedure.query(async ({ ctx }) => {
+    const profileId = ctx.session.user.activeProfile.id;
+
+    // go via the lesson
+    const focusedLessons = await prisma.profileLessonFocus.findMany({
+      where: {
+        profileId: profileId,
+        isFocused: true,
+      },
+      include: {
+        lesson: {
+          select: {
+            words: true,
+          },
+        },
+      },
+    });
+
+    const focusedWords = focusedLessons.flatMap(
+      (lesson) => lesson.lesson.words
+    );
+
+    return focusedWords;
+  }),
+
   getPossibleSentences: protectedProcedure.query(async ({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
     const wordsToFind = await getWordsForProfile(profileId);
+
+    const focusedLessons = await prisma.profileLessonFocus.findMany({
+      where: {
+        profileId: profileId,
+        isFocused: true,
+      },
+      include: {
+        lesson: {
+          select: {
+            words: true,
+          },
+        },
+      },
+    });
+
+    const focusedWords = focusedLessons.flatMap((lesson) =>
+      lesson.lesson.words.map((word) => word.word)
+    );
 
     // search for sentences that include those words
     const sentences = await prisma.sentence.findMany({
@@ -98,37 +141,49 @@ export const questionRouter = createTRPCRouter({
       include: {
         words: {
           include: {
-            summaries: true,
+            summaries: {
+              where: {
+                profileId,
+              },
+            },
           },
         },
       },
     });
 
-    // shuffle sentences
-    sentences.sort(() => Math.random() - 0.5);
+    const scoredSentences = sentences.map((sentence) => {
+      const score = sentence.words.reduce((acc, word) => {
+        const summary = word.summaries[0];
 
-    // sort the sentences by the number of words that are in the sentence
-    sentences.sort((a, b) => {
-      // score = sum of 1/interval for each word
-      // higher score = more urgent
+        // increase factor for focused words
+        const focusedFactor = focusedWords.includes(word.word) ? 10 : 1;
 
-      function getSentenceScore(sentence: typeof a) {
-        return sentence.words.reduce((acc, word) => {
-          const summary = word.summaries[0];
-          if (!summary) {
-            return acc + 1;
-          }
-          return acc + 1 / summary.interval;
-        }, 0);
-      }
+        const wordScore = summary ? 1 / summary.interval : 1;
 
-      const aScore = getSentenceScore(a);
-      const bScore = getSentenceScore(b);
+        const daysOverdue = summary
+          ? Math.max(
+              0,
+              Math.round(
+                (new Date().getTime() - summary.nextReviewDate.getTime()) /
+                  (1000 * 60 * 60 * 24)
+              )
+            )
+          : 0;
 
-      return bScore - aScore;
+        // score is biased toward words that are overdue with a higher factor for focused words
+        return acc + (wordScore + daysOverdue) * focusedFactor;
+      }, 0);
+
+      return {
+        ...sentence,
+
+        score: score / sentence.words.length,
+      };
     });
 
-    return sentences;
+    scoredSentences.sort((a, b) => b.score - a.score);
+
+    return scoredSentences;
   }),
 
   getScheduledQuestions: protectedProcedure.query(async ({ ctx }) => {
