@@ -28,6 +28,28 @@ export const planRouter = createTRPCRouter({
         },
       });
 
+      // now linked, add all lesson words to the profile summary too
+      const lesson = await prisma.lesson.findUnique({
+        where: {
+          id: lessonId,
+        },
+        include: {
+          words: true,
+        },
+      });
+
+      if (!lesson) throw new Error(`Lesson not found: ${lessonId}`);
+
+      // do an upsert to add the words to the profile summary if new
+      await prisma.profileWordSummary.createMany({
+        data: lesson.words.map((word) => ({
+          profileId,
+          wordId: word.id,
+          metaInfo: {},
+        })),
+        skipDuplicates: true,
+      });
+
       return true;
     }),
 
@@ -41,38 +63,19 @@ export const planRouter = createTRPCRouter({
     .mutation(async ({ input: { lessonId, isFocused }, ctx }) => {
       const profileId = ctx.session.user.activeProfile.id;
 
-      // if delinking - do an update only to ensure it exists - do not want to create a new one if it was not there before
+      // this will fail if the link does not exist
 
-      if (isFocused) {
-        await prisma.profileLessonFocus.upsert({
-          where: {
-            profileId_lessonId: {
-              lessonId,
-              profileId,
-            },
-          },
-          update: {
-            isFocused,
-          },
-          create: {
+      await prisma.profileLessonFocus.update({
+        where: {
+          profileId_lessonId: {
             lessonId,
             profileId,
-            isFocused,
           },
-        });
-      } else {
-        await prisma.profileLessonFocus.update({
-          where: {
-            profileId_lessonId: {
-              lessonId,
-              profileId,
-            },
-          },
-          data: {
-            isFocused,
-          },
-        });
-      }
+        },
+        data: {
+          isFocused,
+        },
+      });
 
       return true;
     }),

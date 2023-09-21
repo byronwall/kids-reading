@@ -94,31 +94,31 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
           -{lessonTotalBad}
         </p>
       </div>
-      <ButtonLoading
-        variant={"outline"}
-        onClick={handleLinkProfileToLesson}
-        isLoading={linkProfileToLessonMutation.isLoading}
-      >
-        add to profile
-      </ButtonLoading>
-      <ButtonLoading
-        variant={"outline"}
-        onClick={handleToggleFocus}
-        isLoading={toggleFocusMutation.isLoading}
-      >
-        {isFocused ? "unfocus" : "focus"}
-      </ButtonLoading>
-      <ButtonLoading
-        variant={"outline"}
-        onClick={handleScheduleNewWords}
-        isLoading={scheduleNewWordsMutation.isLoading}
-      >
-        <Icons.userPlus className="h-4 w-4" />
-      </ButtonLoading>
+      {!hasLinkedProfile && (
+        <ButtonLoading
+          variant={"outline"}
+          onClick={handleLinkProfileToLesson}
+          isLoading={linkProfileToLessonMutation.isLoading}
+        >
+          <Icons.userPlus className="h-4 w-4" />
+          add to profile
+        </ButtonLoading>
+      )}
+      {hasLinkedProfile && (
+        <ButtonLoading
+          variant={"outline"}
+          onClick={handleToggleFocus}
+          isLoading={toggleFocusMutation.isLoading}
+        >
+          {isFocused ? "unfocus" : "focus"}
+        </ButtonLoading>
+      )}
+
       <ButtonLoading
         variant={"outline"}
         onClick={handleCreateSentences}
         isLoading={createSentencesMutation.isLoading}
+        title="Create sentences for all words in this lesson"
       >
         <Icons.listPlus className="h-4 w-4" />
       </ButtonLoading>
