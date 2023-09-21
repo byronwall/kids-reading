@@ -169,6 +169,9 @@ model LearningPlan {
     order Int
 
     lessons Lesson[]
+
+    // names must be unique
+    @@unique([name])
 }
 
 model Lesson {
