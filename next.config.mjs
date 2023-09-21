@@ -18,7 +18,6 @@ const config = {
   //   defaultLocale: "en",
   // },
   experimental: {
-    appDir: true,
     serverComponentsExternalPackages: ["@prisma/client", "bcryptjs"],
   },
 };
