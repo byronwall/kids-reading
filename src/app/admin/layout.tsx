@@ -37,8 +37,8 @@ export default function RootLayout({
             <Link href={href} key={href}>
               <span
                 className={cn(
-                  "hover:bg-accent hover:text-accent-foreground group flex items-center rounded-md px-3 py-2 text-sm font-medium",
-                  path === href ? "bg-accent" : "transparent"
+                  "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100 hover:text-gray-900",
+                  path === href ? "bg-gray-100" : "transparent"
                 )}
               >
                 <Icon className="mr-2 h-4 w-4" />

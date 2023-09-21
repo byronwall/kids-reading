@@ -2,6 +2,7 @@ import {
   AlertTriangle,
   ArrowRight,
   Check,
+  Circle,
   ChevronLeft,
   ChevronRight,
   CreditCard,
@@ -33,11 +34,14 @@ import {
   type LucideIcon,
   ListPlus,
   Baseline,
+  ArrowLeft,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  circle: Circle,
+  arrowLeft: ArrowLeft,
   baseline: Baseline,
   listPlus: ListPlus,
   userPlus: UserPlus,

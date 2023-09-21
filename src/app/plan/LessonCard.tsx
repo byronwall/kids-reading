@@ -1,18 +1,9 @@
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
 import { Icons } from "~/components/icons";
 import { ButtonLoading } from "~/components/ButtonLoading";
 import { cn } from "~/utils";
 
-import { LessonEditWordsForm } from "./LessonEditWordsForm";
 import { type LearningPlan } from "./page";
 
 import { trpc } from "../_trpc/client";
@@ -28,18 +19,6 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
 
   const lessonTotalGood = lesson.words.reduce((acc, c) => acc + c.goodCount, 0);
   const lessonTotalBad = lesson.words.reduce((acc, c) => acc + c.badCount, 0);
-
-  const scheduleNewWordsMutation =
-    trpc.questionRouter.scheduleNewWords.useMutation();
-
-  const handleScheduleNewWords = async () => {
-    await scheduleNewWordsMutation.mutateAsync({
-      words: lesson.words.map((c) => c.word),
-    });
-
-    // invalidate the query so that it will refetch
-    await utils.planRouter.getAllLearningPlans.invalidate();
-  };
 
   const createSentencesMutation =
     trpc.sentencesRouter.generateAndAddNewSentencesForWords.useMutation();
@@ -86,45 +65,47 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
         "bg-blue-300": isFocused,
       })}
     >
-      <p className="text-xl font-semibold">{lesson.name}</p>
-      <p className="text-xs text-gray-500">{lesson.description}</p>
-      <div className="flex items-center justify-center gap-4">
-        <p className="text-xl text-blue-800">+{lessonTotalGood}</p>
-        <p className={cn("text-xl ", { "text-red-800": lessonTotalBad > 0 })}>
-          -{lessonTotalBad}
-        </p>
-      </div>
-      {!hasLinkedProfile && (
-        <ButtonLoading
-          variant={"outline"}
-          onClick={handleLinkProfileToLesson}
-          isLoading={linkProfileToLessonMutation.isLoading}
-        >
-          <Icons.userPlus className="h-4 w-4" />
-          add to profile
-        </ButtonLoading>
-      )}
-      {hasLinkedProfile && (
-        <ButtonLoading
-          variant={"outline"}
-          onClick={handleToggleFocus}
-          isLoading={toggleFocusMutation.isLoading}
-        >
-          {isFocused ? "unfocus" : "focus"}
-        </ButtonLoading>
-      )}
+      <div className="flex">
+        <p className="text-xl font-semibold">{lesson.name}</p>
+        <p className="text-xs text-gray-500">{lesson.description}</p>
+        <div className="flex items-center justify-center gap-4">
+          <p className="text-xl text-blue-800">+{lessonTotalGood}</p>
+          <p className={cn("text-xl ", { "text-red-800": lessonTotalBad > 0 })}>
+            -{lessonTotalBad}
+          </p>
+        </div>
 
-      <ButtonLoading
-        variant={"outline"}
-        onClick={handleCreateSentences}
-        isLoading={createSentencesMutation.isLoading}
-        title="Create sentences for all words in this lesson"
-      >
-        <Icons.listPlus className="h-4 w-4" />
-      </ButtonLoading>
-      <p className="flex flex-wrap items-center gap-x-2">
+        {!hasLinkedProfile && (
+          <ButtonLoading
+            variant={"outline"}
+            onClick={handleLinkProfileToLesson}
+            isLoading={linkProfileToLessonMutation.isLoading}
+          >
+            <Icons.userPlus className="h-4 w-4" />
+          </ButtonLoading>
+        )}
+        {hasLinkedProfile && (
+          <ButtonLoading
+            variant={"outline"}
+            onClick={handleToggleFocus}
+            isLoading={toggleFocusMutation.isLoading}
+          >
+            {isFocused ? "unfocus" : "focus"}
+          </ButtonLoading>
+        )}
+
+        <ButtonLoading
+          variant={"outline"}
+          onClick={handleCreateSentences}
+          isLoading={createSentencesMutation.isLoading}
+          title="Create sentences for all words in this lesson"
+        >
+          <Icons.listPlus className="h-4 w-4" />
+        </ButtonLoading>
+      </div>
+      {/* <p className="flex flex-wrap items-center gap-x-2">
         Words:
-        {lesson.words.map((c) => (
+        {lesson.words.slice(0, 5).map((c) => (
           <span
             key={c.word}
             className={cn("text-sm", {
@@ -153,7 +134,7 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 }

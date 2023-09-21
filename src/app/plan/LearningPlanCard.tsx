@@ -8,25 +8,10 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "~/components/ui/collapsible";
 import { slugify } from "~/utils";
 
-import { LessonInputForm } from "./LessonInputForm";
 import { type LearningPlan } from "./page";
 import { LessonCard } from "./LessonCard";
-import { LessonBulkImportWordsForm } from "./LessonBulkImportForm";
 
 export function LearningPlanCard({
   learningPlan,
@@ -35,25 +20,41 @@ export function LearningPlanCard({
 }) {
   const url = slugify(`/plan/${learningPlan.name}`);
 
+  // compute total good and bad for all lesson in learning plan
+  const totalGood = learningPlan.lessons.reduce(
+    (acc, lesson) =>
+      acc + lesson.words.reduce((acc, c) => acc + c.goodCount, 0),
+    0
+  );
+
+  const totalBad = learningPlan.lessons.reduce(
+    (acc, lesson) => acc + lesson.words.reduce((acc, c) => acc + c.badCount, 0),
+    0
+  );
+
   return (
-    <Card className="w-full">
+    <Card className="w-96">
       <CardHeader>
         <CardTitle>
-          <Link href={url}>{learningPlan.name}</Link>
+          <Link href={url} className="hover:underline">
+            {learningPlan.name}[+{totalGood}/-{totalBad}]
+          </Link>
         </CardTitle>
         <CardDescription>{learningPlan.description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="p-4">
-          <h3 className="mb-4 text-xl font-semibold">Lessons</h3>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {learningPlan.lessons.map((lesson) => (
-              <LessonCard lesson={lesson} key={lesson.id} />
-            ))}
-          </div>
+        <div className="flex flex-col gap-2 p-1">
+          {learningPlan.lessons.slice(0, 5).map((lesson) => (
+            <LessonCard lesson={lesson} key={lesson.id} />
+          ))}
+          {learningPlan.lessons.length > 5 && (
+            <div className="flex flex-col items-center justify-center">
+              <Link href={url}>See all</Link>
+            </div>
+          )}
         </div>
 
-        <Dialog>
+        {/* <Dialog>
           <DialogTrigger>Bulk import</DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -72,7 +73,7 @@ export function LearningPlanCard({
           <CollapsibleContent>
             <LessonInputForm learningPlanId={learningPlan.id} />
           </CollapsibleContent>
-        </Collapsible>
+        </Collapsible> */}
       </CardContent>
     </Card>
   );

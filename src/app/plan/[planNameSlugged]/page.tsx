@@ -39,9 +39,12 @@ export default function Page({ params }: PageProps) {
 
       <div className="flex-wrap-container mb-4">
         <h2 className="mb-2 text-2xl font-semibold">Lessons</h2>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2">
           {root.lessons.map((lesson) => (
-            <div key={lesson.id} className=" mb-2 w-64 rounded bg-gray-100 p-4">
+            <div
+              key={lesson.id}
+              className="  flex max-w-4xl gap-2 rounded bg-gray-100 p-1 "
+            >
               <h3 className="text-xl font-semibold">{lesson.name}</h3>
               <p className="text-base">{lesson.description}</p>
               <div className="flex flex-wrap">

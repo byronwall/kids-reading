@@ -15,7 +15,11 @@ h2 {
 }
 
 .bg-accent {
-  @apply bg-gray-100;
+  @apply bg-red-400;
+}
+
+.text-accent-foreground {
+  @apply text-gray-900;
 }
 
 .grid-sidebar {
