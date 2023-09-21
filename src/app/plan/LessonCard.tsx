@@ -51,8 +51,41 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
     await utils.planRouter.getAllLearningPlans.invalidate();
   };
 
+  const isFocused = lesson.ProfileLessonFocus[0]?.isFocused ?? false;
+  const hasLinkedProfile = lesson.ProfileLessonFocus[0]?.profileId != null;
+
+  const toggleFocusMutation =
+    trpc.planRouter.setProfileLessonFocus.useMutation();
+
+  const handleToggleFocus = async () => {
+    await toggleFocusMutation.mutateAsync({
+      lessonId: lesson.id,
+      isFocused: !isFocused,
+    });
+
+    // invalidate the query so that it will refetch
+    await utils.planRouter.getAllLearningPlans.invalidate();
+  };
+
+  const linkProfileToLessonMutation =
+    trpc.planRouter.linkProfileToLesson.useMutation();
+
+  const handleLinkProfileToLesson = async () => {
+    await linkProfileToLessonMutation.mutateAsync({
+      lessonId: lesson.id,
+    });
+
+    // invalidate the query so that it will refetch
+    await utils.planRouter.getAllLearningPlans.invalidate();
+  };
+
   return (
-    <div className="rounded-lg bg-white p-4 pl-2 shadow-lg">
+    <div
+      className={cn("rounded-lg bg-white p-4 pl-2 shadow-lg", {
+        "bg-green-300": hasLinkedProfile,
+        "bg-blue-300": isFocused,
+      })}
+    >
       <p className="text-xl font-semibold">{lesson.name}</p>
       <p className="text-xs text-gray-500">{lesson.description}</p>
       <div className="flex items-center justify-center gap-4">
@@ -61,17 +94,31 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
           -{lessonTotalBad}
         </p>
       </div>
-      <ButtonLoading
-        variant={"outline"}
-        onClick={handleScheduleNewWords}
-        isLoading={scheduleNewWordsMutation.isLoading}
-      >
-        <Icons.userPlus className="h-4 w-4" />
-      </ButtonLoading>
+      {!hasLinkedProfile && (
+        <ButtonLoading
+          variant={"outline"}
+          onClick={handleLinkProfileToLesson}
+          isLoading={linkProfileToLessonMutation.isLoading}
+        >
+          <Icons.userPlus className="h-4 w-4" />
+          add to profile
+        </ButtonLoading>
+      )}
+      {hasLinkedProfile && (
+        <ButtonLoading
+          variant={"outline"}
+          onClick={handleToggleFocus}
+          isLoading={toggleFocusMutation.isLoading}
+        >
+          {isFocused ? "unfocus" : "focus"}
+        </ButtonLoading>
+      )}
+
       <ButtonLoading
         variant={"outline"}
         onClick={handleCreateSentences}
         isLoading={createSentencesMutation.isLoading}
+        title="Create sentences for all words in this lesson"
       >
         <Icons.listPlus className="h-4 w-4" />
       </ButtonLoading>

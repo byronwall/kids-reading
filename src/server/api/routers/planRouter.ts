@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
 
@@ -10,6 +12,74 @@ import {
 import { getWordsForSentence } from "./getWordsForSentence";
 
 export const planRouter = createTRPCRouter({
+  linkProfileToLesson: protectedProcedure
+    .input(
+      z.object({
+        lessonId: z.string(),
+      })
+    )
+    .mutation(async ({ input: { lessonId }, ctx }) => {
+      const profileId = ctx.session.user.activeProfile.id;
+
+      await prisma.profileLessonFocus.create({
+        data: {
+          lessonId,
+          profileId,
+        },
+      });
+
+      // now linked, add all lesson words to the profile summary too
+      const lesson = await prisma.lesson.findUnique({
+        where: {
+          id: lessonId,
+        },
+        include: {
+          words: true,
+        },
+      });
+
+      if (!lesson) throw new Error(`Lesson not found: ${lessonId}`);
+
+      // do an upsert to add the words to the profile summary if new
+      await prisma.profileWordSummary.createMany({
+        data: lesson.words.map((word) => ({
+          profileId,
+          wordId: word.id,
+          metaInfo: {},
+        })),
+        skipDuplicates: true,
+      });
+
+      return true;
+    }),
+
+  setProfileLessonFocus: protectedProcedure
+    .input(
+      z.object({
+        lessonId: z.string(),
+        isFocused: z.boolean(),
+      })
+    )
+    .mutation(async ({ input: { lessonId, isFocused }, ctx }) => {
+      const profileId = ctx.session.user.activeProfile.id;
+
+      // this will fail if the link does not exist
+
+      await prisma.profileLessonFocus.update({
+        where: {
+          profileId_lessonId: {
+            lessonId,
+            profileId,
+          },
+        },
+        data: {
+          isFocused,
+        },
+      });
+
+      return true;
+    }),
+
   getAllLearningPlans: protectedProcedure.query(async ({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
 
@@ -31,6 +101,14 @@ export const planRouter = createTRPCRouter({
                     profileId,
                   },
                 },
+              },
+            },
+
+            // return only 1 instead of array
+            ProfileLessonFocus: {
+              take: 1,
+              where: {
+                profileId,
               },
             },
           },
