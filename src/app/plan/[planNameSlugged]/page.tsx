@@ -1,11 +1,10 @@
 "use client";
 
 import { trpc } from "~/app/_trpc/client";
-import { ButtonLoading } from "~/components/ButtonLoading";
-import { Icons } from "~/components/icons";
-import { cn, deslugify } from "~/utils";
-import { useLessonActions } from "~/hooks/useLessonActions";
-import { type DetailedLearningPlan } from "~/types/models";
+import { deslugify } from "~/utils";
+
+import { findWordsNotInSentences } from "./findWordsNotInSentences";
+import { LessonDetail } from "./LessonDetail";
 
 type PageProps = {
   params: {
@@ -63,97 +62,4 @@ export default function Page({ params }: PageProps) {
       </div>
     </div>
   );
-}
-
-function LessonDetail({
-  lesson,
-  wordsNotInSentences,
-}: {
-  lesson: DetailedLearningPlan["lessons"][0];
-  wordsNotInSentences: DetailedLearningPlan["lessons"][0]["words"];
-}) {
-  const isFocused = lesson.ProfileLessonFocus[0]?.isFocused ?? false;
-  const hasLinkedProfile = lesson.ProfileLessonFocus[0]?.profileId != null;
-
-  const {
-    handleToggleFocus,
-    handleLinkProfileToLesson,
-    isLoadingLinkProfileToLesson,
-    isLoadingToggleFocus,
-  } = useLessonActions(lesson.id);
-
-  return (
-    <div
-      key={lesson.id}
-      className={cn("flex gap-2 rounded bg-gray-100 p-1", {
-        "bg-gray-200": hasLinkedProfile,
-      })}
-    >
-      <h3 className="text-xl font-semibold">{lesson.name}</h3>
-      <p className="text-base">{lesson.description}</p>
-      <div>
-        {!hasLinkedProfile && (
-          <ButtonLoading
-            variant={"outline"}
-            onClick={handleLinkProfileToLesson}
-            isLoading={isLoadingLinkProfileToLesson}
-          >
-            <Icons.userPlus className="h-4 w-4" />
-          </ButtonLoading>
-        )}
-        {hasLinkedProfile && (
-          <ButtonLoading
-            variant={"outline"}
-            onClick={() => handleToggleFocus(!isFocused)}
-            isLoading={isLoadingToggleFocus}
-            size="sm"
-          >
-            <Icons.star
-              fill={isFocused ? "currentColor" : "none"}
-              className="h-4 w-4 text-yellow-500"
-            />
-          </ButtonLoading>
-        )}
-      </div>
-      <div className="flex flex-wrap gap-1">
-        {lesson.words.map((word) => (
-          <div key={word.id} className="rounded bg-gray-100 p-1">
-            <div
-              key={word.id}
-              className={`rounded bg-gray-100 p-1 ${
-                wordsNotInSentences.some((w) => w.id === word.id)
-                  ? "border border-red-500"
-                  : ""
-              }`}
-            >
-              <p className="text-base">{word.word}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function findWordsNotInSentences(root: DetailedLearningPlan) {
-  // Create a set of all word IDs in sentences for quick lookup
-  const sentenceWordIds = new Set<string>();
-  root.sentences.forEach((sentence) => {
-    sentence.words.forEach((word) => {
-      sentenceWordIds.add(word.id);
-    });
-  });
-
-  // Filter out words that are not present in any sentence
-  const wordsNotInSentences: DetailedLearningPlan["lessons"][0]["words"] = [];
-
-  root.lessons.forEach((lesson) => {
-    lesson.words.forEach((word) => {
-      if (!sentenceWordIds.has(word.id)) {
-        wordsNotInSentences.push(word);
-      }
-    });
-  });
-
-  return wordsNotInSentences;
 }

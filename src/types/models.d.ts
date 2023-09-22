@@ -5,3 +5,5 @@ export type LearningPlan =
 
 export type DetailedLearningPlan =
   RouterOutputs["planRouter"]["getSingleLearningPlan"];
+
+export type DetailedLesson = DetailedLearningPlan["lessons"][0];
