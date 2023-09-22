@@ -9,8 +9,8 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { slugify } from "~/utils";
+import { type LearningPlan } from "~/types/models";
 
-import { type LearningPlan } from "./page";
 import { LessonCard } from "./LessonCard";
 
 export function LearningPlanCard({

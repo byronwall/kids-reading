@@ -7,15 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { type RouterOutputs } from "~/utils/api";
 
 import { LearningPlanInputForm } from "./LearningPlanInputForm";
 import { LearningPlanCard } from "./LearningPlanCard";
 
 import { trpc } from "../_trpc/client";
-
-export type LearningPlan =
-  RouterOutputs["planRouter"]["getAllLearningPlans"][0];
 
 export default function PlanPage() {
   const { data: learningPlans } =
