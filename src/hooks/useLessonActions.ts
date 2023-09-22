@@ -1,6 +1,7 @@
 "use client";
 
 import { trpc } from "~/app/_trpc/client";
+import { type DetailedLesson } from "~/types/models";
 
 export function useLessonActions(lessonId: string) {
   const utils = trpc.useContext();
@@ -30,13 +31,30 @@ export function useLessonActions(lessonId: string) {
     await utils.planRouter.getSingleLearningPlan.invalidate();
   };
 
+  const createSentencesMutation =
+    trpc.sentencesRouter.generateAndAddNewSentencesForWords.useMutation();
+
+  const handleCreateSentences = async (words: DetailedLesson["words"]) => {
+    await createSentencesMutation.mutateAsync(words.map((c) => c.word));
+
+    // invalidate the query so that it will refetch
+    await Promise.all([
+      utils.planRouter.getAllLearningPlans.invalidate(),
+      utils.planRouter.getSingleLearningPlan.invalidate(),
+      utils.sentencesRouter.getAllSentences.invalidate(),
+    ]);
+  };
+
   const isLoadingLinkProfileToLesson = linkProfileToLessonMutation.isLoading;
   const isLoadingToggleFocus = toggleFocusMutation.isLoading;
+  const isLoadingCreateSentences = createSentencesMutation.isLoading;
 
   return {
     handleToggleFocus,
-    handleLinkProfileToLesson,
     isLoadingLinkProfileToLesson,
+    handleLinkProfileToLesson,
     isLoadingToggleFocus,
+    handleCreateSentences,
+    isLoadingCreateSentences,
   };
 }

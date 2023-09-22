@@ -1,29 +1,13 @@
 "use client";
 
-import { Icons } from "~/components/icons";
-import { ButtonLoading } from "~/components/ButtonLoading";
 import { cn } from "~/utils";
 import { type LearningPlan } from "~/types/models";
-
-import { trpc } from "../_trpc/client";
 
 export type Lesson = LearningPlan["lessons"][0];
 
 export function LessonCard({ lesson }: { lesson: Lesson }) {
-  const utils = trpc.useContext();
-
   const lessonTotalGood = lesson.words.reduce((acc, c) => acc + c.goodCount, 0);
   const lessonTotalBad = lesson.words.reduce((acc, c) => acc + c.badCount, 0);
-
-  const createSentencesMutation =
-    trpc.sentencesRouter.generateAndAddNewSentencesForWords.useMutation();
-
-  const handleCreateSentences = async () => {
-    await createSentencesMutation.mutateAsync(lesson.words.map((c) => c.word));
-
-    // invalidate the query so that it will refetch
-    await utils.planRouter.getAllLearningPlans.invalidate();
-  };
 
   const isFocused = lesson.ProfileLessonFocus[0]?.isFocused ?? false;
   const hasLinkedProfile = lesson.ProfileLessonFocus[0]?.profileId != null;
@@ -44,15 +28,6 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
             -{lessonTotalBad}
           </p>
         </div>
-
-        <ButtonLoading
-          variant={"outline"}
-          onClick={handleCreateSentences}
-          isLoading={createSentencesMutation.isLoading}
-          title="Create sentences for all words in this lesson"
-        >
-          <Icons.listPlus className="h-4 w-4" />
-        </ButtonLoading>
       </div>
       {/* <p className="flex flex-wrap items-center gap-x-2">
         Words:

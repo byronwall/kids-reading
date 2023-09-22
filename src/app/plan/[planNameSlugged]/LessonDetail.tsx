@@ -21,6 +21,8 @@ export function LessonDetail({
     handleLinkProfileToLesson,
     isLoadingLinkProfileToLesson,
     isLoadingToggleFocus,
+    handleCreateSentences,
+    isLoadingCreateSentences,
   } = useLessonActions(lesson.id);
 
   return (
@@ -55,6 +57,21 @@ export function LessonDetail({
             />
           </ButtonLoading>
         )}
+        <ButtonLoading
+          variant={"outline"}
+          onClick={() =>
+            handleCreateSentences(
+              // only create sentences for words that are not already in sentences
+              lesson.words.filter((w) =>
+                wordsNotInSentences.some((w2) => w2.id === w.id)
+              )
+            )
+          }
+          isLoading={isLoadingCreateSentences}
+          title="Create sentences for all words in this lesson"
+        >
+          <Icons.listPlus className="h-4 w-4" />
+        </ButtonLoading>
       </div>
       <div className="flex flex-wrap gap-1">
         {lesson.words.map((word) => (
