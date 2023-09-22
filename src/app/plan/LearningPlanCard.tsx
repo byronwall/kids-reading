@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 
 import {
@@ -9,8 +10,8 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { slugify } from "~/utils";
+import { type LearningPlan } from "~/types/models";
 
-import { type LearningPlan } from "./page";
 import { LessonCard } from "./LessonCard";
 
 export function LearningPlanCard({
@@ -53,27 +54,6 @@ export function LearningPlanCard({
             </div>
           )}
         </div>
-
-        {/* <Dialog>
-          <DialogTrigger>Bulk import</DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Paste the lesson plan</DialogTitle>
-              <DialogDescription>
-                <LessonBulkImportWordsForm learningPlanId={learningPlan.id} />
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-
-        <Collapsible>
-          <CollapsibleTrigger>
-            <h2>Add lesson to learning plan...</h2>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <LessonInputForm learningPlanId={learningPlan.id} />
-          </CollapsibleContent>
-        </Collapsible> */}
       </CardContent>
     </Card>
   );

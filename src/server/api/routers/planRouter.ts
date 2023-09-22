@@ -112,6 +112,7 @@ export const planRouter = createTRPCRouter({
                   },
                 },
               },
+              ProfileLessonFocus: true,
             },
           },
         },
