@@ -2,9 +2,19 @@
 
 import { trpc } from "~/app/_trpc/client";
 import { deslugify } from "~/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 
-import { findWordsNotInSentences } from "./findWordsNotInSentences";
 import { LessonDetail } from "./LessonDetail";
+import { findWordsNotInSentences } from "./findWordsNotInSentences";
+
+import { LessonBulkImportWordsForm } from "../LessonBulkImportForm";
+import { LessonInputForm } from "../LessonInputForm";
 
 type PageProps = {
   params: {
@@ -58,6 +68,30 @@ export default function Page({ params }: PageProps) {
               <p className="text-base">{sentence.fullSentence}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col">
+        <h2 className="mb-2 text-2xl font-semibold">Plan Admin</h2>
+        <div className="flex flex-wrap gap-2">
+          <Card className="w-full max-w-[400px]">
+            <CardHeader>
+              <CardTitle>Bulk import</CardTitle>
+              <CardDescription>Paste the lesson plan</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <LessonBulkImportWordsForm learningPlanId={learningPlan.id} />
+            </CardContent>
+          </Card>
+          <Card className="w-full max-w-[400px]">
+            <CardHeader>
+              <CardTitle>Add new lesson</CardTitle>
+              <CardDescription>Add an empty lesson to plan</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <LessonInputForm learningPlanId={learningPlan.id} />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

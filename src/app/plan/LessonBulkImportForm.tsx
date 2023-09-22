@@ -59,7 +59,7 @@ export function LessonBulkImportWordsForm(props: Props) {
                 <Textarea placeholder="Contents" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                Expected format is <code>| topic | sub topic | words |</code>
               </FormDescription>
               <FormMessage />
             </FormItem>
