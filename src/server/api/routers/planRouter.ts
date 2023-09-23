@@ -138,8 +138,10 @@ export const planRouter = createTRPCRouter({
         },
       });
 
+      const augmentedPlan = augmentPlanWithScores(plan);
+
       return {
-        ...plan,
+        ...augmentedPlan,
         sentences,
       };
     }),

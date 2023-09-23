@@ -25,6 +25,9 @@ export function LessonDetail({
     isLoadingCreateSentences,
   } = useLessonActions(lesson.id);
 
+  const lessonTotalGood = lesson.words.reduce((acc, c) => acc + c.goodCount, 0);
+  const lessonTotalBad = lesson.words.reduce((acc, c) => acc + c.badCount, 0);
+
   return (
     <div
       key={lesson.id}
@@ -34,6 +37,12 @@ export function LessonDetail({
     >
       <h3 className="text-xl font-semibold">{lesson.name}</h3>
       <p className="text-base">{lesson.description}</p>
+      <div className="flex items-center justify-center gap-4">
+        <p className="text-xl text-blue-800">+{lessonTotalGood}</p>
+        <p className={cn("text-xl ", { "text-red-800": lessonTotalBad > 0 })}>
+          -{lessonTotalBad}
+        </p>
+      </div>
       <div>
         {!hasLinkedProfile && (
           <ButtonLoading
