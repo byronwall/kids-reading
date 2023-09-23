@@ -34,7 +34,12 @@ export default function RootLayout({
 
   return (
     <div className="grid-sidebar w-full">
-      <div className="flex flex-col gap-2 text-left">
+      <div
+        className="sticky top-0 flex flex-col gap-2 overflow-y-auto text-left"
+        style={{
+          maxHeight: "calc(100vh - 4rem)",
+        }}
+      >
         <Link href={"/plan"}>
           <span
             className={cn(
