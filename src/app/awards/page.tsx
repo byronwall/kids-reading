@@ -40,8 +40,6 @@ export default function AwardsPage() {
     await utils.awardRouter.getAllAwardImages.invalidate();
   };
 
-  const unclaimedAwards = awards?.filter((award) => !award.imageId);
-
   const wordCountAwards = awards?.filter(
     (award) => award.awardType === "WORD_COUNT"
   );
@@ -50,23 +48,13 @@ export default function AwardsPage() {
     (award) => award.awardType === "SENTENCE_COUNT"
   );
 
+  const wordMasteryAwards = awards?.filter(
+    (award) => award.awardType === "WORD_MASTERY"
+  );
+
   return (
     <div>
       <h1>Awards</h1>
-
-      <h2>Unclaimed awards</h2>
-
-      <div className="flex flex-wrap">
-        {(unclaimedAwards ?? []).map((award) => (
-          <div
-            key={award.id}
-            className="flex h-64 w-64 flex-col items-center bg-gray-200 "
-          >
-            <p>{award.awardType}</p>
-            <p>{award.awardValue ?? 0}</p>
-          </div>
-        ))}
-      </div>
 
       <h2>Word count awards</h2>
 
@@ -91,7 +79,14 @@ export default function AwardsPage() {
       </div>
 
       <h2>Word mastery awards</h2>
-      <h2>Lesson master awards</h2>
+
+      <div className="flex flex-wrap">
+        {wordMasteryAwards?.map((award) => (
+          <AwardCard key={award.id} award={award} />
+        ))}
+      </div>
+
+      <h2>Lesson mastery awards</h2>
 
       <h2>Award images</h2>
 

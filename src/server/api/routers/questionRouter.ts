@@ -439,43 +439,12 @@ async function getWordsForProfile(profileId: string) {
 }
 
 async function createProfileAwards(profileId: string) {
-  // get the word count
-  // check the user's current max word count award
-  // create awards for every 100 words completed
+  await processWordCountAwards(profileId);
+  await processSentenceCountAwards(profileId);
+  await processWordMasteryAwards(profileId);
+}
 
-  const wordCount = await getProfileWordCount(profileId);
-
-  const currentMaxWordCountAward = await prisma.profileAward.findFirst({
-    where: {
-      profileId,
-      awardType: "WORD_COUNT",
-    },
-
-    orderBy: {
-      awardValue: "desc",
-    },
-  });
-
-  const currentMaxWordCount = currentMaxWordCountAward?.awardValue ?? 0;
-
-  const newAwardsToCreate = [];
-
-  for (
-    let wordCountAward = currentMaxWordCount + 100;
-    wordCountAward <= wordCount;
-    wordCountAward += 100
-  ) {
-    newAwardsToCreate.push({
-      profileId,
-      awardType: "WORD_COUNT",
-      awardValue: wordCountAward,
-    });
-  }
-
-  await prisma.profileAward.createMany({
-    data: newAwardsToCreate,
-  });
-
+async function processSentenceCountAwards(profileId: string) {
   // do the same thing for sentence count
   const sentenceCount = await getProfileSentenceCount(profileId);
 
@@ -508,5 +477,88 @@ async function createProfileAwards(profileId: string) {
 
   await prisma.profileAward.createMany({
     data: newSentenceAwardsToCreate,
+  });
+}
+
+async function processWordCountAwards(profileId: string) {
+  // get the word count
+  // check the user's current max word count award
+  // create awards for every 100 words completed
+  const wordCount = await getProfileWordCount(profileId);
+
+  const currentMaxWordCountAward = await prisma.profileAward.findFirst({
+    where: {
+      profileId,
+      awardType: "WORD_COUNT",
+    },
+
+    orderBy: {
+      awardValue: "desc",
+    },
+  });
+
+  const currentMaxWordCount = currentMaxWordCountAward?.awardValue ?? 0;
+
+  const newAwardsToCreate = [];
+
+  for (
+    let wordCountAward = currentMaxWordCount + 100;
+    wordCountAward <= wordCount;
+    wordCountAward += 100
+  ) {
+    newAwardsToCreate.push({
+      profileId,
+      awardType: "WORD_COUNT",
+      awardValue: wordCountAward,
+    });
+  }
+
+  await prisma.profileAward.createMany({
+    data: newAwardsToCreate,
+  });
+}
+
+async function processWordMasteryAwards(profileId: string) {
+  // find any words that have a interval >= 60
+  // check if the current user has awards for those words
+  // create awards for those words
+
+  const wordsWithMastery = await prisma.profileWordSummary.findMany({
+    where: {
+      profileId,
+      interval: {
+        gte: 60,
+      },
+    },
+    include: {
+      word: true,
+    },
+  });
+
+  const wordIdsWithMastery = wordsWithMastery.map((word) => word.wordId);
+
+  const existingAwards = await prisma.profileAward.findMany({
+    where: {
+      profileId,
+      awardType: "WORD_MASTERY",
+      wordId: {
+        in: wordIdsWithMastery,
+      },
+    },
+  });
+
+  const existingAwardWordIds = existingAwards.map((award) => award.wordId);
+
+  const newAwardsToCreate = wordsWithMastery
+    .filter((word) => !existingAwardWordIds.includes(word.wordId))
+    .map((word) => ({
+      profileId,
+      awardType: "WORD_MASTERY",
+      awardValue: 1,
+      wordId: word.wordId,
+    }));
+
+  await prisma.profileAward.createMany({
+    data: newAwardsToCreate,
   });
 }
