@@ -6,6 +6,7 @@ import { userRouter } from "./routers/userRouter";
 import { questionRouter } from "./routers/questionRouter";
 import { sentencesRouter } from "./routers/sentencesRouter";
 import { planRouter } from "./routers/planRouter";
+import { awardRouter } from "./routers/awardRouter";
 
 export const appRouter = createTRPCRouter({
   authRouter,
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   questionRouter,
   sentencesRouter,
   planRouter,
+  awardRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -20,6 +20,9 @@ const config = {
   experimental: {
     serverComponentsExternalPackages: ["@prisma/client", "bcryptjs"],
   },
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default config;

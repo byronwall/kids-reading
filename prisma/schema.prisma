@@ -73,6 +73,7 @@ model Profile {
     results   ProfileQuestionResult[]
     summaries ProfileWordSummary[]
     lessons   ProfileLessonFocus[]
+    awards    ProfileAward[]
 }
 
 // ---- WORD and CORE DATA ---- //
@@ -90,6 +91,7 @@ model Word {
 
     // implicitly connect to lessons using a many words : many lessons
     lesson Lesson[]
+    awards ProfileAward[]
 
     @@unique([word])
 }
@@ -121,6 +123,9 @@ model ProfileQuestionResult {
 
     // this will grow into columns so it's easier to query?
     metaInfo Json
+
+    // this will be used to group results together
+    groupId String @default("")
 
     profileId String
     profile   Profile @relation(fields: [profileId], references: [id])
@@ -191,6 +196,7 @@ model Lesson {
     // implicitly connect to sentences using a many lessons : many sentences
     sentences          Sentence[]
     ProfileLessonFocus ProfileLessonFocus[]
+    awards             ProfileAward[]
 }
 
 model ProfileLessonFocus {
@@ -207,4 +213,50 @@ model ProfileLessonFocus {
 
     // unique constraint
     @@unique([profileId, lessonId])
+}
+
+// ---- AWARD RELATED ---- //
+
+enum AwardType {
+    WORD_COUNT
+    SENTENCE_COUNT
+    WORD_MASTERY
+    LESSON_MASTERY
+}
+
+model ProfileAward {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+
+    profileId String
+    profile   Profile @relation(fields: [profileId], references: [id])
+
+    awardType String
+
+    // value used for WORD_COUNT and SENTENCE_COUNT
+    awardValue Int?
+
+    // used for WORD_MASTERY 
+    wordId String?
+    word   Word?   @relation(fields: [wordId], references: [id])
+
+    // used for LESSON_MASTERY
+    lessonId String?
+    lesson   Lesson? @relation(fields: [lessonId], references: [id])
+
+    // will start blank before user makes a choice
+    imageId String?
+    image   AwardImages? @relation(fields: [imageId], references: [id])
+}
+
+model AwardImages {
+    id String @id @default(cuid())
+
+    imageUrl String
+
+    metaInfo Json
+    awards   ProfileAward[]
+
+    // unique url
+    @@unique([imageUrl])
 }
