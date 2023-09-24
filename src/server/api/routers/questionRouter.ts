@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { addDays } from "date-fns";
+import { v4 } from "uuid";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
@@ -50,7 +51,7 @@ export const questionRouter = createTRPCRouter({
 
     // group the results by sentence id
     const resultsBySentenceId = results.reduce((acc, result) => {
-      const sentenceId = result.sentence?.id ?? result.wordId ?? "NONE";
+      const sentenceId = result.groupId ?? result.wordId ?? "NONE";
 
       if (!acc[sentenceId]) {
         acc[sentenceId] = [];
@@ -307,12 +308,16 @@ export const questionRouter = createTRPCRouter({
       const { sentenceId, results } = input;
       const profileId = ctx.session.user.activeProfile.id;
 
+      // ensure that all results have a common group ID
+      const groupId = v4();
+
       for (const result of results) {
         await submitResultAndUpdateSchedule(
           result.wordId,
           result.score,
           profileId,
-          sentenceId
+          sentenceId,
+          groupId
         );
       }
     }),
@@ -334,7 +339,14 @@ export const questionRouter = createTRPCRouter({
       const profileId = ctx.session.user.activeProfile.id;
 
       // create the result
-      await submitResultAndUpdateSchedule(wordId, score, profileId, undefined);
+      const groupId = v4();
+      await submitResultAndUpdateSchedule(
+        wordId,
+        score,
+        profileId,
+        undefined,
+        groupId
+      );
 
       return {
         message: `Result created successfully!`,
@@ -346,7 +358,8 @@ async function submitResultAndUpdateSchedule(
   wordId: string,
   score: number | undefined,
   profileId: string,
-  sentenceId: string | undefined
+  sentenceId: string | undefined,
+  groupId: string
 ) {
   await prisma.profileQuestionResult.create({
     data: {
@@ -354,6 +367,7 @@ async function submitResultAndUpdateSchedule(
       sentenceId,
       score: score ?? -1, // will use -1 to flag a skipped entry for now
       profileId,
+      groupId,
       metaInfo: {},
     },
   });
