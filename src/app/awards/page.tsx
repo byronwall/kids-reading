@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import { type RouterOutputs } from "~/utils/api";
 
 type Award = RouterOutputs["awardRouter"]["getAllAwardsForProfile"][number];
 
