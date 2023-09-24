@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -14,6 +13,7 @@ export const awardRouter = createTRPCRouter({
       },
       include: {
         image: true,
+        word: true,
       },
     });
   }),
@@ -47,92 +47,73 @@ export const awardRouter = createTRPCRouter({
       });
     }),
 
+  deleteImage: protectedProcedure
+    .input(
+      z.object({
+        imageId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // find any awards using that id and set to blank
+      await prisma.profileAward.updateMany({
+        where: {
+          imageId: input.imageId,
+        },
+        data: {
+          imageId: null,
+        },
+      });
+
+      await prisma.awardImages.delete({
+        where: {
+          id: input.imageId,
+        },
+      });
+    }),
+
   getAllAwardImages: protectedProcedure.query(async () => {
-    return prisma.awardImages.findMany();
+    const allAwardImages = await prisma.awardImages.findMany();
+
+    // shuffle those
+    allAwardImages.sort(() => Math.random() - 0.5);
+
+    return allAwardImages;
   }),
 
   addImageIdToAward: protectedProcedure
     .input(
       z.object({
-        awardId: z.string(),
+        awardId: z.string().optional(),
         imageId: z.string(),
       })
     )
     .mutation(async ({ input }) => {
+      let awardId = input.awardId;
+
+      // find first null award and assign imageId to it
+      if (!input.awardId) {
+        const award = await prisma.profileAward.findFirst({
+          where: {
+            imageId: null,
+          },
+        });
+
+        if (!award) {
+          throw new Error("No awards left to assign");
+        }
+
+        awardId = award.id;
+      }
+
       await prisma.profileAward.update({
         where: {
-          id: input.awardId,
+          id: awardId,
         },
         data: {
           imageId: input.imageId,
         },
       });
     }),
-
-  __TEMP__updateGroupIds: protectedProcedure.mutation(
-    async ({ ctx, input }) => {
-      if (1 + 1 === 2) {
-        throw new Error("This is a temporary endpoint that should not be used");
-      }
-
-      // get all results that have ""  as the groupId
-      const results = await prisma.profileQuestionResult.findMany({});
-
-      // process those results:
-      // group based on the minute of createdAt
-      // then assign a UUID to each group
-      // then update the groupId of each result in that group to be the UUID
-      // then return the updated results
-
-      const groupedResults = results.reduce((acc, result) => {
-        const createdAtMinute = result.createdAt.getTime() / 1000;
-
-        // search for an entry within 10 seconds of timestamp
-        // if found, add to that group
-        // if not found, create a new group
-
-        const existingGroup = Object.keys(acc).find((key) => {
-          const keyAsNumber = Number(key);
-          return (
-            keyAsNumber >= createdAtMinute - 10 &&
-            keyAsNumber <= createdAtMinute + 10
-          );
-        });
-
-        if (existingGroup) {
-          acc[Number(existingGroup)]!.push(result);
-          return acc;
-        }
-
-        if (!acc[createdAtMinute]) {
-          acc[createdAtMinute] = [];
-        }
-        acc[createdAtMinute]!.push(result);
-        return acc;
-      }, {} as Record<number, typeof results>);
-
-      const updatedResults = await Promise.all(
-        Object.values(groupedResults).map(async (group) => {
-          const groupId = uuidv4();
-
-          return await Promise.all(
-            group.map((result) =>
-              prisma.profileQuestionResult.update({
-                where: {
-                  id: result.id,
-                },
-                data: {
-                  groupId,
-                },
-              })
-            )
-          );
-        })
-      );
-
-      return updatedResults;
-    }
-  ),
 });
 export async function getProfileSentenceCount(profileId: any) {
   // TODO: this query is very inefficient -- do better
