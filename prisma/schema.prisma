@@ -246,6 +246,7 @@ model ProfileAward {
 
     // will start blank before user makes a choice
     imageId String?
+    image   AwardImages? @relation(fields: [imageId], references: [id])
 }
 
 model AwardImages {
@@ -254,4 +255,8 @@ model AwardImages {
     imageUrl String
 
     metaInfo Json
+    awards   ProfileAward[]
+
+    // unique url
+    @@unique([imageUrl])
 }

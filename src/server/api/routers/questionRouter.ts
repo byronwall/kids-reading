@@ -5,6 +5,8 @@ import { v4 } from "uuid";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
 
+import { getProfileSentenceCount, getProfileWordCount } from "./awardRouter";
+
 export const questionRouter = createTRPCRouter({
   getUserStats: protectedProcedure.query(async ({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
@@ -320,6 +322,8 @@ export const questionRouter = createTRPCRouter({
           groupId
         );
       }
+
+      await createProfileAwards(profileId);
     }),
 
   createResultAndUpdateSummaryForWord: protectedProcedure
@@ -347,6 +351,8 @@ export const questionRouter = createTRPCRouter({
         undefined,
         groupId
       );
+
+      await createProfileAwards(profileId);
 
       return {
         message: `Result created successfully!`,
@@ -430,4 +436,77 @@ async function getWordsForProfile(profileId: string) {
   });
 
   return wordsToSchedule;
+}
+
+async function createProfileAwards(profileId: string) {
+  // get the word count
+  // check the user's current max word count award
+  // create awards for every 100 words completed
+
+  const wordCount = await getProfileWordCount(profileId);
+
+  const currentMaxWordCountAward = await prisma.profileAward.findFirst({
+    where: {
+      profileId,
+      awardType: "WORD_COUNT",
+    },
+
+    orderBy: {
+      awardValue: "desc",
+    },
+  });
+
+  const currentMaxWordCount = currentMaxWordCountAward?.awardValue ?? 0;
+
+  const newAwardsToCreate = [];
+
+  for (
+    let wordCountAward = currentMaxWordCount + 100;
+    wordCountAward <= wordCount;
+    wordCountAward += 100
+  ) {
+    newAwardsToCreate.push({
+      profileId,
+      awardType: "WORD_COUNT",
+      awardValue: wordCountAward,
+    });
+  }
+
+  await prisma.profileAward.createMany({
+    data: newAwardsToCreate,
+  });
+
+  // do the same thing for sentence count
+  const sentenceCount = await getProfileSentenceCount(profileId);
+
+  const currentMaxSentenceCountAward = await prisma.profileAward.findFirst({
+    where: {
+      profileId,
+      awardType: "SENTENCE_COUNT",
+    },
+
+    orderBy: {
+      awardValue: "desc",
+    },
+  });
+
+  const currentMaxSentenceCount = currentMaxSentenceCountAward?.awardValue ?? 0;
+
+  const newSentenceAwardsToCreate = [];
+
+  for (
+    let sentenceCountAward = currentMaxSentenceCount + 10;
+    sentenceCountAward <= sentenceCount;
+    sentenceCountAward += 10
+  ) {
+    newSentenceAwardsToCreate.push({
+      profileId,
+      awardType: "SENTENCE_COUNT",
+      awardValue: sentenceCountAward,
+    });
+  }
+
+  await prisma.profileAward.createMany({
+    data: newSentenceAwardsToCreate,
+  });
 }

@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
@@ -11,47 +12,62 @@ export const awardRouter = createTRPCRouter({
       where: {
         profileId,
       },
+      include: {
+        image: true,
+      },
     });
   }),
 
   getProfileWordCount: protectedProcedure.query(({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
 
-    return prisma.profileQuestionResult.count({
-      where: {
-        profileId,
-        wordId: {
-          not: null,
-        },
-        score: {
-          gt: 50,
-        },
-      },
-    });
+    return getProfileWordCount(profileId);
   }),
 
   getProfileSentenceCount: protectedProcedure.query(async ({ ctx }) => {
     const profileId = ctx.session.user.activeProfile.id;
 
-    // TODO: this query is very inefficient -- do better
-    const groupedResults = await prisma.profileQuestionResult.groupBy({
-      by: ["groupId"],
-      where: {
-        profileId,
-        sentenceId: {
-          not: {
-            equals: null,
-          },
-        },
-        score: {
-          gt: 50,
-        },
-      },
-    });
-
-    // filter to score > 50, then group by groupId, then count
-    return groupedResults.length;
+    return await getProfileSentenceCount(profileId);
   }),
+
+  addImageUrlsToDb: protectedProcedure
+    .input(
+      z.object({
+        imageUrls: z.array(z.string()),
+      })
+    )
+
+    .mutation(async ({ input }) => {
+      await prisma.awardImages.createMany({
+        data: input.imageUrls.map((url) => ({
+          imageUrl: url,
+          metaInfo: {},
+        })),
+        skipDuplicates: true,
+      });
+    }),
+
+  getAllAwardImages: protectedProcedure.query(async () => {
+    return prisma.awardImages.findMany();
+  }),
+
+  addImageIdToAward: protectedProcedure
+    .input(
+      z.object({
+        awardId: z.string(),
+        imageId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await prisma.profileAward.update({
+        where: {
+          id: input.awardId,
+        },
+        data: {
+          imageId: input.imageId,
+        },
+      });
+    }),
 
   __TEMP__updateGroupIds: protectedProcedure.mutation(
     async ({ ctx, input }) => {
@@ -118,3 +134,37 @@ export const awardRouter = createTRPCRouter({
     }
   ),
 });
+export async function getProfileSentenceCount(profileId: any) {
+  // TODO: this query is very inefficient -- do better
+  const groupedResults = await prisma.profileQuestionResult.groupBy({
+    by: ["groupId"],
+    where: {
+      profileId,
+      sentenceId: {
+        not: {
+          equals: null,
+        },
+      },
+      score: {
+        gt: 50,
+      },
+    },
+  });
+
+  // filter to score > 50, then group by groupId, then count
+  return groupedResults.length;
+}
+
+export function getProfileWordCount(profileId: string) {
+  return prisma.profileQuestionResult.count({
+    where: {
+      profileId,
+      wordId: {
+        not: null,
+      },
+      score: {
+        gt: 50,
+      },
+    },
+  });
+}
