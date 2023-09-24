@@ -53,6 +53,13 @@ export default function AwardsPage() {
 
   const hasUnclaimedAwards = awards?.some((award) => !award.imageId) ?? false;
 
+  // next word award is multiple of 100
+  const nextWordAward = Math.ceil(((currentWordCount ?? 0) + 1) / 100) * 100;
+
+  // next sentence award is multiple of 10
+  const nextSentenceAward =
+    Math.ceil(((currentSentenceCount ?? 0) + 1) / 10) * 10;
+
   return (
     <div>
       <h1>Awards</h1>
@@ -60,7 +67,7 @@ export default function AwardsPage() {
       <h2>Word count awards</h2>
 
       <p>Current word count: {currentWordCount}</p>
-      <p>Next award at: {12}</p>
+      <p>Next award at: {nextWordAward}</p>
 
       <div className="flex flex-wrap">
         {wordCountAwards?.map((award) => (
@@ -71,7 +78,7 @@ export default function AwardsPage() {
       <h2>Sentence count awards</h2>
 
       <p>Current sentence count: {currentSentenceCount}</p>
-      <p>Next award at: {12}</p>
+      <p>Next award at: {nextSentenceAward}</p>
 
       <div className="flex flex-wrap">
         {sentenceCountAwards?.map((award) => (

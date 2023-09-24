@@ -72,7 +72,12 @@ export const awardRouter = createTRPCRouter({
     }),
 
   getAllAwardImages: protectedProcedure.query(async () => {
-    return prisma.awardImages.findMany();
+    const allAwardImages = await prisma.awardImages.findMany();
+
+    // shuffle those
+    allAwardImages.sort(() => Math.random() - 0.5);
+
+    return allAwardImages;
   }),
 
   addImageIdToAward: protectedProcedure
