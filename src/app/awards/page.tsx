@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { type Award } from "lucide-react";
 
 import { trpc } from "~/app/_trpc/client";
 import { ButtonLoading } from "~/components/ButtonLoading";
@@ -52,6 +51,8 @@ export default function AwardsPage() {
     (award) => award.awardType === "WORD_MASTERY"
   );
 
+  const hasUnclaimedAwards = awards?.some((award) => !award.imageId) ?? false;
+
   return (
     <div>
       <h1>Awards</h1>
@@ -86,13 +87,15 @@ export default function AwardsPage() {
         ))}
       </div>
 
-      <h2>Lesson mastery awards</h2>
-
       <h2>Award images</h2>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {(allAwardImages ?? []).map((image) => (
-          <AwardImageChoice key={image.id} image={image} />
+          <AwardImageChoice
+            key={image.id}
+            image={image}
+            shouldClickToClaim={hasUnclaimedAwards}
+          />
         ))}
       </div>
 
@@ -115,6 +118,7 @@ function AwardCard({ award }: { award: Award }) {
     <div className="flex  flex-col items-center bg-gray-200">
       <p>{award.awardType}</p>
       <p>{award.awardValue ?? 0}</p>
+      {award.word && <p>{award.word.word}</p>}
       {award.image && (
         <Image
           key={award.id}
@@ -128,7 +132,13 @@ function AwardCard({ award }: { award: Award }) {
   );
 }
 
-function AwardImageChoice({ image }: { image: AwardImage }) {
+function AwardImageChoice({
+  image,
+  shouldClickToClaim,
+}: {
+  image: AwardImage;
+  shouldClickToClaim: boolean;
+}) {
   const utils = trpc.useContext();
 
   const addImageIdToAward = trpc.awardRouter.addImageIdToAward.useMutation();
@@ -165,7 +175,7 @@ function AwardImageChoice({ image }: { image: AwardImage }) {
         alt={"Award image"}
         width={256}
         height={256}
-        onClick={() => handleAddImageIdToAward(image.id)}
+        onClick={() => shouldClickToClaim && handleAddImageIdToAward(image.id)}
       />
       <ButtonLoading
         onClick={() => handleDeleteImage(image.id)}

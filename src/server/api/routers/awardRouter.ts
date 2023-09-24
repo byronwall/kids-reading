@@ -13,6 +13,7 @@ export const awardRouter = createTRPCRouter({
       },
       include: {
         image: true,
+        word: true,
       },
     });
   }),
