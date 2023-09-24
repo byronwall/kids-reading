@@ -7,14 +7,11 @@ import { type Award } from "lucide-react";
 import { trpc } from "~/app/_trpc/client";
 import { ButtonLoading } from "~/components/ButtonLoading";
 import { Textarea } from "~/components/ui/textarea";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
 import { type RouterOutputs } from "~/utils/api";
 
 type Award = RouterOutputs["awardRouter"]["getAllAwardsForProfile"][number];
+
+type AwardImage = RouterOutputs["awardRouter"]["getAllAwardImages"][number];
 
 export default function AwardsPage() {
   const { data: awards } = trpc.awardRouter.getAllAwardsForProfile.useQuery();
@@ -45,17 +42,6 @@ export default function AwardsPage() {
 
   const unclaimedAwards = awards?.filter((award) => !award.imageId);
 
-  const addImageIdToAward = trpc.awardRouter.addImageIdToAward.useMutation();
-
-  const handleAddImageIdToAward = async (awardId: string, imageId: string) => {
-    await addImageIdToAward.mutateAsync({
-      awardId,
-      imageId,
-    });
-
-    await utils.awardRouter.getAllAwardsForProfile.invalidate();
-  };
-
   const wordCountAwards = awards?.filter(
     (award) => award.awardType === "WORD_COUNT"
   );
@@ -72,41 +58,13 @@ export default function AwardsPage() {
 
       <div className="flex flex-wrap">
         {(unclaimedAwards ?? []).map((award) => (
-          <Popover key={award.id}>
-            <PopoverTrigger>
-              {" "}
-              <div
-                key={award.id}
-                className="flex h-64 w-64 flex-col items-center bg-gray-200 "
-              >
-                <p>{award.awardType}</p>
-                <p>{award.awardValue ?? 0}</p>
-              </div>
-            </PopoverTrigger>
-            <PopoverContent>
-              <div>
-                <p>Pick your award!</p>
-                <div className="flex max-w-full flex-wrap">
-                  {/* pick 5 random images */}
-                  {(allAwardImages ?? [])
-                    .sort(() => Math.random() - 0.5)
-                    .slice(0, 5)
-                    .map((image) => (
-                      <Image
-                        key={image.id}
-                        src={image.imageUrl}
-                        alt={"Award image"}
-                        width={256}
-                        height={256}
-                        onClick={() =>
-                          handleAddImageIdToAward(award.id, image.id)
-                        }
-                      />
-                    ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <div
+            key={award.id}
+            className="flex h-64 w-64 flex-col items-center bg-gray-200 "
+          >
+            <p>{award.awardType}</p>
+            <p>{award.awardValue ?? 0}</p>
+          </div>
         ))}
       </div>
 
@@ -137,15 +95,9 @@ export default function AwardsPage() {
 
       <h2>Award images</h2>
 
-      <div className="flex flex-wrap">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {(allAwardImages ?? []).map((image) => (
-          <Image
-            key={image.id}
-            src={image.imageUrl}
-            alt={"Award image"}
-            width={256}
-            height={256}
-          />
+          <AwardImageChoice key={image.id} image={image} />
         ))}
       </div>
 
@@ -177,6 +129,55 @@ function AwardCard({ award }: { award: Award }) {
           height={256}
         />
       )}
+    </div>
+  );
+}
+
+function AwardImageChoice({ image }: { image: AwardImage }) {
+  const utils = trpc.useContext();
+
+  const addImageIdToAward = trpc.awardRouter.addImageIdToAward.useMutation();
+
+  const handleAddImageIdToAward = async (imageId: string) => {
+    // confirm add
+    const shouldAdd = confirm(
+      "Are you sure you want to add this image to the award?"
+    );
+    if (!shouldAdd) {
+      return;
+    }
+
+    await addImageIdToAward.mutateAsync({
+      imageId,
+    });
+  };
+
+  const deleteImage = trpc.awardRouter.deleteImage.useMutation();
+
+  const handleDeleteImage = async (imageId: string) => {
+    await deleteImage.mutateAsync({
+      imageId,
+    });
+
+    await utils.awardRouter.getAllAwardImages.invalidate();
+  };
+
+  return (
+    <div>
+      <Image
+        key={image.id}
+        src={image.imageUrl}
+        alt={"Award image"}
+        width={256}
+        height={256}
+        onClick={() => handleAddImageIdToAward(image.id)}
+      />
+      <ButtonLoading
+        onClick={() => handleDeleteImage(image.id)}
+        isLoading={deleteImage.isLoading}
+      >
+        Delete
+      </ButtonLoading>
     </div>
   );
 }
