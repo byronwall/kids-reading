@@ -69,42 +69,34 @@ export default function AwardsPage() {
       <p>Current word count: {currentWordCount}</p>
       <p>Next award at: {nextWordAward}</p>
 
-      <div className="flex flex-wrap">
-        {wordCountAwards?.map((award) => (
-          <AwardCard key={award.id} award={award} />
-        ))}
-      </div>
+      <AwardList awards={wordCountAwards} />
 
       <h2>Sentence count awards</h2>
 
       <p>Current sentence count: {currentSentenceCount}</p>
       <p>Next award at: {nextSentenceAward}</p>
 
-      <div className="flex flex-wrap">
-        {sentenceCountAwards?.map((award) => (
-          <AwardCard key={award.id} award={award} />
-        ))}
-      </div>
+      <AwardList awards={sentenceCountAwards} />
 
       <h2>Word mastery awards</h2>
 
-      <div className="flex flex-wrap">
-        {wordMasteryAwards?.map((award) => (
-          <AwardCard key={award.id} award={award} />
-        ))}
-      </div>
+      <AwardList awards={wordMasteryAwards} />
 
-      <h2>Award images</h2>
+      {hasUnclaimedAwards && (
+        <>
+          <h2>Award images</h2>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        {(allAwardImages ?? []).map((image) => (
-          <AwardImageChoice
-            key={image.id}
-            image={image}
-            shouldClickToClaim={hasUnclaimedAwards}
-          />
-        ))}
-      </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {(allAwardImages ?? []).map((image) => (
+              <AwardImageChoice
+                key={image.id}
+                image={image}
+                shouldClickToClaim={hasUnclaimedAwards}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
       <Textarea
         value={imageUrls}
@@ -162,6 +154,8 @@ function AwardImageChoice({
     await addImageIdToAward.mutateAsync({
       imageId,
     });
+
+    await utils.awardRouter.getAllAwardsForProfile.invalidate();
   };
 
   const deleteImage = trpc.awardRouter.deleteImage.useMutation();
@@ -190,6 +184,16 @@ function AwardImageChoice({
       >
         Delete
       </ButtonLoading>
+    </div>
+  );
+}
+
+function AwardList({ awards = [] }: { awards?: Award[] }) {
+  return (
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      {awards.map((award) => (
+        <AwardCard key={award.id} award={award} />
+      ))}
     </div>
   );
 }
