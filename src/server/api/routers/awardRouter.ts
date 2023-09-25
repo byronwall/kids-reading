@@ -71,13 +71,32 @@ export const awardRouter = createTRPCRouter({
       });
     }),
 
-  getAllAwardImages: protectedProcedure.query(async () => {
+  getAllAwardImages: protectedProcedure.query(async ({ ctx }) => {
+    const profileId = ctx.session.user.activeProfile.id;
+
     const allAwardImages = await prisma.awardImages.findMany();
 
-    // shuffle those
-    allAwardImages.sort(() => Math.random() - 0.5);
+    const profileAwardImages = await prisma.profileAward.findMany({
+      where: {
+        profileId,
+      },
+      select: {
+        imageId: true,
+      },
+    });
 
-    return allAwardImages;
+    // filter out any images that are already assigned to the profile
+    const filteredAwardImages = allAwardImages.filter(
+      (awardImage) =>
+        !profileAwardImages.find(
+          (profileAwardImage) => profileAwardImage.imageId === awardImage.id
+        )
+    );
+
+    // shuffle those
+    filteredAwardImages.sort(() => Math.random() - 0.5);
+
+    return filteredAwardImages;
   }),
 
   addImageIdToAward: protectedProcedure
