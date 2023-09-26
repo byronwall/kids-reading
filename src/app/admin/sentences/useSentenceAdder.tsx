@@ -13,6 +13,7 @@ export function useSentenceAdder() {
 
     // invalidate the query so that it will refetch
     await utils.sentencesRouter.getAllSentences.invalidate();
+    await utils.planRouter.getSingleLearningPlan.invalidate();
   };
 
   return {

@@ -34,8 +34,6 @@ import type * as z from "zod";
 
 const FormSchema = GptSentenceSchema;
 
-type Props = {};
-
 const readingLevelExamples = {
   A: "I see a cat.",
   B: "The dog is running.",
@@ -65,12 +63,14 @@ const readingLevelExamples = {
   Z: "Existential questions often concern the nature of life, freedom, and choice.",
 };
 
+type Props = {
+  initialWordTargets?: string[];
+};
+
 export function SentenceCreatorForm(props: Props) {
-  const {} = props;
+  const { initialWordTargets } = props;
 
   const utils = trpc.useContext();
-
-  const createLesson = trpc.planRouter.createLesson.useMutation();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -84,6 +84,12 @@ export function SentenceCreatorForm(props: Props) {
       includeRhyming: false,
     },
   });
+
+  useEffect(() => {
+    if (initialWordTargets) {
+      form.setValue("__rawWordGroups", initialWordTargets.join("\n"));
+    }
+  }, [form.setValue, initialWordTargets]);
 
   const createNewSentencesMutation =
     trpc.sentencesRouter.getGptSentences.useMutation();

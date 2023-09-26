@@ -19,6 +19,8 @@ export function SentenceCreatorDialog() {
   const toggleModal = useSentenceCreatorStore((state) => state.toggleModal);
   const setModalOpen = useSentenceCreatorStore((state) => state.setModalOpen);
 
+  const targetWords = useSentenceCreatorStore((state) => state.targetWords);
+
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "j" && (e.metaKey || e.ctrlKey)) {
@@ -40,7 +42,7 @@ export function SentenceCreatorDialog() {
           <DialogHeader>
             <DialogTitle>Sentence Creator Helper</DialogTitle>
             <DialogDescription>
-              <SentenceCreatorForm />
+              <SentenceCreatorForm initialWordTargets={targetWords} />
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
