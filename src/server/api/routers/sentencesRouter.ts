@@ -5,7 +5,11 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { generateSentenceWithWords } from "~/server/openai/generations";
 
 import { getWordsForSentence } from "./getWordsForSentence";
-import { AddSentenceSchema, EditSentenceSchema } from "./inputSchemas";
+import {
+  AddSentenceSchema,
+  EditSentenceSchema,
+  GptSentenceSchema,
+} from "./inputSchemas";
 
 const prisma = new PrismaClient();
 
@@ -32,6 +36,12 @@ export const sentencesRouter = createTRPCRouter({
       const sentences = await generateSentenceWithWords(words);
 
       return sentences;
+    }),
+
+  getGptSentences: protectedProcedure
+    .input(GptSentenceSchema)
+    .query(async () => {
+      return ["testing one", "testing two"];
     }),
 
   generateAndAddNewSentencesForWords: protectedProcedure

@@ -9,6 +9,7 @@ import { getServerAuthSession } from "~/server/auth";
 import Provider from "./_trpc/Provider";
 import { NextAuthProvider } from "./authProvider";
 import { GlobalNotifications } from "./GlobalNotifications";
+import { SentenceCreatorDialog } from "./SentenceCreatorDialog";
 
 import { UserMenuOrLogin } from "../components/UserMenuOrLogin";
 
@@ -47,6 +48,7 @@ export default async function RootLayout({
                   {children}
                 </div>
               </main>
+              <SentenceCreatorDialog />
             </div>
           </Provider>
         </NextAuthProvider>
