@@ -5,6 +5,8 @@ import { Icons } from "~/components/icons";
 import { cn } from "~/utils";
 import { useLessonActions } from "~/hooks/useLessonActions";
 import { type DetailedLesson } from "~/types/models";
+import { useSentenceCreatorStore } from "~/app/_stores/sentenceCreatorStore";
+import { Button } from "~/components/ui/button";
 
 export function LessonDetail({
   lesson,
@@ -21,9 +23,15 @@ export function LessonDetail({
     handleLinkProfileToLesson,
     isLoadingLinkProfileToLesson,
     isLoadingToggleFocus,
-    handleCreateSentences,
-    isLoadingCreateSentences,
   } = useLessonActions(lesson.id);
+
+  const openWithTargetWords = useSentenceCreatorStore(
+    (s) => s.openWithTargetWords
+  );
+
+  const handleCreateSentences = (words: DetailedLesson["words"]) => {
+    openWithTargetWords(words.map((w) => w.word));
+  };
 
   const lessonTotalGood = lesson.words.reduce((acc, c) => acc + c.goodCount, 0);
   const lessonTotalBad = lesson.words.reduce((acc, c) => acc + c.badCount, 0);
@@ -66,7 +74,7 @@ export function LessonDetail({
             />
           </ButtonLoading>
         )}
-        <ButtonLoading
+        <Button
           variant={"outline"}
           onClick={() =>
             handleCreateSentences(
@@ -76,11 +84,10 @@ export function LessonDetail({
               )
             )
           }
-          isLoading={isLoadingCreateSentences}
           title="Create sentences for all words in this lesson"
         >
           <Icons.listPlus className="h-4 w-4" />
-        </ButtonLoading>
+        </Button>
       </div>
       <div className="flex flex-wrap gap-1">
         {lesson.words.map((word) => (
