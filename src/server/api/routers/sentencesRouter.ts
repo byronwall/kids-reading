@@ -2,7 +2,10 @@ import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { generateSentenceWithWords } from "~/server/openai/generations";
+import {
+  generateSentenceWithWords,
+  generateSentencesWithSettings,
+} from "~/server/openai/generations";
 
 import { getWordsForSentence } from "./getWordsForSentence";
 import {
@@ -40,8 +43,13 @@ export const sentencesRouter = createTRPCRouter({
 
   getGptSentences: protectedProcedure
     .input(GptSentenceSchema)
-    .query(async () => {
-      return ["testing one", "testing two"];
+    .mutation(async ({ input }) => {
+      console.log("input", input);
+      // TODO: connect real logic to GPT
+
+      const sentences = await generateSentencesWithSettings(input);
+
+      return sentences;
     }),
 
   generateAndAddNewSentencesForWords: protectedProcedure

@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ButtonLoading } from "~/components/ButtonLoading";
 import {
@@ -38,34 +38,46 @@ export function SentenceCreatorForm(props: Props) {
 
   const createLesson = trpc.planRouter.createLesson.useMutation();
 
-  const [gptSettings, setGptSettings] = useState<GptSettings>({
-    readingLevel: "I",
-    numberOfSentences: 10,
-    wordGroups: [
-      ["test", "best"],
-      ["red", "bed"],
-    ],
-    includeAlliteration: false,
-    includeProperNames: false,
-    includeRhyming: false,
-  });
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: gptSettings,
+    defaultValues: {
+      __rawWordGroups: "",
+      wordGroups: [],
+      readingLevel: "I",
+      numberOfSentences: 10,
+      includeAlliteration: false,
+      includeProperNames: false,
+      includeRhyming: false,
+    },
   });
 
-  const {
-    data: newSentences,
-    refetch,
-    isInitialLoading: isLoadingSentences,
-  } = trpc.sentencesRouter.getGptSentences.useQuery(gptSettings, {
-    enabled: false,
-  });
+  const createNewSentencesMutation =
+    trpc.sentencesRouter.getGptSentences.useMutation();
+
+  const __rawWordGroups = form.watch("__rawWordGroups");
+
+  useEffect(() => {
+    if (form.formState.touchedFields.__rawWordGroups) {
+      const wordGroups = (__rawWordGroups ?? "").split("\n").map((line) =>
+        line
+          .trim()
+          .split(/\s+/)
+          .map((word) => word.trim())
+      );
+
+      form.setValue("wordGroups", wordGroups);
+    }
+  }, [__rawWordGroups, form.formState, form.setValue]);
+
+  const [newSentences, setNewSentences] = useState<string[]>([]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    await refetch();
+    const sentences = await createNewSentencesMutation.mutateAsync(data);
+
+    setNewSentences(sentences);
   }
+
+  const isLoadingSentences = createNewSentencesMutation.isLoading;
 
   return (
     <div className="grid grid-cols-2">
@@ -170,7 +182,11 @@ export function SentenceCreatorForm(props: Props) {
       <div>
         <h2>Results</h2>
         <div>
-          {isLoadingSentences && <p>loading...</p>}
+          {isLoadingSentences && (
+            <p>
+              <Icons.spinner />{" "}
+            </p>
+          )}
           {!isLoadingSentences && newSentences?.length && (
             <div>
               <div>
