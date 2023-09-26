@@ -8,6 +8,7 @@ import { getServerAuthSession } from "~/server/auth";
 
 import Provider from "./_trpc/Provider";
 import { NextAuthProvider } from "./authProvider";
+import { GlobalNotifications } from "./GlobalNotifications";
 
 import { UserMenuOrLogin } from "../components/UserMenuOrLogin";
 
@@ -40,6 +41,7 @@ export default async function RootLayout({
                   <UserMenuOrLogin />
                 </div>
               </header>
+              <GlobalNotifications />
               <main className="flex-1">
                 <div className="container flex max-w-[96rem] flex-col items-center gap-4 text-center">
                   {children}

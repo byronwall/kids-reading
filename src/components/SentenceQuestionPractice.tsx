@@ -135,6 +135,9 @@ export function SentenceQuestionPractice() {
 
     // get the next sentence by invalidating query
     await utils.questionRouter.getPossibleSentences.invalidate();
+
+    // this is needed to update the award banner
+    await utils.awardRouter.getAllAwardsForProfile.invalidate();
   };
 
   if (isLoadingSentences) {
