@@ -1,16 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { trpc } from "~/app/_trpc/client";
 import { ButtonLoading } from "~/components/ButtonLoading";
 import { Textarea } from "~/components/ui/textarea";
 import { type RouterOutputs } from "~/utils/api";
 
-type Award = RouterOutputs["awardRouter"]["getAllAwardsForProfile"][number];
+import { AwardImageChoice } from "./AwardImageChoice";
+import { AwardList } from "./AwardList";
 
-type AwardImage = RouterOutputs["awardRouter"]["getAllAwardImages"][number];
+export type Award =
+  RouterOutputs["awardRouter"]["getAllAwardsForProfile"][number];
+
+export type AwardImage =
+  RouterOutputs["awardRouter"]["getAllAwardImages"][number];
 
 export default function AwardsPage() {
   const { data: awards } = trpc.awardRouter.getAllAwardsForProfile.useQuery();
@@ -61,139 +72,93 @@ export default function AwardsPage() {
     Math.ceil(((currentSentenceCount ?? 0) + 1) / 10) * 10;
 
   return (
-    <div>
+    <div className="flex flex-col items-center gap-4">
       <h1>Awards</h1>
+      <Card className="max-w-4xl">
+        <CardHeader>
+          <CardTitle>Word count awards</CardTitle>
+          <CardDescription>
+            Word count awards are given every 100 correct words.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Current word count: {currentWordCount}</p>
+          <p>Next award at: {nextWordAward}</p>
+          <AwardList awards={wordCountAwards} />
+        </CardContent>
+      </Card>
 
-      <h2>Word count awards</h2>
+      <Card className="max-w-4xl">
+        <CardHeader>
+          <CardTitle>Sentence count awards</CardTitle>
+          <CardDescription>
+            Awards are given every 10 sentences.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Current sentence count: {currentSentenceCount}</p>
+          <p>Next award at: {nextSentenceAward}</p>
+          <AwardList awards={sentenceCountAwards} />
+        </CardContent>
+      </Card>
 
-      <p>Current word count: {currentWordCount}</p>
-      <p>Next award at: {nextWordAward}</p>
-
-      <AwardList awards={wordCountAwards} />
-
-      <h2>Sentence count awards</h2>
-
-      <p>Current sentence count: {currentSentenceCount}</p>
-      <p>Next award at: {nextSentenceAward}</p>
-
-      <AwardList awards={sentenceCountAwards} />
-
-      <h2>Word mastery awards</h2>
-
-      <AwardList awards={wordMasteryAwards} />
+      <Card className="max-w-4xl">
+        <CardHeader>
+          <CardTitle>Word mastery awards</CardTitle>
+          <CardDescription>
+            Given when the interval on a word reaches the max: 60d.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AwardList awards={wordMasteryAwards} />
+        </CardContent>
+      </Card>
 
       {hasUnclaimedAwards && (
         <>
-          <h2>Award images</h2>
-
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {(allAwardImages ?? []).map((image) => (
-              <AwardImageChoice
-                key={image.id}
-                image={image}
-                shouldClickToClaim={hasUnclaimedAwards}
-              />
-            ))}
-          </div>
+          <Card className="max-w-4xl">
+            <CardHeader>
+              <CardTitle>Pick new awards</CardTitle>
+              <CardDescription>
+                Click an image to add to your awards.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {" "}
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                {(allAwardImages ?? []).map((image) => (
+                  <AwardImageChoice
+                    key={image.id}
+                    image={image}
+                    shouldClickToClaim={hasUnclaimedAwards}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </>
       )}
 
-      <Textarea
-        value={imageUrls}
-        onChange={(e) => setImageUrls(e.target.value)}
-      />
-      <ButtonLoading
-        onClick={handleAddAwardImages}
-        isLoading={addAwardImages.isLoading}
-      >
-        Add URLs
-      </ButtonLoading>
-    </div>
-  );
-}
-
-function AwardCard({ award }: { award: Award }) {
-  return (
-    <div className="flex  flex-col items-center bg-gray-200">
-      <p>{award.awardType}</p>
-      <p>{award.awardValue ?? 0}</p>
-      {award.word && <p>{award.word.word}</p>}
-      {award.image && (
-        <Image
-          key={award.id}
-          src={award.image.imageUrl}
-          alt={"Award image"}
-          width={256}
-          height={256}
-        />
-      )}
-    </div>
-  );
-}
-
-function AwardImageChoice({
-  image,
-  shouldClickToClaim,
-}: {
-  image: AwardImage;
-  shouldClickToClaim: boolean;
-}) {
-  const utils = trpc.useContext();
-
-  const addImageIdToAward = trpc.awardRouter.addImageIdToAward.useMutation();
-
-  const handleAddImageIdToAward = async (imageId: string) => {
-    // confirm add
-    const shouldAdd = confirm(
-      "Are you sure you want to add this image to the award?"
-    );
-    if (!shouldAdd) {
-      return;
-    }
-
-    await addImageIdToAward.mutateAsync({
-      imageId,
-    });
-
-    await utils.awardRouter.getAllAwardsForProfile.invalidate();
-  };
-
-  const deleteImage = trpc.awardRouter.deleteImage.useMutation();
-
-  const handleDeleteImage = async (imageId: string) => {
-    await deleteImage.mutateAsync({
-      imageId,
-    });
-
-    await utils.awardRouter.getAllAwardImages.invalidate();
-  };
-
-  return (
-    <div>
-      <Image
-        key={image.id}
-        src={image.imageUrl}
-        alt={"Award image"}
-        width={256}
-        height={256}
-        onClick={() => shouldClickToClaim && handleAddImageIdToAward(image.id)}
-      />
-      <ButtonLoading
-        onClick={() => handleDeleteImage(image.id)}
-        isLoading={deleteImage.isLoading}
-      >
-        Delete
-      </ButtonLoading>
-    </div>
-  );
-}
-
-function AwardList({ awards = [] }: { awards?: Award[] }) {
-  return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-      {awards.map((award) => (
-        <AwardCard key={award.id} award={award} />
-      ))}
+      <Card className="max-w-4xl">
+        <CardHeader>
+          <CardTitle>Add images to award choices</CardTitle>
+          <CardDescription>
+            Paste a set of image URLs here to add to DB
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            value={imageUrls}
+            onChange={(e) => setImageUrls(e.target.value)}
+          />
+          <ButtonLoading
+            onClick={handleAddAwardImages}
+            isLoading={addAwardImages.isLoading}
+          >
+            Add URLs
+          </ButtonLoading>
+        </CardContent>
+      </Card>
     </div>
   );
 }
