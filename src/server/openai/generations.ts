@@ -121,28 +121,32 @@ export async function generateSentencesWithSettings(
           ", "
         )}.`
       : `Create a sentence for each line using the words given:\n ${wordGroups
-          .map((wordGroup) => wordGroup.join(", "))
+          .map(
+            (wordGroup, idx) => `Sentence ${idx + 1}: ${wordGroup.join(", ")}`
+          )
           .join("\n")}`;
 
   const systemMessages = [
     "You are an assistant for a phonics learning program.",
     "Your task is to generate sentences for young kids to read aloud.",
     "The user will give you a list of words to use in the sentences.",
-    "If the user gives you words on separate lines, ensure that all words are used in the sentences.",
+    "If the user gives you words on separate lines, ensure that all words are used in the same sentences.",
     "Return each sentence on a new line.",
     "Do not add any extra punctuation around the sentence.",
     settings.includeProperNames
       ? "You may use proper names. Keep them simple."
       : "Avoid using proper names.  Instead use generic objects, articles, and pronouns.",
     settings.includeRhyming ? "Try to use rhyming words." : "",
-    settings.includeAlliteration ? "Try to use alliteration." : "",
-    `Aim for a reading level of ${settings.readingLevel} in the Fountas & Pinnell scale.`,
+    settings.includeAlliteration
+      ? "Try to use alliterations with the target words."
+      : "",
+    `Aim for a Fountas & Pinnell reading level of ${settings.readingLevel}.`,
   ];
 
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: systemMessages.join(" "),
+      content: systemMessages.join("\n"),
     },
     {
       role: "user",

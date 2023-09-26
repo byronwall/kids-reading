@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 
 import { AddSentenceForm } from "./AddSentenceForm";
 import { EditSentenceForm } from "./EditSentenceForm";
+import { useSentenceAdder } from "./useSentenceAdder";
 
 export default function AdminSentences() {
   const utils = trpc.useContext();
@@ -22,17 +23,7 @@ export default function AdminSentences() {
     enabled: false,
   });
 
-  const addSentencesMutation =
-    trpc.sentencesRouter.addSentencesAndWords.useMutation();
-
-  const handleAddSentences = async (sentences: string[]) => {
-    await addSentencesMutation.mutateAsync({
-      sentences,
-    });
-
-    // invalidate the query so that it will refetch
-    await utils.sentencesRouter.getAllSentences.invalidate();
-  };
+  const { handleAddSentences } = useSentenceAdder();
 
   const deleteSentenceMutation =
     trpc.sentencesRouter.deleteSentence.useMutation();

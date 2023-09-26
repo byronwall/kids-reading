@@ -51,5 +51,5 @@ export const GptSentenceSchema = z.object({
   includeProperNames: z.boolean(),
   includeRhyming: z.boolean(),
   includeAlliteration: z.boolean(),
-  numberOfSentences: z.number().optional(),
+  numberOfSentences: z.coerce.number().optional(),
 });
