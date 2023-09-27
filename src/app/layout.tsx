@@ -1,6 +1,7 @@
 import "~/styles/globals.css";
 
 import { type Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 
 import { MainNav } from "~/components/main-nav";
 import { marketingConfig } from "~/config/marketing";
@@ -52,6 +53,7 @@ export default async function RootLayout({
             </div>
           </Provider>
         </NextAuthProvider>
+        <Analytics />
       </body>
     </html>
   );
