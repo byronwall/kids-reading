@@ -15,10 +15,12 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import { Button } from "~/components/ui/button";
 
 import { getRelativeTime } from "./getRelativeTime";
 
 import { trpc } from "../_trpc/client";
+import { useSentenceCreatorStore } from "../_stores/sentenceCreatorStore";
 
 export default function StatsPage() {
   // create sections for the results history and summary table
@@ -29,6 +31,29 @@ export default function StatsPage() {
   const userResults = userData?.results ?? [];
 
   const userSummary = userData?.summaries ?? [];
+
+  const openWithTargetWords = useSentenceCreatorStore(
+    (state) => state.openWithTargetWords
+  );
+
+  const handleNewSentences = () => {
+    // get the 12 words that are most behind and create 4 sentences using 3 of them
+    const words = userSummary.slice(0, 10 * 3) ?? [];
+
+    const groupedWords = [];
+
+    for (let i = 0; i < words.length; i++) {
+      const addIdx = Math.floor(i / 3);
+
+      if (!groupedWords[addIdx]) {
+        groupedWords[addIdx] = "";
+      }
+
+      groupedWords[addIdx] += words[i]?.word?.word + " ";
+    }
+
+    openWithTargetWords(groupedWords);
+  };
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -81,6 +106,7 @@ export default function StatsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <Button onClick={handleNewSentences}>create sentences</Button>
           <Table>
             <TableHeader>
               <TableRow>

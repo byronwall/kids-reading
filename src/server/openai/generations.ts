@@ -133,6 +133,7 @@ export async function generateSentencesWithSettings(
     "If the user gives you words on separate lines, ensure that all words are used in the same sentences.",
     "Return each sentence on a new line.",
     "Do not add any extra punctuation around the sentence.",
+    "Do not include 'Sentence N:' at the beginning of the sentence.",
     settings.includeProperNames
       ? "You may use proper names. Keep them simple."
       : "Avoid using proper names.  Instead use generic objects, articles, and pronouns.",
@@ -157,7 +158,7 @@ export async function generateSentencesWithSettings(
 
   const chatCompletion = await openai.chat.completions.create({
     messages,
-    model: "gpt-3.5-turbo",
+    model: "gpt-4",
     presence_penalty: 0.4,
     temperature: 1,
   });
