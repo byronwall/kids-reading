@@ -71,33 +71,37 @@ export const awardRouter = createTRPCRouter({
       });
     }),
 
-  getAllAwardImages: protectedProcedure.query(async ({ ctx }) => {
-    const profileId = ctx.session.user.activeProfile.id;
+  getAllAwardImages: protectedProcedure
+    .input(
+      z.object({
+        shouldLimitToProfile: z.boolean().optional().default(true),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const profileId = ctx.session.user.activeProfile.id;
+      const shouldLimitToProfile = input.shouldLimitToProfile;
 
-    const allAwardImages = await prisma.awardImages.findMany();
+      const allAwardImages = await prisma.awardImages.findMany();
 
-    const profileAwardImages = await prisma.profileAward.findMany({
-      where: {
-        profileId,
-      },
-      select: {
-        imageId: true,
-      },
-    });
+      const profileAwardImages = await prisma.profileAward.findMany({
+        where: {
+          profileId: shouldLimitToProfile ? profileId : undefined,
+        },
+        select: {
+          imageId: true,
+        },
+      });
 
-    // filter out any images that are already assigned to the profile
-    const filteredAwardImages = allAwardImages.filter(
-      (awardImage) =>
-        !profileAwardImages.find(
-          (profileAwardImage) => profileAwardImage.imageId === awardImage.id
-        )
-    );
+      // filter out any images that are already assigned to the profile
+      const filteredAwardImages = allAwardImages.filter(
+        (awardImage) =>
+          !profileAwardImages.find(
+            (profileAwardImage) => profileAwardImage.imageId === awardImage.id
+          )
+      );
 
-    // shuffle those
-    filteredAwardImages.sort(() => Math.random() - 0.5);
-
-    return filteredAwardImages;
-  }),
+      return filteredAwardImages;
+    }),
 
   addImageIdToAward: protectedProcedure
     .input(

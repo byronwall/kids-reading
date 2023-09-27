@@ -36,11 +36,13 @@ import {
   Baseline,
   ArrowLeft,
   Star,
+  Trophy,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  trophy: Trophy,
   star: Star,
   circle: Circle,
   arrowLeft: ArrowLeft,

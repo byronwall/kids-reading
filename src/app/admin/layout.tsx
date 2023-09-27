@@ -17,6 +17,7 @@ const links: DashLink[] = [
   { href: "/admin", label: "Home", icon: "check" },
   { href: "/admin/sentences", label: "Sentences", icon: "logo" },
   { href: "/admin/words", label: "Words", icon: "pencil" },
+  { href: "/admin/awards", label: "Awards", icon: "trophy" },
 ];
 
 export default function RootLayout({

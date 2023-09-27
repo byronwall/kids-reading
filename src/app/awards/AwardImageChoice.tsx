@@ -10,9 +10,11 @@ import { type AwardImage } from "./page";
 export function AwardImageChoice({
   image,
   shouldClickToClaim,
+  shouldShowDelete = false,
 }: {
   image: AwardImage;
   shouldClickToClaim: boolean;
+  shouldShowDelete?: boolean;
 }) {
   const utils = trpc.useContext();
 
@@ -54,12 +56,14 @@ export function AwardImageChoice({
         height={256}
         onClick={() => shouldClickToClaim && handleAddImageIdToAward(image.id)}
       />
-      <ButtonLoading
-        onClick={() => handleDeleteImage(image.id)}
-        isLoading={deleteImage.isLoading}
-      >
-        Delete
-      </ButtonLoading>
+      {shouldShowDelete && (
+        <ButtonLoading
+          onClick={() => handleDeleteImage(image.id)}
+          isLoading={deleteImage.isLoading}
+        >
+          Delete
+        </ButtonLoading>
+      )}
     </div>
   );
 }
