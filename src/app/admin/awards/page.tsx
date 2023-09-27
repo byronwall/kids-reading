@@ -75,6 +75,7 @@ export default function AdminAwards() {
                 key={image.id}
                 image={image}
                 shouldClickToClaim={false}
+                shouldShowDelete={true}
               />
             ))}
           </div>
