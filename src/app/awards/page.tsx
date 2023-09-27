@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import {
   Card,
   CardContent,
@@ -10,8 +8,6 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { trpc } from "~/app/_trpc/client";
-import { ButtonLoading } from "~/components/ButtonLoading";
-import { Textarea } from "~/components/ui/textarea";
 import { type RouterOutputs } from "~/utils/api";
 
 import { AwardImageChoice } from "./AwardImageChoice";
@@ -32,23 +28,9 @@ export default function AwardsPage() {
   const { data: currentSentenceCount } =
     trpc.awardRouter.getProfileSentenceCount.useQuery();
 
-  const { data: allAwardImages } =
-    trpc.awardRouter.getAllAwardImages.useQuery();
-
-  const [imageUrls, setImageUrls] = useState<string>("");
-
-  const addAwardImages = trpc.awardRouter.addImageUrlsToDb.useMutation();
-
-  const utils = trpc.useContext();
-  const handleAddAwardImages = async () => {
-    const urls = imageUrls.split("\n").filter((url) => url.length > 0);
-
-    await addAwardImages.mutateAsync({
-      imageUrls: urls,
-    });
-
-    await utils.awardRouter.getAllAwardImages.invalidate();
-  };
+  const { data: allAwardImages } = trpc.awardRouter.getAllAwardImages.useQuery({
+    shouldLimitToProfile: true,
+  });
 
   const wordCountAwards = awards?.filter(
     (award) => award.awardType === "WORD_COUNT"
@@ -115,50 +97,26 @@ export default function AwardsPage() {
       </Card>
 
       {hasUnclaimedAwards && (
-        <>
-          <Card className="max-w-4xl">
-            <CardHeader>
-              <CardTitle>Pick new awards</CardTitle>
-              <CardDescription>
-                Click an image to add to your awards.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {" "}
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                {(allAwardImages ?? []).map((image) => (
-                  <AwardImageChoice
-                    key={image.id}
-                    image={image}
-                    shouldClickToClaim={hasUnclaimedAwards}
-                  />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </>
+        <Card className="max-w-4xl">
+          <CardHeader>
+            <CardTitle>Pick new awards</CardTitle>
+            <CardDescription>
+              Click an image to add to your awards.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {(allAwardImages ?? []).map((image) => (
+                <AwardImageChoice
+                  key={image.id}
+                  image={image}
+                  shouldClickToClaim={hasUnclaimedAwards}
+                />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
-
-      <Card className="max-w-4xl">
-        <CardHeader>
-          <CardTitle>Add images to award choices</CardTitle>
-          <CardDescription>
-            Paste a set of image URLs here to add to DB
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            value={imageUrls}
-            onChange={(e) => setImageUrls(e.target.value)}
-          />
-          <ButtonLoading
-            onClick={handleAddAwardImages}
-            isLoading={addAwardImages.isLoading}
-          >
-            Add URLs
-          </ButtonLoading>
-        </CardContent>
-      </Card>
     </div>
   );
 }
