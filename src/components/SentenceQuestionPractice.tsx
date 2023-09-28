@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocalStorage } from "usehooks-ts";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 import { trpc } from "~/app/_trpc/client";
 import { type RouterOutputs } from "~/utils/api";
@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { SsrContext } from "~/app/SsrContext";
 
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
@@ -32,8 +33,12 @@ export type WordToRender = {
 export function SentenceQuestionPractice() {
   const utils = trpc.useContext();
 
+  const { getPossibleSentences } = useContext(SsrContext);
+
   const { data: sentencesToUse, isLoading: isLoadingSentences } =
-    trpc.questionRouter.getPossibleSentences.useQuery();
+    trpc.questionRouter.getPossibleSentences.useQuery(undefined, {
+      initialData: getPossibleSentences,
+    });
 
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
 

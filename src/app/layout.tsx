@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 
 import { type Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import { MainNav } from "~/components/main-nav";
 import { marketingConfig } from "~/config/marketing";
@@ -51,6 +52,7 @@ export default async function RootLayout({
               </main>
               <SentenceCreatorDialog />
             </div>
+            <ReactQueryDevtools initialIsOpen={false} />
           </Provider>
         </NextAuthProvider>
         <Analytics />
