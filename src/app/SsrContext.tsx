@@ -7,6 +7,7 @@ import { type RouterOutputs } from "~/utils/api";
 export type SsrContextData = Partial<{
   getPossibleSentences: RouterOutputs["questionRouter"]["getPossibleSentences"];
   getSingleLearningPlan: RouterOutputs["planRouter"]["getSingleLearningPlan"];
+  getUserStats: RouterOutputs["questionRouter"]["getUserStats"];
 }>;
 
 export const SsrContext = createContext<SsrContextData>({});
