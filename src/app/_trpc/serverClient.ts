@@ -2,9 +2,12 @@ import { httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
 
 import { appRouter } from "~/server/api/root";
+import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
 
-export function getTrpcServer(session: any) {
+export async function getTrpcServer(_session?: any) {
+  const session = _session ?? (await getServerAuthSession());
+
   const options = {
     links: [
       httpBatchLink({

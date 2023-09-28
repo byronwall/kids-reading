@@ -6,11 +6,10 @@ import { type RouterOutputs } from "~/utils/api";
 
 export type SsrContextData = Partial<{
   getPossibleSentences: RouterOutputs["questionRouter"]["getPossibleSentences"];
+  getSingleLearningPlan: RouterOutputs["planRouter"]["getSingleLearningPlan"];
 }>;
 
-export const SsrContext = createContext<SsrContextData>({
-  getPossibleSentences: undefined,
-});
+export const SsrContext = createContext<SsrContextData>({});
 
 export function SsrContextProvider({
   children,

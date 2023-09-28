@@ -7,7 +7,8 @@ import { SsrContextProvider } from "./SsrContext";
 export default async function Home() {
   const session = await getServerAuthSession();
 
-  const trpcServer = getTrpcServer(session);
+  const trpcServer = await getTrpcServer();
+  
   const getPossibleSentences =
     await trpcServer.questionRouter.getPossibleSentences();
 
