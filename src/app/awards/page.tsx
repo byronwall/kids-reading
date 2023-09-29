@@ -9,6 +9,7 @@ import {
 } from "~/components/ui/card";
 import { trpc } from "~/app/_trpc/client";
 import { type RouterOutputs } from "~/utils/api";
+import { useQuerySsr } from "~/hooks/useQuerySsr";
 
 import { AwardImageChoice } from "./AwardImageChoice";
 import { AwardList } from "./AwardList";
@@ -20,17 +21,20 @@ export type AwardImage =
   RouterOutputs["awardRouter"]["getAllAwardImages"][number];
 
 export default function AwardsPage() {
-  const { data: awards } = trpc.awardRouter.getAllAwardsForProfile.useQuery();
+  const { data: awards } = useQuerySsr(trpc.awardRouter.getAllAwardsForProfile);
+
+  const { data: allAwardImages } = useQuerySsr(
+    trpc.awardRouter.getAllAwardImages,
+    {
+      shouldLimitToProfile: true,
+    }
+  );
 
   const { data: currentWordCount } =
     trpc.awardRouter.getProfileWordCount.useQuery();
 
   const { data: currentSentenceCount } =
     trpc.awardRouter.getProfileSentenceCount.useQuery();
-
-  const { data: allAwardImages } = trpc.awardRouter.getAllAwardImages.useQuery({
-    shouldLimitToProfile: true,
-  });
 
   const wordCountAwards = awards?.filter(
     (award) => award.awardType === "WORD_COUNT"

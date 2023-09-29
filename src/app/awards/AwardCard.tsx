@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 
 import { cn } from "~/utils";
@@ -16,7 +14,7 @@ export function AwardCard({ award }: { award: Award }) {
   );
 
   const masteryAward = (
-    <p className="text-2xl">{award.word && <p>{award.word?.word}</p>}</p>
+    <p className="text-2xl">{award.word && <span>{award.word?.word}</span>}</p>
   );
 
   return (
