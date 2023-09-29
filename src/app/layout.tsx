@@ -7,13 +7,14 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { MainNav } from "~/components/main-nav";
 import { marketingConfig } from "~/config/marketing";
 import { getServerAuthSession } from "~/server/auth";
+import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
+import { appRouter } from "~/server/api/root";
 
 import Provider from "./_trpc/Provider";
 import { NextAuthProvider } from "./authProvider";
 import { GlobalNotifications } from "./GlobalNotifications";
 import { SentenceCreatorDialog } from "./SentenceCreatorDialog";
 import { SsrContextProvider } from "./SsrContext";
-import { getTrpcServer } from "./_trpc/serverClient";
 
 import { UserMenuOrLogin } from "../components/UserMenuOrLogin";
 
@@ -34,21 +35,16 @@ export default async function RootLayout({
 }) {
   const session = await getServerAuthSession();
 
-  const trpcServer = await getTrpcServer();
-  const awards = await trpcServer.awardRouter.getAllAwardsForProfile();
+  const initialData = await callQuerySsrServer(
+    appRouter.awardRouter.getAllAwardsForProfile
+  );
 
   return (
     <html>
       <body>
         <NextAuthProvider session={session}>
           <Provider>
-            <SsrContextProvider
-              initialData={{
-                awardRouter: {
-                  getAllAwardsForProfile: awards,
-                },
-              }}
-            >
+            <SsrContextProvider initialData={initialData}>
               <div className="flex min-h-screen flex-col pb-20">
                 <header className="bg-background container z-40">
                   <div className="flex h-20 items-center justify-between py-6">

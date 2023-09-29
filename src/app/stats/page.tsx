@@ -1,23 +1,19 @@
+import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
+import { appRouter } from "~/server/api/root";
+
 import { StatsDetail } from "./StatsDetail";
 
-import { getTrpcServer } from "../_trpc/serverClient";
 import { SsrContextProvider } from "../SsrContext";
 
 export default async function StatsPage() {
   // create sections for the results history and summary table
 
-  // get the user stats
-  const trpcServer = await getTrpcServer();
-  const getUserStats = await trpcServer.questionRouter.getUserStats();
+  const initialData = await callQuerySsrServer(
+    appRouter.questionRouter.getUserStats
+  );
 
   return (
-    <SsrContextProvider
-      initialData={{
-        questionRouter: {
-          getUserStats,
-        },
-      }}
-    >
+    <SsrContextProvider initialData={initialData}>
       <StatsDetail />
     </SsrContextProvider>
   );

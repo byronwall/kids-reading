@@ -1,6 +1,7 @@
 import { deslugify } from "~/utils";
 import { SsrContextProvider } from "~/app/SsrContext";
-import { getTrpcServer } from "~/app/_trpc/serverClient";
+import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
+import { appRouter } from "~/server/api/root";
 
 import { LearningPlanSingle } from "./LessonPlanSingle";
 
@@ -15,20 +16,15 @@ export default async function Page({ params }: PageProps) {
 
   const planName = deslugify(planNameSlugged);
 
-  const trpcServer = await getTrpcServer();
-  const getSingleLearningPlan =
-    await trpcServer.planRouter.getSingleLearningPlan({
+  const initialData = await callQuerySsrServer(
+    appRouter.planRouter.getSingleLearningPlan,
+    {
       learningPlanName: planName,
-    });
+    }
+  );
 
   return (
-    <SsrContextProvider
-      initialData={{
-        planRouter: {
-          getSingleLearningPlan,
-        },
-      }}
-    >
+    <SsrContextProvider initialData={initialData}>
       <LearningPlanSingle planName={planName} />
     </SsrContextProvider>
   );
