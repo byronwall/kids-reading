@@ -26,15 +26,23 @@ export function useQuerySsr<
   // need to return the useQuery
 
   // need to get the initialData from context using the correct key name
-  const { initialData } = useContext(SsrContext);
+  const initialData = useContext(SsrContext);
 
   // @ts-expect-error - we don't expose _def on the type layer
   const keys = proc._def().path as string[]; // will be ['awardRouter', 'getActiveProfile']
 
   // traverse the keys into the context object, assume arbitrary depth
   const initialDataForProc = keys.reduce((acc, key) => {
-    // @ts-expect-error - unhappy about index
-    return acc[key] as any;
+    const possibleData = (acc as any)[key];
+    if (possibleData === undefined) {
+      // throw error if dev
+      if (process.env.NODE_ENV === "development") {
+        console.error(`Could not find initialData for ${keys.join(".")}`);
+      }
+      return undefined;
+    }
+
+    return possibleData;
   }, initialData) as inferProcedureOutput<QueryProcedure>;
 
   //   console.log("useQuery", { keys, initialData, initialDataForProc });

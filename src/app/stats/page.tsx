@@ -13,10 +13,8 @@ export default async function StatsPage() {
   return (
     <SsrContextProvider
       initialData={{
-        initialData: {
-          questionRouter: {
-            getUserStats,
-          },
+        questionRouter: {
+          getUserStats,
         },
       }}
     >

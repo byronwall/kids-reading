@@ -12,6 +12,8 @@ import Provider from "./_trpc/Provider";
 import { NextAuthProvider } from "./authProvider";
 import { GlobalNotifications } from "./GlobalNotifications";
 import { SentenceCreatorDialog } from "./SentenceCreatorDialog";
+import { SsrContextProvider } from "./SsrContext";
+import { getTrpcServer } from "./_trpc/serverClient";
 
 import { UserMenuOrLogin } from "../components/UserMenuOrLogin";
 
@@ -32,27 +34,38 @@ export default async function RootLayout({
 }) {
   const session = await getServerAuthSession();
 
+  const trpcServer = await getTrpcServer();
+  const awards = await trpcServer.awardRouter.getAllAwardsForProfile();
+
   return (
     <html>
       <body>
         <NextAuthProvider session={session}>
           <Provider>
-            <div className="flex min-h-screen flex-col pb-20">
-              <header className="bg-background container z-40">
-                <div className="flex h-20 items-center justify-between py-6">
-                  <MainNav items={marketingConfig.mainNav} />
-                  <UserMenuOrLogin />
-                </div>
-              </header>
-              <GlobalNotifications />
-              <main className="flex-1">
-                <div className="container flex max-w-[96rem] flex-col items-center gap-4 text-center">
-                  {children}
-                </div>
-              </main>
-              <SentenceCreatorDialog />
-            </div>
-            <ReactQueryDevtools initialIsOpen={false} />
+            <SsrContextProvider
+              initialData={{
+                awardRouter: {
+                  getAllAwardsForProfile: awards,
+                },
+              }}
+            >
+              <div className="flex min-h-screen flex-col pb-20">
+                <header className="bg-background container z-40">
+                  <div className="flex h-20 items-center justify-between py-6">
+                    <MainNav items={marketingConfig.mainNav} />
+                    <UserMenuOrLogin />
+                  </div>
+                </header>
+                <GlobalNotifications />
+                <main className="flex-1">
+                  <div className="container flex max-w-[96rem] flex-col items-center gap-4 text-center">
+                    {children}
+                  </div>
+                </main>
+                <SentenceCreatorDialog />
+              </div>
+              <ReactQueryDevtools initialIsOpen={false} />
+            </SsrContextProvider>
           </Provider>
         </NextAuthProvider>
         <Analytics />

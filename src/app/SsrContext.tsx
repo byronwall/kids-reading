@@ -16,14 +16,9 @@ export type SsrQueryShape<TRouter extends AnyRouter> = {
     : undefined;
 };
 
-// this will become a trpc proc to its output type
-type SsrDataStructure = {
-  initialData: Partial<SsrQueryShape<typeof appRouter>>;
-};
+type SsrDataStructure = Partial<SsrQueryShape<typeof appRouter>>;
 
-export const SsrContext = createContext<SsrDataStructure>({
-  initialData: {},
-});
+export const SsrContext = createContext<SsrDataStructure>({});
 
 export function SsrContextProvider({
   children,

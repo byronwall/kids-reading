@@ -23,10 +23,8 @@ export default async function Home() {
   return (
     <SsrContextProvider
       initialData={{
-        initialData: {
-          questionRouter: {
-            getPossibleSentences,
-          },
+        questionRouter: {
+          getPossibleSentences,
         },
       }}
     >
