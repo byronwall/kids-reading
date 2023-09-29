@@ -2,9 +2,11 @@
 
 import { type AnyProcedure, type AnyRouter } from "@trpc/server";
 import { type inferTransformedProcedureOutput } from "@trpc/server/shared";
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 
 import { type appRouter } from "~/server/api/root";
+
+import { deepMerge } from "./deepMerge";
 
 export type SsrQueryShape<TRouter extends AnyRouter> = {
   [TKey in keyof TRouter["_def"]["record"]]: TRouter["_def"]["record"][TKey] extends infer TRouterOrProcedure
@@ -27,7 +29,15 @@ export function SsrContextProvider({
   children: React.ReactNode;
   initialData: SsrDataStructure;
 }) {
+  const parentData = useContext(SsrContext);
+
+  // merge the data from the parent context with the data from the server
+  // this allows us to nest contexts and have them all be available on the client
+  const providerValue = deepMerge(parentData, initialData);
+
+  // console.log("SsrContextProvider", { providerValue, initialData, parentData });
+
   return (
-    <SsrContext.Provider value={initialData}>{children}</SsrContext.Provider>
+    <SsrContext.Provider value={providerValue}>{children}</SsrContext.Provider>
   );
 }

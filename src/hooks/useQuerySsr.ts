@@ -23,13 +23,13 @@ export function useQuerySsr<
   inferProcedureOutput<QueryProcedure>,
   TRPCClientErrorLike<QueryProcedure>
 > {
-  // need to return the useQuery
-
   // need to get the initialData from context using the correct key name
   const initialData = useContext(SsrContext);
 
   // @ts-expect-error - we don't expose _def on the type layer
   const keys = proc._def().path as string[]; // will be ['awardRouter', 'getActiveProfile']
+
+  // TODO: need to link the initial data to the the params also
 
   // traverse the keys into the context object, assume arbitrary depth
   const initialDataForProc = keys.reduce((acc, key) => {
