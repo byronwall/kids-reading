@@ -37,7 +37,7 @@ export function useQuerySsr<
     if (possibleData === undefined) {
       // throw error if dev
       if (process.env.NODE_ENV === "development") {
-        console.error(`Could not find initialData for ${keys.join(".")}`);
+        throw new Error(`Could not find initialData for ${keys.join(".")}`);
       }
       return undefined;
     }
