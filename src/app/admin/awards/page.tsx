@@ -19,7 +19,7 @@ export default function AdminAwardPage() {
   return <AdminAwards />;
 }
 
-export function AdminAwards() {
+function AdminAwards() {
   const { data: allAwardImages } = useQuerySsr(
     trpc.awardRouter.getAllAwardImages,
     {
