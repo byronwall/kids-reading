@@ -22,7 +22,15 @@ export default async function Page({ params }: PageProps) {
     });
 
   return (
-    <SsrContextProvider initialData={{ getSingleLearningPlan }}>
+    <SsrContextProvider
+      initialData={{
+        initialData: {
+          planRouter: {
+            getSingleLearningPlan,
+          },
+        },
+      }}
+    >
       <LearningPlanSingle planName={planName} />
     </SsrContextProvider>
   );

@@ -11,7 +11,15 @@ export default async function StatsPage() {
   const getUserStats = await trpcServer.questionRouter.getUserStats();
 
   return (
-    <SsrContextProvider initialData={{ getUserStats }}>
+    <SsrContextProvider
+      initialData={{
+        initialData: {
+          questionRouter: {
+            getUserStats,
+          },
+        },
+      }}
+    >
       <StatsDetail />
     </SsrContextProvider>
   );

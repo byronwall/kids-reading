@@ -1,5 +1,4 @@
 "use client";
-import { useContext } from "react";
 
 import {
   Card,
@@ -17,19 +16,17 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { Button } from "~/components/ui/button";
+import { useQuerySsr } from "~/hooks/useQuerySsr";
 
 import { getRelativeTime } from "./getRelativeTime";
 
 import { trpc } from "../_trpc/client";
 import { useSentenceCreatorStore } from "../_stores/sentenceCreatorStore";
-import { SsrContext } from "../SsrContext";
 
 export function StatsDetail() {
-  const { getUserStats } = useContext(SsrContext);
-  const { data: userData, isLoading } =
-    trpc.questionRouter.getUserStats.useQuery(undefined, {
-      initialData: getUserStats,
-    });
+  const { data: userData, isLoading } = useQuerySsr(
+    trpc.questionRouter.getUserStats
+  );
 
   const userResults = userData?.results ?? [];
 

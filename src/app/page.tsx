@@ -8,7 +8,7 @@ export default async function Home() {
   const session = await getServerAuthSession();
 
   const trpcServer = await getTrpcServer();
-  
+
   const getPossibleSentences =
     await trpcServer.questionRouter.getPossibleSentences();
 
@@ -21,7 +21,15 @@ export default async function Home() {
   }
 
   return (
-    <SsrContextProvider initialData={{ getPossibleSentences }}>
+    <SsrContextProvider
+      initialData={{
+        initialData: {
+          questionRouter: {
+            getPossibleSentences,
+          },
+        },
+      }}
+    >
       <section className="flex flex-col items-center gap-4">
         <QuestionPractice />
       </section>
