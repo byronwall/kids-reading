@@ -1,5 +1,4 @@
 "use client";
-import { useContext } from "react";
 
 import { trpc } from "~/app/_trpc/client";
 import {
@@ -9,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { SsrContext } from "~/app/SsrContext";
+import { useQuerySsr } from "~/hooks/useQuerySsr";
 
 import { LessonDetail } from "./LessonDetail";
 import { findWordsNotInSentences } from "./findWordsNotInSentences";
@@ -18,14 +17,10 @@ import { LessonBulkImportWordsForm } from "../LessonBulkImportForm";
 import { LessonInputForm } from "../LessonInputForm";
 
 export function LearningPlanSingle({ planName }: { planName: string }) {
-  const { getSingleLearningPlan } = useContext(SsrContext);
-
-  const { data: learningPlan } = trpc.planRouter.getSingleLearningPlan.useQuery(
+  const { data: learningPlan } = useQuerySsr(
+    trpc.planRouter.getSingleLearningPlan,
     {
       learningPlanName: planName,
-    },
-    {
-      initialData: getSingleLearningPlan,
     }
   );
 

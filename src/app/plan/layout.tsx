@@ -1,20 +1,20 @@
 import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
 import { appRouter } from "~/server/api/root";
 
-import { StatsDetail } from "./StatsDetail";
-
 import { SsrContextProvider } from "../SsrContext";
 
-export default async function StatsPage() {
-  // create sections for the results history and summary table
-
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const initialData = await callQuerySsrServer(
-    appRouter.questionRouter.getUserStats
+    appRouter.planRouter.getAllLearningPlans
   );
 
   return (
     <SsrContextProvider initialData={initialData}>
-      <StatsDetail />
+      {children}
     </SsrContextProvider>
   );
 }

@@ -1,25 +1,43 @@
 "use client";
 
-import { createContext } from "react";
+import { type AnyProcedure, type AnyRouter } from "@trpc/server";
+import { type inferTransformedProcedureOutput } from "@trpc/server/shared";
+import { createContext, useContext } from "react";
 
-import { type RouterOutputs } from "~/utils/api";
+import { type appRouter } from "~/server/api/root";
 
-export type SsrContextData = Partial<{
-  getPossibleSentences: RouterOutputs["questionRouter"]["getPossibleSentences"];
-  getSingleLearningPlan: RouterOutputs["planRouter"]["getSingleLearningPlan"];
-  getUserStats: RouterOutputs["questionRouter"]["getUserStats"];
-}>;
+import { deepMerge } from "./deepMerge";
 
-export const SsrContext = createContext<SsrContextData>({});
+export type SsrQueryShape<TRouter extends AnyRouter> = {
+  [TKey in keyof TRouter["_def"]["record"]]: TRouter["_def"]["record"][TKey] extends infer TRouterOrProcedure
+    ? TRouterOrProcedure extends AnyRouter
+      ? Partial<SsrQueryShape<TRouterOrProcedure>>
+      : TRouterOrProcedure extends AnyProcedure
+      ? Partial<inferTransformedProcedureOutput<TRouterOrProcedure>>
+      : never
+    : undefined;
+};
+
+type SsrDataStructure = Partial<SsrQueryShape<typeof appRouter>>;
+
+export const SsrContext = createContext<SsrDataStructure>({});
 
 export function SsrContextProvider({
   children,
   initialData,
 }: {
   children: React.ReactNode;
-  initialData: SsrContextData;
+  initialData: SsrDataStructure;
 }) {
+  const parentData = useContext(SsrContext);
+
+  // merge the data from the parent context with the data from the server
+  // this allows us to nest contexts and have them all be available on the client
+  const providerValue = deepMerge(parentData, initialData);
+
+  // console.log("SsrContextProvider", { providerValue, initialData, parentData });
+
   return (
-    <SsrContext.Provider value={initialData}>{children}</SsrContext.Provider>
+    <SsrContext.Provider value={providerValue}>{children}</SsrContext.Provider>
   );
 }

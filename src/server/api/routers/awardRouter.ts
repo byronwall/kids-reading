@@ -100,6 +100,9 @@ export const awardRouter = createTRPCRouter({
           )
       );
 
+      // flip so new ones are first
+      filteredAwardImages.reverse();
+
       return filteredAwardImages;
     }),
 

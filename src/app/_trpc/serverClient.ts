@@ -18,5 +18,6 @@ export async function getTrpcServer(_session?: any) {
     prisma: prisma,
     session: session,
   } as any;
+
   return appRouter.createCaller(options);
 }

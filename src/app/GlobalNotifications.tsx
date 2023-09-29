@@ -3,9 +3,10 @@
 import Link from "next/link";
 
 import { trpc } from "~/app/_trpc/client";
+import { useQuerySsr } from "~/hooks/useQuerySsr";
 
 export function GlobalNotifications() {
-  const { data: awards } = trpc.awardRouter.getAllAwardsForProfile.useQuery();
+  const { data: awards } = useQuerySsr(trpc.awardRouter.getAllAwardsForProfile);
 
   const hasUnclaimedAwards = awards?.some((award) => !award.imageId) ?? false;
 

@@ -1,16 +1,16 @@
 import { getServerAuthSession } from "~/server/auth";
 import { QuestionPractice } from "~/components/QuestionPractice";
+import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
+import { appRouter } from "~/server/api/root";
 
-import { getTrpcServer } from "./_trpc/serverClient";
 import { SsrContextProvider } from "./SsrContext";
 
 export default async function Home() {
   const session = await getServerAuthSession();
 
-  const trpcServer = await getTrpcServer();
-  
-  const getPossibleSentences =
-    await trpcServer.questionRouter.getPossibleSentences();
+  const initialData = await callQuerySsrServer(
+    appRouter.questionRouter.getPossibleSentences
+  );
 
   if (!session) {
     return (
@@ -21,7 +21,7 @@ export default async function Home() {
   }
 
   return (
-    <SsrContextProvider initialData={{ getPossibleSentences }}>
+    <SsrContextProvider initialData={initialData}>
       <section className="flex flex-col items-center gap-4">
         <QuestionPractice />
       </section>

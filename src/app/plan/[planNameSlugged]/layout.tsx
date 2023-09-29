@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { trpc } from "~/app/_trpc/client";
 import { Icons } from "~/components/icons";
+import { useQuerySsr } from "~/hooks/useQuerySsr";
 import { cn, slugify } from "~/utils";
 
 type DashLink = {
@@ -22,8 +23,9 @@ export default function RootLayout({
   const path = usePathname();
 
   // get all learning plans to build side bar
-  const { data: learningPlans } =
-    trpc.planRouter.getAllLearningPlans.useQuery();
+  const { data: learningPlans } = useQuerySsr(
+    trpc.planRouter.getAllLearningPlans
+  );
 
   const links: DashLink[] =
     learningPlans?.map((learningPlan) => ({

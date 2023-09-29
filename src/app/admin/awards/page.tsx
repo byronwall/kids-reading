@@ -13,11 +13,19 @@ import {
 } from "~/components/ui/card";
 import { ButtonLoading } from "~/components/ButtonLoading";
 import { Textarea } from "~/components/ui/textarea";
+import { useQuerySsr } from "~/hooks/useQuerySsr";
 
-export default function AdminAwards() {
-  const { data: allAwardImages } = trpc.awardRouter.getAllAwardImages.useQuery({
-    shouldLimitToProfile: false,
-  });
+export default function AdminAwardPage() {
+  return <AdminAwards />;
+}
+
+function AdminAwards() {
+  const { data: allAwardImages } = useQuerySsr(
+    trpc.awardRouter.getAllAwardImages,
+    {
+      shouldLimitToProfile: false,
+    }
+  );
 
   const utils = trpc.useContext();
 
