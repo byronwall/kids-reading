@@ -9,8 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
+import { useSentenceCreatorStore } from "~/stores/sentenceCreatorStore";
 
-import { useSentenceCreatorStore } from "./_stores/sentenceCreatorStore";
 import { SentenceCreatorForm } from "./SentenceCreatorForm";
 
 export function SentenceCreatorDialog() {

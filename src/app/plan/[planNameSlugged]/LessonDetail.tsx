@@ -5,7 +5,7 @@ import { Icons } from "~/components/icons";
 import { cn } from "~/utils";
 import { useLessonActions } from "~/hooks/useLessonActions";
 import { type DetailedLesson } from "~/types/models";
-import { useSentenceCreatorStore } from "~/app/_stores/sentenceCreatorStore";
+import { useSentenceCreatorStore } from "~/stores/sentenceCreatorStore";
 import { Button } from "~/components/ui/button";
 
 export function LessonDetail({

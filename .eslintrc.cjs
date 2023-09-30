@@ -10,6 +10,7 @@ const config = {
     "plugin:@typescript-eslint/recommended-type-checked",
     "plugin:@typescript-eslint/stylistic-type-checked",
     "plugin:react-server-components/recommended",
+    "plugin:@dword-design/import-alias/recommended",
   ],
 
   rules: {
@@ -73,6 +74,14 @@ const config = {
       },
     ],
     "react-server-components/use-client": "error",
+    "@dword-design/import-alias/prefer-alias": [
+      "error",
+      {
+        alias: {
+          "~": "./src/",
+        },
+      },
+    ],
   },
 };
 

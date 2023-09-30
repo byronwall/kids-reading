@@ -17,11 +17,10 @@ import {
 } from "~/components/ui/table";
 import { Button } from "~/components/ui/button";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
+import { trpc } from "~/app/_trpc/client";
+import { useSentenceCreatorStore } from "~/stores/sentenceCreatorStore";
 
 import { getRelativeTime } from "./getRelativeTime";
-
-import { trpc } from "../_trpc/client";
-import { useSentenceCreatorStore } from "../_stores/sentenceCreatorStore";
 
 export function StatsDetail() {
   const { data: userData, isLoading } = useQuerySsr(
