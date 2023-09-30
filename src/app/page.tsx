@@ -3,14 +3,12 @@ import { QuestionPractice } from "~/components/QuestionPractice";
 import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
 import { appRouter } from "~/server/api/root";
 
-import { SsrContextProvider } from "./SsrContext";
+import { SsrContextServer } from "./SsrContextServer";
 
 export default async function Home() {
   const session = await getServerAuthSession();
 
-  const initialData = await callQuerySsrServer(
-    appRouter.questionRouter.getPossibleSentences
-  );
+  await callQuerySsrServer(appRouter.questionRouter.getPossibleSentences);
 
   if (!session) {
     return (
@@ -21,10 +19,10 @@ export default async function Home() {
   }
 
   return (
-    <SsrContextProvider initialData={initialData}>
+    <SsrContextServer>
       <section className="flex flex-col items-center gap-4">
         <QuestionPractice />
       </section>
-    </SsrContextProvider>
+    </SsrContextServer>
   );
 }

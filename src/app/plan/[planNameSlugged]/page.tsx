@@ -1,7 +1,7 @@
 import { deslugify } from "~/utils";
-import { SsrContextProvider } from "~/app/SsrContext";
 import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
 import { appRouter } from "~/server/api/root";
+import { SsrContextServer } from "~/app/SsrContextServer";
 
 import { LearningPlanSingle } from "./LessonPlanSingle";
 
@@ -16,16 +16,13 @@ export default async function Page({ params }: PageProps) {
 
   const planName = deslugify(planNameSlugged);
 
-  const initialData = await callQuerySsrServer(
-    appRouter.planRouter.getSingleLearningPlan,
-    {
-      learningPlanName: planName,
-    }
-  );
+  await callQuerySsrServer(appRouter.planRouter.getSingleLearningPlan, {
+    learningPlanName: planName,
+  });
 
   return (
-    <SsrContextProvider initialData={initialData}>
+    <SsrContextServer>
       <LearningPlanSingle planName={planName} />
-    </SsrContextProvider>
+    </SsrContextServer>
   );
 }

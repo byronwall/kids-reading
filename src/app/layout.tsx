@@ -14,7 +14,7 @@ import Provider from "./_trpc/Provider";
 import { NextAuthProvider } from "./authProvider";
 import { GlobalNotifications } from "./GlobalNotifications";
 import { SentenceCreatorDialog } from "./SentenceCreatorDialog";
-import { SsrContextProvider } from "./SsrContext";
+import { SsrContextServer } from "./SsrContextServer";
 
 import { UserMenuOrLogin } from "../components/UserMenuOrLogin";
 
@@ -35,16 +35,14 @@ export default async function RootLayout({
 }) {
   const session = await getServerAuthSession();
 
-  const initialData = await callQuerySsrServer(
-    appRouter.awardRouter.getAllAwardsForProfile
-  );
+  await callQuerySsrServer(appRouter.awardRouter.getAllAwardsForProfile);
 
   return (
     <html>
       <body>
         <NextAuthProvider session={session}>
           <Provider>
-            <SsrContextProvider initialData={initialData}>
+            <SsrContextServer>
               <div className="flex min-h-screen flex-col pb-20">
                 <header className="bg-background container z-40">
                   <div className="flex h-20 items-center justify-between py-6">
@@ -61,7 +59,7 @@ export default async function RootLayout({
                 <SentenceCreatorDialog />
               </div>
               <ReactQueryDevtools initialIsOpen={false} />
-            </SsrContextProvider>
+            </SsrContextServer>
           </Provider>
         </NextAuthProvider>
         <Analytics />
