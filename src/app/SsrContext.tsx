@@ -13,7 +13,9 @@ export type SsrQueryShape<TRouter extends AnyRouter> = {
     ? TRouterOrProcedure extends AnyRouter
       ? Partial<SsrQueryShape<TRouterOrProcedure>>
       : TRouterOrProcedure extends AnyProcedure
-      ? Partial<inferTransformedProcedureOutput<TRouterOrProcedure>>
+      ? TRouterOrProcedure extends string // this is the JSONed params
+        ? Partial<inferTransformedProcedureOutput<TRouterOrProcedure>>
+        : never
       : never
     : undefined;
 };

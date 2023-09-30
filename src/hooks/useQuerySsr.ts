@@ -12,6 +12,8 @@ import { useContext } from "react";
 
 import { SsrContext } from "~/app/SsrContext";
 
+import { deepSortObjectByKeys } from "./deepSortObjectByKeys";
+
 export function useQuerySsr<
   QueryProcedure extends AnyQueryProcedure,
   U,
@@ -29,15 +31,22 @@ export function useQuerySsr<
   // @ts-expect-error - we don't expose _def on the type layer
   const keys = proc._def().path as string[]; // will be ['awardRouter', 'getActiveProfile']
 
+  const paramsAsString = params
+    ? JSON.stringify(deepSortObjectByKeys(params))
+    : "";
+
+  const fullQueryKey = keys.concat(paramsAsString);
   // TODO: need to link the initial data to the the params also
 
   // traverse the keys into the context object, assume arbitrary depth
-  const initialDataForProc = keys.reduce((acc, key) => {
+  const initialDataForProc = fullQueryKey.reduce((acc, key) => {
     const possibleData = (acc as any)[key];
     if (possibleData === undefined) {
       // throw error if dev
       if (process.env.NODE_ENV === "development") {
-        throw new Error(`Could not find initialData for ${keys.join(".")}`);
+        throw new Error(
+          `Could not find initialData for ${fullQueryKey.join(".")}`
+        );
       }
       return undefined;
     }

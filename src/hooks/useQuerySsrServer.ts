@@ -13,6 +13,8 @@ import { getTrpcServer } from "~/app/_trpc/serverClient";
 import { deepMerge } from "~/app/deepMerge";
 import { appRouter } from "~/server/api/root";
 
+import { deepSortObjectByKeys } from "./deepSortObjectByKeys";
+
 const routerKeyMap = createRouterMap(appRouter);
 
 type SsrShape = Partial<SsrQueryShape<typeof appRouter>>;
@@ -52,6 +54,10 @@ async function getDataForSingleProc<QueryProcedure extends AnyQueryProcedure>(
     throw new Error(`Could not find keys for procedure.`);
   }
 
+  const paramsAsString = params
+    ? JSON.stringify(deepSortObjectByKeys(params))
+    : "";
+
   // get the true caller -- this needs to go through the createCaller proxy
   // this all ensures that the context is setup correctly
   const trpcServerProc = keys.reduce((acc, key) => {
@@ -62,7 +68,8 @@ async function getDataForSingleProc<QueryProcedure extends AnyQueryProcedure>(
 
   // iterate keys and set the initialData
   // generalize that to arbitrary depth, reduce right
-  const initialData = keys.reduceRight((acc, key) => {
+  // this adds the params to make a unique key
+  const initialData = keys.concat(paramsAsString).reduceRight((acc, key) => {
     return {
       [key]: acc,
     };
