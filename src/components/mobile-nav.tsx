@@ -12,9 +12,11 @@ import { type MainNavItem } from "~/types";
 interface MobileNavProps {
   items: MainNavItem[];
   children?: React.ReactNode;
+
+  onClose?: () => void;
 }
 
-export function MobileNav({ items, children }: MobileNavProps) {
+export function MobileNav({ items, children, onClose }: MobileNavProps) {
   useLockBody();
 
   return (
@@ -24,7 +26,11 @@ export function MobileNav({ items, children }: MobileNavProps) {
       )}
     >
       <div className="bg-popover text-popover-foreground relative z-20 grid gap-6 rounded-md p-4 shadow-md">
-        <Link href="/" className="flex items-center space-x-2">
+        <Link
+          href="/"
+          className="flex items-center space-x-2"
+          onClick={onClose}
+        >
           <Icons.logo />
           <span className="font-bold">{siteConfig.name}</span>
         </Link>
@@ -37,6 +43,7 @@ export function MobileNav({ items, children }: MobileNavProps) {
                 "flex w-full items-center rounded-md p-2 text-sm font-medium hover:underline",
                 item.disabled && "cursor-not-allowed opacity-60"
               )}
+              onClick={onClose}
             >
               {item.title}
             </Link>
