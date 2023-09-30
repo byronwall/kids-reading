@@ -27,8 +27,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { Icons } from "~/components/icons";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
-
-import { useSentenceAdder } from "./admin/sentences/useSentenceAdder";
+import { useSentenceAdder } from "~/app/admin/sentences/useSentenceAdder";
 
 import type * as z from "zod";
 

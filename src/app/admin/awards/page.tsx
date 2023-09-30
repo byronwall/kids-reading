@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { trpc } from "~/app/_trpc/client";
-import { AwardImageChoice } from "~/app/awards/AwardImageChoice";
+import { AwardImageChoice } from "~/components/awards/AwardImageChoice";
 import {
   Card,
   CardContent,

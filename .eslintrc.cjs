@@ -75,7 +75,7 @@ const config = {
     ],
     "react-server-components/use-client": "error",
     "@dword-design/import-alias/prefer-alias": [
-      "error",
+      "warn",
       {
         alias: {
           "~": "./src/",

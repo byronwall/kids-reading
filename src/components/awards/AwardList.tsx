@@ -1,7 +1,8 @@
 "use client";
 
+import { type Award } from "~/app/awards/page";
+
 import { AwardCard } from "./AwardCard";
-import { type Award } from "./page";
 
 export function AwardList({ awards = [] }: { awards?: Award[] }) {
   return (
