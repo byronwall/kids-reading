@@ -6,23 +6,44 @@ import {
   type ProcedureRouterRecord,
   type ProcedureRecord,
 } from "@trpc/server";
+import { cache } from "react";
 
 import { type SsrQueryShape } from "~/app/SsrContext";
 import { getTrpcServer } from "~/app/_trpc/serverClient";
+import { deepMerge } from "~/app/deepMerge";
 import { appRouter } from "~/server/api/root";
 
 const routerKeyMap = createRouterMap(appRouter);
+
+type SsrShape = Partial<SsrQueryShape<typeof appRouter>>;
+
+export const getInitialData = cache(() => {
+  const initialData: SsrShape = {};
+
+  return initialData;
+});
 
 export async function callQuerySsrServer<
   QueryProcedure extends AnyQueryProcedure
 >(
   proc: QueryProcedure,
   params?: inferProcedureInput<QueryProcedure>
-): Promise<SsrQueryShape<typeof appRouter>> {
-  // this mess plays a game to use the true appRouter to get the key structure
-  // with that key structure, it then traverses the trpcServer to get the true
-  // caller for the procedure
+): Promise<SsrShape> {
+  const newInitialData = await getDataForSingleProc(proc, params);
 
+  const initialData = getInitialData();
+
+  const mergedData = deepMerge(initialData, newInitialData);
+
+  // Object.assign to forcefully update the cache
+  // return the complete data object if someone wants it server side
+  return Object.assign(initialData, mergedData);
+}
+
+async function getDataForSingleProc<QueryProcedure extends AnyQueryProcedure>(
+  proc: QueryProcedure,
+  params?: inferProcedureInput<QueryProcedure>
+) {
   const trpcServer = await getTrpcServer();
 
   const keys = routerKeyMap.get(proc);
@@ -49,11 +70,8 @@ export async function callQuerySsrServer<
 
   // nest result based on keys
   // keys = ['awardRouter', 'getActiveProfile']
-
   // TODO: need to link the initial data to the the params also
-
   //   console.log("useQuery", { keys, initialData, initialDataForProc });
-
   return initialData;
 }
 
