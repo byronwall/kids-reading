@@ -58,7 +58,7 @@ export function StatsDetail() {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex max-w-[100vw] flex-col gap-6">
       <h1>Stats</h1>
       <Card>
         <CardHeader>
@@ -79,7 +79,7 @@ export function StatsDetail() {
             <TableBody>
               {userResults.map((result, idx) => (
                 <TableRow key={idx}>
-                  <TableCell className="max-w-md font-semibold text-red-700">
+                  <TableCell className="font-semibold text-red-700">
                     {result
                       .filter((c) => c.score < 50)
                       .map((r) => r.word?.word)
@@ -113,8 +113,7 @@ export function StatsDetail() {
                 <TableHead>Word</TableHead>
                 <TableHead>Next Review Date</TableHead>
                 <TableHead>Interval</TableHead>
-                <TableHead>Good Count</TableHead>
-                <TableHead>Bad Count</TableHead>
+                <TableHead>Good / Bad</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -127,11 +126,11 @@ export function StatsDetail() {
                   <TableCell>{summary.interval}d</TableCell>
 
                   <TableCell>
-                    {summary.goodCount > 0 && summary.goodCount}
-                  </TableCell>
+                    <p>{summary.goodCount > 0 && summary.goodCount}</p>
 
-                  <TableCell className="font-semibold text-red-700">
-                    {summary.badCount > 0 && summary.badCount}
+                    <p className="font-semibold text-red-700">
+                      {summary.badCount > 0 && summary.badCount}
+                    </p>
                   </TableCell>
                 </TableRow>
               ))}
