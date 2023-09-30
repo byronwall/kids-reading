@@ -175,7 +175,7 @@ export function SentenceQuestionPractice() {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => {
-                          setFontSize(fontSize + 1);
+                          setFontSize(fontSize + 0.5);
                         }}
                         onSelect={(evt) => evt.preventDefault()}
                       >
@@ -183,7 +183,7 @@ export function SentenceQuestionPractice() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => {
-                          setFontSize(fontSize - 1);
+                          setFontSize(fontSize - 0.5);
                         }}
                         onSelect={(evt) => evt.preventDefault()}
                       >
@@ -247,6 +247,8 @@ export function SentenceQuestionPractice() {
                   />
                 ))}
               </div>
+
+              <div>font size {fontSize}rem</div>
             </div>
           </CardContent>
         </Card>

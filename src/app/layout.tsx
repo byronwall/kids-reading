@@ -52,7 +52,7 @@ export default async function RootLayout({
                 </header>
                 <GlobalNotifications />
                 <main className="flex-1">
-                  <div className="container flex max-w-[96rem] flex-col items-center gap-4 text-center">
+                  <div className="container flex max-w-full  flex-col items-center gap-4 text-center">
                     {children}
                   </div>
                 </main>
