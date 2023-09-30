@@ -1,7 +1,7 @@
 import { type Profile } from "@prisma/client";
 import { useSession } from "next-auth/react";
 
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 
 export function useActiveProfile() {
   const { data: session, update } = useSession();

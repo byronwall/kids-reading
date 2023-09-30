@@ -9,14 +9,12 @@ import { marketingConfig } from "~/config/marketing";
 import { getServerAuthSession } from "~/server/auth";
 import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
 import { appRouter } from "~/server/api/root";
-
-import Provider from "./_trpc/Provider";
-import { NextAuthProvider } from "./authProvider";
-import { GlobalNotifications } from "./GlobalNotifications";
-import { SentenceCreatorDialog } from "./SentenceCreatorDialog";
-import { SsrContextServer } from "./SsrContextServer";
-
-import { UserMenuOrLogin } from "../components/UserMenuOrLogin";
+import { UserMenuOrLogin } from "~/components/UserMenuOrLogin";
+import { SentenceCreatorDialog } from "~/components/sentences/SentenceCreatorDialog";
+import { SsrContextServer } from "~/lib/trpc/SsrContextServer";
+import Provider from "~/lib/trpc/Provider";
+import { NextAuthProvider } from "~/lib/auth/authProvider";
+import { GlobalNotifications } from "~/components/awards/GlobalNotifications";
 
 export const metadata: Metadata = {
   title: "Kids Reading",

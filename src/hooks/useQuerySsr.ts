@@ -10,9 +10,9 @@ import {
 import { type TRPCClientErrorLike } from "@trpc/client";
 import { useContext } from "react";
 
-import { SsrContext } from "~/app/SsrContext";
+import { SsrContext } from "~/lib/trpc/SsrContext";
 
-import { deepSortObjectByKeys } from "./deepSortObjectByKeys";
+import { deepSortObjectByKeys } from "../lib/deepSortObjectByKeys";
 
 export function useQuerySsr<
   QueryProcedure extends AnyQueryProcedure,

@@ -1,7 +1,7 @@
 import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
 import { appRouter } from "~/server/api/root";
 
-import { SsrContextServer } from "../SsrContextServer";
+import { SsrContextServer } from "../../lib/trpc/SsrContextServer";
 
 export default async function RootLayout({
   children,

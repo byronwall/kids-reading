@@ -7,12 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 import { type RouterOutputs } from "~/utils/api";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
-
-import { AwardImageChoice } from "./AwardImageChoice";
-import { AwardList } from "./AwardList";
+import { AwardList } from "~/components/awards/AwardList";
+import { AwardImageChoice } from "~/components/awards/AwardImageChoice";
 
 export type Award =
   RouterOutputs["awardRouter"]["getAllAwardsForProfile"][number];

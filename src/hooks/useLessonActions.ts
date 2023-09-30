@@ -1,6 +1,6 @@
 "use client";
 
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 import { type DetailedLesson } from "~/types/models";
 
 export function useLessonActions(lessonId: string) {

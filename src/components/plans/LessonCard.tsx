@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "~/utils";
+import { cn } from "~/lib/utils";
 import { type LearningPlan } from "~/types/models";
 
 export type Lesson = LearningPlan["lessons"][0];

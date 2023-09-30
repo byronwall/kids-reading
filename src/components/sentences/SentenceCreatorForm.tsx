@@ -22,13 +22,12 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { GptSentenceSchema } from "~/server/api/routers/inputSchemas";
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Icons } from "~/components/icons";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
-
-import { useSentenceAdder } from "./admin/sentences/useSentenceAdder";
+import { useSentenceAdder } from "~/hooks/useSentenceAdder";
 
 import type * as z from "zod";
 

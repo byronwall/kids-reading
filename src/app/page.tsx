@@ -3,7 +3,7 @@ import { QuestionPractice } from "~/components/QuestionPractice";
 import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
 import { appRouter } from "~/server/api/root";
 
-import { SsrContextServer } from "./SsrContextServer";
+import { SsrContextServer } from "../lib/trpc/SsrContextServer";
 
 export default async function Home() {
   const session = await getServerAuthSession();

@@ -5,8 +5,7 @@ import { type inferTransformedProcedureOutput } from "@trpc/server/shared";
 import { createContext, useContext } from "react";
 
 import { type appRouter } from "~/server/api/root";
-
-import { deepMerge } from "./deepMerge";
+import { deepMerge } from "~/lib/deepMerge";
 
 export type SsrQueryShape<TRouter extends AnyRouter> = {
   [TKey in keyof TRouter["_def"]["record"]]: TRouter["_def"]["record"][TKey] extends infer TRouterOrProcedure

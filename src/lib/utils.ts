@@ -19,3 +19,11 @@ export function formatDate(input: string | number): string {
 export function absoluteUrl(path: string) {
   return `${env.NEXT_PUBLIC_VERCEL_URL}${path}`;
 }
+
+export function slugify(name: string) {
+  return name.replace(/\s/g, "-");
+}
+
+export function deslugify(slug: string) {
+  return slug.replace(/-/g, " ");
+}

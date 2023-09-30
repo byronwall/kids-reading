@@ -4,17 +4,17 @@ import Link from "next/link";
 import { type User } from "next-auth";
 import { signOut } from "next-auth/react";
 
+import { trpc } from "~/lib/trpc/client";
+import { useActiveProfile } from "~/hooks/useActiveProfile";
+import { cn } from "~/lib/utils";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { trpc } from "~/app/_trpc/client";
-import { useActiveProfile } from "~/hooks/useActiveProfile";
-import { cn } from "~/utils";
-
+} from "./ui/dropdown-menu";
 import { Icons } from "./icons";
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {

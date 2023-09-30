@@ -1,6 +1,4 @@
 import { create } from "zustand";
-// eslint-disable-next-line unused-imports/no-unused-imports
-import { devtools, persist } from "zustand/middleware";
 
 type SentenceCreatorStore = {
   isModalOpen: boolean;

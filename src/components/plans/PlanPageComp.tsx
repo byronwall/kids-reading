@@ -7,11 +7,10 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
+import { trpc } from "~/lib/trpc/client";
 
 import { LearningPlanInputForm } from "./LearningPlanInputForm";
 import { LearningPlanCard } from "./LearningPlanCard";
-
-import { trpc } from "../_trpc/client";
 
 export function PlanPageComp() {
   const { data: learningPlans } = useQuerySsr(

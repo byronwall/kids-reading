@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { slugify } from "~/utils";
+import { slugify } from "~/lib/utils";
 import { type LearningPlan } from "~/types/models";
 
 import { LessonCard } from "./LessonCard";
