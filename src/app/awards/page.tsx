@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 import { type RouterOutputs } from "~/utils/api";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
 import { AwardList } from "~/components/awards/AwardList";

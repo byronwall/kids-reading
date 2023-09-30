@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Icons } from "~/components/icons";
-import { cn } from "~/utils";
+import { cn } from "~/lib/utils";
 
 type DashLink = {
   href: string;

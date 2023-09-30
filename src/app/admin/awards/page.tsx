@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 import { AwardImageChoice } from "~/components/awards/AwardImageChoice";
 import {
   Card,

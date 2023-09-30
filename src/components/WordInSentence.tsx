@@ -1,13 +1,9 @@
 "use client";
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
-import { trpc } from "~/app/_trpc/client";
-import { cn } from "~/utils";
+import { trpc } from "~/lib/trpc/client";
+import { cn } from "~/lib/utils";
 
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
 import { type WordToRender } from "./SentenceQuestionPractice";

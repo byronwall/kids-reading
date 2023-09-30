@@ -2,7 +2,7 @@
 
 import { useLocalStorage } from "usehooks-ts";
 
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Button } from "./ui/button";

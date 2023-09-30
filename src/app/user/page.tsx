@@ -13,9 +13,8 @@ import {
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { useActiveProfile } from "~/hooks/useActiveProfile";
-import { cn } from "~/utils";
-
-import { trpc } from "../_trpc/client";
+import { cn } from "~/lib/utils";
+import { trpc } from "~/lib/trpc/client";
 
 export default function UserPage() {
   const utils = trpc.useContext();

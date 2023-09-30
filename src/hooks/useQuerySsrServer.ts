@@ -8,12 +8,12 @@ import {
 } from "@trpc/server";
 import { cache } from "react";
 
-import { type SsrQueryShape } from "~/app/SsrContext";
-import { getTrpcServer } from "~/app/_trpc/serverClient";
-import { deepMerge } from "~/app/deepMerge";
+import { type SsrQueryShape } from "~/lib/trpc/SsrContext";
+import { getTrpcServer } from "~/lib/trpc/serverClient";
+import { deepMerge } from "~/lib/deepMerge";
 import { appRouter } from "~/server/api/root";
 
-import { deepSortObjectByKeys } from "./deepSortObjectByKeys";
+import { deepSortObjectByKeys } from "../lib/deepSortObjectByKeys";
 
 const routerKeyMap = createRouterMap(appRouter);
 

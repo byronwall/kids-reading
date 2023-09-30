@@ -1,5 +1,5 @@
 "use client";
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 
 export function useSentenceAdder() {
   const utils = trpc.useContext();

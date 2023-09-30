@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { cn } from "~/utils";
+import { cn } from "~/lib/utils";
 import { type Award } from "~/app/awards/page";
 
 export function AwardCard({ award }: { award: Award }) {

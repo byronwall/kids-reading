@@ -13,34 +13,36 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { AddSentenceSchema } from "~/server/api/routers/inputSchemas";
+import { LessonBulkImportWordsSchema } from "~/server/api/routers/inputSchemas";
 import { Textarea } from "~/components/ui/textarea";
-
-import { trpc } from "../../_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 
 import type * as z from "zod";
 
-const FormSchema = AddSentenceSchema;
+const FormSchema = LessonBulkImportWordsSchema;
 
-export function AddSentenceForm() {
+type Props = {
+  learningPlanId: string;
+};
+
+export function LessonBulkImportWordsForm(props: Props) {
+  const { learningPlanId } = props;
+
   const utils = trpc.useContext();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {},
+    defaultValues: {
+      learningPlanId,
+    },
   });
 
-  const addSentencesMutation =
-    trpc.sentencesRouter.addSentencesFromString.useMutation();
-
-  const rawInput = form.watch("rawInput") ?? "";
-
-  const newSentences = rawInput.split("\n").filter(Boolean);
+  const bulkImportMutation = trpc.planRouter.bulkImportLesson.useMutation();
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    await addSentencesMutation.mutateAsync(data);
+    await bulkImportMutation.mutateAsync(data);
 
-    await utils.sentencesRouter.getAllSentences.invalidate();
+    await utils.planRouter.getAllLearningPlans.invalidate();
   }
 
   return (
@@ -48,34 +50,24 @@ export function AddSentenceForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
         <FormField
           control={form.control}
-          name="rawInput"
+          name="contents"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Sentences</FormLabel>
+              <FormLabel>Words</FormLabel>
               <FormControl>
                 <Textarea placeholder="Contents" {...field} />
               </FormControl>
               <FormDescription>
-                Enter sentences on new lines. See preview below.
+                Expected format is <code>| topic | sub topic | words |</code>
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div>
-          preview:
-          {newSentences.map((sentence) => (
-            <div
-              key={sentence}
-              className="rounded-md border border-gray-200 p-2"
-            >
-              {sentence}
-            </div>
-          ))}
-        </div>
+        <input type="hidden" {...form.register("learningPlanId")} />
 
-        <ButtonLoading isLoading={addSentencesMutation.isLoading} type="submit">
+        <ButtonLoading isLoading={bulkImportMutation.isLoading} type="submit">
           <span>Create</span>
         </ButtonLoading>
       </form>

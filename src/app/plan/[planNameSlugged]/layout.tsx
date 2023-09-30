@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 import { Icons } from "~/components/icons";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
-import { cn, slugify } from "~/utils";
+import { cn } from "~/lib/utils";
+import { slugify } from "~/lib/utils";
 
 type DashLink = {
   href: string;

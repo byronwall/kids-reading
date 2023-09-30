@@ -14,31 +14,22 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { LessonCreateSchema } from "~/server/api/routers/inputSchemas";
-
-import { trpc } from "../_trpc/client";
+import { LearningPlanCreateSchema } from "~/server/api/routers/inputSchemas";
+import { trpc } from "~/lib/trpc/client";
 
 import type * as z from "zod";
 
-const FormSchema = LessonCreateSchema;
-
-type Props = {
-  learningPlanId: string;
-};
-
-export function LessonInputForm(props: Props) {
-  const { learningPlanId } = props;
-
+export function LearningPlanInputForm() {
   const utils = trpc.useContext();
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof LearningPlanCreateSchema>>({
+    resolver: zodResolver(LearningPlanCreateSchema),
   });
 
-  const createLesson = trpc.planRouter.createLesson.useMutation();
+  const createLearningPlan = trpc.planRouter.createLearningPlan.useMutation();
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    await createLesson.mutateAsync(data);
+  async function onSubmit(data: z.infer<typeof LearningPlanCreateSchema>) {
+    await createLearningPlan.mutateAsync(data);
 
     await utils.planRouter.getAllLearningPlans.invalidate();
   }
@@ -79,13 +70,7 @@ export function LessonInputForm(props: Props) {
           )}
         />
 
-        <input
-          type="hidden"
-          {...form.register("learningPlanId")}
-          value={learningPlanId}
-        />
-
-        <ButtonLoading isLoading={createLesson.isLoading} type="submit">
+        <ButtonLoading isLoading={createLearningPlan.isLoading} type="submit">
           <span>Create</span>
         </ButtonLoading>
       </form>

@@ -1,9 +1,9 @@
-import { deslugify } from "~/utils";
+import { deslugify } from "~/lib/utils";
 import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
 import { appRouter } from "~/server/api/root";
-import { SsrContextServer } from "~/app/SsrContextServer";
+import { SsrContextServer } from "~/lib/trpc/SsrContextServer";
 
-import { LearningPlanSingle } from "./LessonPlanSingle";
+import { LearningPlanSingle } from "../../../components/plans/LessonPlanSingle";
 
 type PageProps = {
   params: {

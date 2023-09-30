@@ -3,7 +3,7 @@
 import { useLocalStorage } from "usehooks-ts";
 import { useEffect, useMemo, useState } from "react";
 
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 import { type RouterOutputs } from "~/utils/api";
 import {
   DropdownMenu,

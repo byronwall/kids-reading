@@ -1,6 +1,6 @@
 "use client";
 
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 import {
   Card,
   CardContent,
@@ -9,12 +9,11 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
+import { findWordsNotInSentences } from "~/app/plan/[planNameSlugged]/findWordsNotInSentences";
 
 import { LessonDetail } from "./LessonDetail";
-import { findWordsNotInSentences } from "./findWordsNotInSentences";
-
-import { LessonBulkImportWordsForm } from "../LessonBulkImportForm";
-import { LessonInputForm } from "../LessonInputForm";
+import { LessonBulkImportWordsForm } from "./LessonBulkImportForm";
+import { LessonInputForm } from "./LessonInputForm";
 
 export function LearningPlanSingle({ planName }: { planName: string }) {
   const { data: learningPlan } = useQuerySsr(

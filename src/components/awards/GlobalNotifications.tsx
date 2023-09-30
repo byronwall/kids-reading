@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
 
 export function GlobalNotifications() {

@@ -13,35 +13,36 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { LessonBulkImportWordsSchema } from "~/server/api/routers/inputSchemas";
-import { Textarea } from "~/components/ui/textarea";
-
-import { trpc } from "../_trpc/client";
+import { Input } from "~/components/ui/input";
+import { LessonEditWordsSchema } from "~/server/api/routers/inputSchemas";
+import { trpc } from "~/lib/trpc/client";
 
 import type * as z from "zod";
 
-const FormSchema = LessonBulkImportWordsSchema;
+const FormSchema = LessonEditWordsSchema;
 
 type Props = {
-  learningPlanId: string;
+  lessonId: string;
+  defaultWords: string;
 };
 
-export function LessonBulkImportWordsForm(props: Props) {
-  const { learningPlanId } = props;
+export function LessonEditWordsForm(props: Props) {
+  const { lessonId } = props;
 
   const utils = trpc.useContext();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      learningPlanId,
+      lessonId,
+      words: props.defaultWords,
     },
   });
 
-  const bulkImportMutation = trpc.planRouter.bulkImportLesson.useMutation();
+  const createLearningPlan = trpc.planRouter.editLessonWords.useMutation();
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    await bulkImportMutation.mutateAsync(data);
+    await createLearningPlan.mutateAsync(data);
 
     await utils.planRouter.getAllLearningPlans.invalidate();
   }
@@ -51,24 +52,24 @@ export function LessonBulkImportWordsForm(props: Props) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
         <FormField
           control={form.control}
-          name="contents"
+          name="words"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Words</FormLabel>
               <FormControl>
-                <Textarea placeholder="Contents" {...field} />
+                <Input placeholder="Short Vowel sounds" {...field} />
               </FormControl>
               <FormDescription>
-                Expected format is <code>| topic | sub topic | words |</code>
+                This is your public display name.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <input type="hidden" {...form.register("learningPlanId")} />
+        <input type="hidden" {...form.register("lessonId")} />
 
-        <ButtonLoading isLoading={bulkImportMutation.isLoading} type="submit">
+        <ButtonLoading isLoading={createLearningPlan.isLoading} type="submit">
           <span>Create</span>
         </ButtonLoading>
       </form>

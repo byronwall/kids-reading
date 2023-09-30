@@ -15,8 +15,7 @@ import {
 } from "~/components/ui/form";
 import { EditSentenceSchema } from "~/server/api/routers/inputSchemas";
 import { Textarea } from "~/components/ui/textarea";
-
-import { trpc } from "../../_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 
 import type * as z from "zod";
 

@@ -6,7 +6,7 @@ import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import { Button } from "~/components/ui/button";
 import { Icons } from "~/components/icons";
-import { trpc } from "~/app/_trpc/client";
+import { trpc } from "~/lib/trpc/client";
 
 export default function AdminWords() {
   const [words, setWords] = useState("");
