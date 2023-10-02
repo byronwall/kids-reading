@@ -11,8 +11,7 @@ import { type TRPCClientErrorLike } from "@trpc/client";
 import { useContext } from "react";
 
 import { SsrContext } from "~/lib/trpc/SsrContext";
-
-import { deepSortObjectByKeys } from "../lib/deepSortObjectByKeys";
+import { deepSortObjectByKeys } from "~/lib/deepSortObjectByKeys";
 
 export function useQuerySsr<
   QueryProcedure extends AnyQueryProcedure,
@@ -40,11 +39,15 @@ export function useQuerySsr<
 
   // traverse the keys into the context object, assume arbitrary depth
   const initialDataForProc = fullQueryKey.reduce((acc, key) => {
+    if (acc === undefined) {
+      return undefined;
+    }
+
     const possibleData = (acc as any)[key];
     if (possibleData === undefined) {
       // throw error if dev
       if (process.env.NODE_ENV === "development") {
-        throw new Error(
+        console.error(
           `Could not find initialData for ${fullQueryKey.join(".")}`
         );
       }

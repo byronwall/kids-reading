@@ -38,7 +38,7 @@ export function SentenceCreatorDialog() {
   return (
     <div>
       <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="max-w-[800px]">
+        <DialogContent className="max-h-[90vh] max-w-[800px] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Sentence Creator Helper</DialogTitle>
             <DialogDescription>

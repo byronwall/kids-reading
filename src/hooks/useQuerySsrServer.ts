@@ -12,8 +12,7 @@ import { type SsrQueryShape } from "~/lib/trpc/SsrContext";
 import { getTrpcServer } from "~/lib/trpc/serverClient";
 import { deepMerge } from "~/lib/deepMerge";
 import { appRouter } from "~/server/api/root";
-
-import { deepSortObjectByKeys } from "../lib/deepSortObjectByKeys";
+import { deepSortObjectByKeys } from "~/lib/deepSortObjectByKeys";
 
 const routerKeyMap = createRouterMap(appRouter);
 
@@ -64,22 +63,28 @@ async function getDataForSingleProc<QueryProcedure extends AnyQueryProcedure>(
     return (acc as any)[key];
   }, trpcServer);
 
-  const result = await (trpcServerProc as any)(params);
+  try {
+    // this call will fail if user is not authenticated
+    const result = await (trpcServerProc as any)(params);
 
-  // iterate keys and set the initialData
-  // generalize that to arbitrary depth, reduce right
-  // this adds the params to make a unique key
-  const initialData = keys.concat(paramsAsString).reduceRight((acc, key) => {
-    return {
-      [key]: acc,
-    };
-  }, result) as SsrQueryShape<typeof appRouter>;
+    // iterate keys and set the initialData
+    // generalize that to arbitrary depth, reduce right
+    // this adds the params to make a unique key
+    const initialData = keys.concat(paramsAsString).reduceRight((acc, key) => {
+      return {
+        [key]: acc,
+      };
+    }, result) as SsrQueryShape<typeof appRouter>;
 
-  // nest result based on keys
-  // keys = ['awardRouter', 'getActiveProfile']
-  // TODO: need to link the initial data to the the params also
-  //   console.log("useQuery", { keys, initialData, initialDataForProc });
-  return initialData;
+    // nest result based on keys
+    // keys = ['awardRouter', 'getActiveProfile']
+    // TODO: need to link the initial data to the the params also
+    //   console.log("useQuery", { keys, initialData, initialDataForProc });
+    return initialData;
+  } catch (e) {
+    console.log("error", e);
+    return {};
+  }
 }
 
 export function createRouterMap(router: AnyRouter) {
