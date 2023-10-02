@@ -1,6 +1,8 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+
 import { WordQuestionPractice } from "./WordQuestionPractice";
 import { SentenceQuestionPractice } from "./SentenceQuestionPractice";
+
 
 export function QuestionPractice() {
   return (

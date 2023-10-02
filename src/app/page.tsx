@@ -1,9 +1,8 @@
 import { getServerAuthSession } from "~/server/auth";
-import { QuestionPractice } from "~/components/QuestionPractice";
+import { QuestionPractice } from "~/components/questions/QuestionPractice";
 import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
 import { appRouter } from "~/server/api/root";
-
-import { SsrContextServer } from "../lib/trpc/SsrContextServer";
+import { SsrContextServer } from "~/lib/trpc/SsrContextServer";
 
 export default async function Home() {
   const session = await getServerAuthSession();

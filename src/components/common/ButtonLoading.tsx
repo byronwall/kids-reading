@@ -1,5 +1,7 @@
-import { Button } from "./ui/button";
+import { Button } from "~/components/ui/button";
+
 import { Icons } from "./icons";
+
 
 type ButtonProps = Parameters<typeof Button>[0];
 

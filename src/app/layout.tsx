@@ -4,12 +4,12 @@ import { type Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import { MainNav } from "~/components/main-nav";
+import { MainNav } from "~/components/nav/main-nav";
 import { marketingConfig } from "~/config/marketing";
 import { getServerAuthSession } from "~/server/auth";
 import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
 import { appRouter } from "~/server/api/root";
-import { UserMenuOrLogin } from "~/components/UserMenuOrLogin";
+import { UserMenuOrLogin } from "~/components/user/UserMenuOrLogin";
 import { SentenceCreatorDialog } from "~/components/sentences/SentenceCreatorDialog";
 import { SsrContextServer } from "~/lib/trpc/SsrContextServer";
 import Provider from "~/lib/trpc/Provider";
@@ -34,6 +34,7 @@ export default async function RootLayout({
   const session = await getServerAuthSession();
 
   await callQuerySsrServer(appRouter.awardRouter.getAllAwardsForProfile);
+  await callQuerySsrServer(appRouter.questionRouter.getFocusedWords);
 
   return (
     <html>

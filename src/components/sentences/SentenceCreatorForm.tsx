@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { ButtonLoading } from "~/components/ButtonLoading";
+import { ButtonLoading } from "~/components/common/ButtonLoading";
 import {
   Form,
   FormControl,
@@ -24,7 +24,7 @@ import {
 import { GptSentenceSchema } from "~/server/api/routers/inputSchemas";
 import { trpc } from "~/lib/trpc/client";
 import { Checkbox } from "~/components/ui/checkbox";
-import { Icons } from "~/components/icons";
+import { Icons } from "~/components/common/icons";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
 import { useSentenceAdder } from "~/hooks/useSentenceAdder";

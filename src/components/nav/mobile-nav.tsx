@@ -3,7 +3,7 @@
 import Link from "next/link";
 import * as React from "react";
 
-import { Icons } from "~/components/icons";
+import { Icons } from "~/components/common/icons";
 import { siteConfig } from "~/config/site";
 import { useLockBody } from "~/hooks/use-lock-body";
 import { cn } from "~/lib/utils";

@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { ButtonLoading } from "~/components/ButtonLoading";
+import { ButtonLoading } from "~/components/common/ButtonLoading";
 import { Textarea } from "~/components/ui/textarea";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
 

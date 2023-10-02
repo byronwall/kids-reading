@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { trpc } from "~/lib/trpc/client";
 import { type RouterOutputs } from "~/utils/api";
+import { useQuerySsr } from "~/hooks/useQuerySsr";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,13 +14,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { useQuerySsr } from "~/hooks/useQuerySsr";
+import { Card, CardContent } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Icons } from "~/components/common/icons";
+import { ButtonLoading } from "~/components/common/ButtonLoading";
 
-import { Card, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
-import { Icons } from "./icons";
 import { WordInSentence } from "./WordInSentence";
-import { ButtonLoading } from "./ButtonLoading";
 
 type WordWithSentence =
   RouterOutputs["questionRouter"]["getPossibleSentences"][0];
@@ -247,8 +247,6 @@ export function SentenceQuestionPractice() {
                   />
                 ))}
               </div>
-
-              <div>font size {fontSize}rem</div>
             </div>
           </CardContent>
         </Card>

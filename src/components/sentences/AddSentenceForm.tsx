@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { ButtonLoading } from "~/components/ButtonLoading";
+import { ButtonLoading } from "~/components/common/ButtonLoading";
 import {
   Form,
   FormControl,

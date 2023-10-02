@@ -3,11 +3,12 @@
 import Link from "next/link";
 import * as React from "react";
 
-import { Icons } from "~/components/icons";
-import { MobileNav } from "~/components/mobile-nav";
+import { Icons } from "~/components/common/icons";
 import { siteConfig } from "~/config/site";
 import { cn } from "~/lib/utils";
 import { type MainNavItem } from "~/types";
+
+import { MobileNav } from "./mobile-nav";
 
 interface MainNavProps {
   items?: MainNavItem[];

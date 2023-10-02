@@ -2,10 +2,15 @@
 
 import { trpc } from "~/lib/trpc/client";
 import { cn } from "~/lib/utils";
+import { useQuerySsr } from "~/hooks/useQuerySsr";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import { Button } from "~/components/ui/button";
+import { Icons } from "~/components/common/icons";
 
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Button } from "./ui/button";
-import { Icons } from "./icons";
 import { type WordToRender } from "./SentenceQuestionPractice";
 
 export function WordInSentence(props: {
@@ -14,7 +19,9 @@ export function WordInSentence(props: {
 }) {
   const { wordToRender, onUpdateScore } = props;
 
-  const { data: focusedWords } = trpc.questionRouter.getFocusedWords.useQuery();
+  const { data: focusedWords } = useQuerySsr(
+    trpc.questionRouter.getFocusedWords
+  );
 
   // color map
   // score = undefined = blue; black  = 100; red = 0

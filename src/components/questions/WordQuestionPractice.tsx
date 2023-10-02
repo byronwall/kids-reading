@@ -3,10 +3,9 @@
 import { useLocalStorage } from "usehooks-ts";
 
 import { trpc } from "~/lib/trpc/client";
-
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
-import { Icons } from "./icons";
+import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Icons } from "~/components/common/icons";
 
 export function WordQuestionPractice() {
   const utils = trpc.useContext();

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { trpc } from "~/lib/trpc/client";
-import { Icons } from "~/components/icons";
+import { Icons } from "~/components/common/icons";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
 import { cn } from "~/lib/utils";
 import { slugify } from "~/lib/utils";

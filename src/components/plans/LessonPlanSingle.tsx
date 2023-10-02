@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
-import { findWordsNotInSentences } from "~/app/plan/[planNameSlugged]/findWordsNotInSentences";
+import { findWordsNotInSentences } from "~/lib/findWordsNotInSentences";
 
 import { LessonDetail } from "./LessonDetail";
 import { LessonBulkImportWordsForm } from "./LessonBulkImportForm";
