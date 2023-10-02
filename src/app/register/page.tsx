@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { RegisterNewUser } from "~/components/RegisterNewUser";
+import { RegisterNewUser } from "~/components/user/RegisterNewUser";
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function RegisterPage() {

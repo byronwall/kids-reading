@@ -1,13 +1,12 @@
 "use client";
 
 import { Button } from "~/components/ui/button";
-import { Icons } from "~/components/icons";
+import { Icons } from "~/components/common/icons";
 import { trpc } from "~/lib/trpc/client";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-
-import { AddSentenceForm } from "../../../components/sentences/AddSentenceForm";
-import { EditSentenceForm } from "../../../components/sentences/EditSentenceForm";
-import { useSentenceAdder } from "../../../hooks/useSentenceAdder";
+import { AddSentenceForm } from "~/components/sentences/AddSentenceForm";
+import { EditSentenceForm } from "~/components/sentences/EditSentenceForm";
+import { useSentenceAdder } from "~/hooks/useSentenceAdder";
 
 export default function AdminSentences() {
   const utils = trpc.useContext();

@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import { trpc } from "~/lib/trpc/client";
 import { type AwardImage } from "~/app/awards/page";
-import { ButtonLoading } from "~/components/ButtonLoading";
+import { ButtonLoading } from "~/components/common/ButtonLoading";
 
 export function AwardImageChoice({
   image,

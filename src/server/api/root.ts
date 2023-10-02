@@ -1,6 +1,5 @@
-import { authRouter } from "~/server/api/routers/auth";
-import { createTRPCRouter } from "~/server/api/trpc";
-
+import { authRouter } from "./routers/auth";
+import { createTRPCRouter } from "./trpc";
 import { wordRouter } from "./routers/wordRouter";
 import { userRouter } from "./routers/userRouter";
 import { questionRouter } from "./routers/questionRouter";

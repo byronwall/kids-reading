@@ -10,7 +10,8 @@ import {
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { env } from "~/env.mjs";
-import { prisma } from "~/server/db";
+
+import { prisma } from "./db";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {

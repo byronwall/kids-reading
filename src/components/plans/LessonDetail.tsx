@@ -1,7 +1,7 @@
 "use client";
 
-import { ButtonLoading } from "~/components/ButtonLoading";
-import { Icons } from "~/components/icons";
+import { ButtonLoading } from "~/components/common/ButtonLoading";
+import { Icons } from "~/components/common/icons";
 import { cn } from "~/lib/utils";
 import { useLessonActions } from "~/hooks/useLessonActions";
 import { type DetailedLesson } from "~/types/models";
