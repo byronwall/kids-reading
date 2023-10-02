@@ -138,7 +138,7 @@ export function SentenceCreatorForm(props: Props) {
   };
 
   return (
-    <div className="grid grid-cols-[1.5fr,1fr] gap-4">
+    <div className="grid  grid-cols-1 gap-4  md:grid-cols-[1.5fr,1fr]">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -286,7 +286,10 @@ export function SentenceCreatorForm(props: Props) {
               <Icons.spinner />{" "}
             </p>
           )}
-          {!isLoadingSentences && newSentences?.length && (
+          {!isLoadingSentences && newSentences?.length == 0 && (
+            <p>No sentences yet</p>
+          )}
+          {!isLoadingSentences && newSentences?.length > 0 && (
             <div>
               <div>
                 <ButtonLoading

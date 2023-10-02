@@ -3,8 +3,7 @@ import { type ChatCompletionMessageParam } from "openai/resources/chat";
 import { type z } from "zod";
 
 import { env } from "~/env.mjs";
-
-import { type GptSentenceSchema } from "../api/routers/inputSchemas";
+import { type GptSentenceSchema } from "~/server/api/routers/inputSchemas";
 
 const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
@@ -130,7 +129,7 @@ export async function generateSentencesWithSettings(
     "You are an assistant for a phonics learning program.",
     "Your task is to generate sentences for young kids to read aloud.",
     "The user will give you a list of words to use in the sentences.",
-    "If the user gives you words on separate lines, ensure that all words are used in the same sentences.",
+    "If the user gives you words on separate lines, try to use all words in the same sentences.  Ensure the sentence still makes sense.",
     "Return each sentence on a new line.",
     "Do not add any extra punctuation around the sentence.",
     "Do not include 'Sentence N:' at the beginning of the sentence.",
