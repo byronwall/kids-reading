@@ -14,6 +14,7 @@ import {
 import { ButtonLoading } from "~/components/common/ButtonLoading";
 import { Textarea } from "~/components/ui/textarea";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
+import { ImageDropzone } from "~/components/dropzone/ImageDropzone";
 
 export default function AdminAwardPage() {
   return <AdminAwards />;
@@ -47,26 +48,28 @@ function AdminAwards() {
     <section>
       <h1>awards</h1>
 
-      <Card className="max-w-4xl">
-        <CardHeader>
-          <CardTitle>Add images to award choices</CardTitle>
-          <CardDescription>
-            Paste a set of image URLs here to add to DB
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            value={imageUrls}
-            onChange={(e) => setImageUrls(e.target.value)}
-          />
-          <ButtonLoading
-            onClick={handleAddAwardImages}
-            isLoading={addAwardImages.isLoading}
-          >
-            Add URLs
-          </ButtonLoading>
-        </CardContent>
-      </Card>
+      <ImageDropzone>
+        <Card className="max-w-4xl">
+          <CardHeader>
+            <CardTitle>Add images to award choices</CardTitle>
+            <CardDescription>
+              Paste a set of image URLs here to add to DB
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Textarea
+              value={imageUrls}
+              onChange={(e) => setImageUrls(e.target.value)}
+            />
+            <ButtonLoading
+              onClick={handleAddAwardImages}
+              isLoading={addAwardImages.isLoading}
+            >
+              Add URLs
+            </ButtonLoading>
+          </CardContent>
+        </Card>
+      </ImageDropzone>
 
       <Card className="max-w-4xl">
         <CardHeader>

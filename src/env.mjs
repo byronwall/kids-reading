@@ -23,6 +23,11 @@ export const env = createEnv({
     JWT_SECRET: z.string().min(1),
     NEXT_PUBLIC_VERCEL_URL: z.string(),
     OPENAI_API_KEY: z.string().min(1),
+
+    S3_ACCESS_KEY_ID: z.string().min(1),
+    S3_SECRET_ACCESS_KEY: z.string().min(1),
+    S3_ENDPOINT: z.string().min(1),
+    S3_BUCKET_NAME: z.string().min(1),
   },
 
   /**
@@ -46,6 +51,10 @@ export const env = createEnv({
     JWT_SECRET: process.env.JWT_SECRET,
     NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
+    S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
+    S3_ENDPOINT: process.env.S3_ENDPOINT,
+    S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

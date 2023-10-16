@@ -1,7 +1,17 @@
 import { z } from "zod";
+import AWS from "aws-sdk";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
+import { env } from "~/env.mjs";
+
+export const s3 = new AWS.S3({
+  accessKeyId: env.S3_ACCESS_KEY_ID,
+  secretAccessKey: env.S3_SECRET_ACCESS_KEY,
+  endpoint: env.S3_ENDPOINT,
+  s3ForcePathStyle: true,
+  signatureVersion: "v4",
+});
 
 export const awardRouter = createTRPCRouter({
   getAllAwardsForProfile: protectedProcedure.query(({ ctx }) => {
@@ -140,7 +150,59 @@ export const awardRouter = createTRPCRouter({
         },
       });
     }),
+
+  uploadImageToS3: protectedProcedure
+    .input(
+      z.object({
+        filename: z.string(),
+        fileDataBase64: z.string(),
+        fileMimeType: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // Use the function
+      await uploadToMinio(input);
+
+      // use that URL to create an award image
+      await prisma.awardImages.create({
+        data: {
+          imageUrl: "/api/images/" + input.filename,
+          metaInfo: {},
+        },
+      });
+
+      return true;
+    }),
 });
+
+async function uploadToMinio({
+  filename,
+  fileDataBase64,
+  fileMimeType,
+}: {
+  filename: string;
+  fileDataBase64: string;
+  fileMimeType: string;
+}) {
+  const fileContent = Buffer.from(fileDataBase64, "base64");
+
+  // Set up S3 upload parameters
+
+  try {
+    // Upload the image to the MinIO bucket
+    const data = await s3
+      .upload({
+        Bucket: env.S3_BUCKET_NAME,
+        Key: filename,
+        Body: fileContent,
+        ContentType: fileMimeType,
+      })
+      .promise();
+    console.log(`File uploaded successfully. ${data.Location}`);
+  } catch (error) {
+    console.log("Error uploading the file: ", error);
+  }
+}
 export async function getProfileSentenceCount(profileId: any) {
   // TODO: this query is very inefficient -- do better
   const groupedResults = await prisma.profileQuestionResult.groupBy({
