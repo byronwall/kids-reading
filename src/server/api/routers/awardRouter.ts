@@ -100,6 +100,9 @@ export const awardRouter = createTRPCRouter({
         select: {
           imageId: true,
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
 
       // filter out any images that are already assigned to the profile
