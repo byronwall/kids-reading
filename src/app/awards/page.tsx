@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+import { Icons } from "~/components/common/icons";
 import {
   Card,
   CardContent,
@@ -12,6 +15,8 @@ import { type RouterOutputs } from "~/utils/api";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
 import { AwardList } from "~/components/awards/AwardList";
 import { AwardImageChoice } from "~/components/awards/AwardImageChoice";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 
 export type Award =
   RouterOutputs["awardRouter"]["getAllAwardsForProfile"][number];
@@ -22,7 +27,7 @@ export type AwardImage =
 export default function AwardsPage() {
   const { data: awards } = useQuerySsr(trpc.awardRouter.getAllAwardsForProfile);
 
-  const { data: allAwardImages } = useQuerySsr(
+  const { data: allAwardImages = [] } = useQuerySsr(
     trpc.awardRouter.getAllAwardImages,
     {
       shouldLimitToProfile: true,
@@ -56,9 +61,62 @@ export default function AwardsPage() {
   const nextSentenceAward =
     Math.ceil(((currentSentenceCount ?? 0) + 1) / 10) * 10;
 
+  const [awardImagesShuffled, setAwardImagesShuffled] = useState<AwardImage[]>(
+    allAwardImages.slice(0, 50)
+  );
+
+  useEffect(() => {
+    setAwardImagesShuffled(allAwardImages.slice(0, 50));
+  }, [allAwardImages]);
+
   return (
     <div className="flex flex-col items-center gap-4">
       <h1>Awards</h1>
+
+      {hasUnclaimedAwards && (
+        <Card className="max-w-4xl">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-center gap-4">
+              Pick new awards
+              <Button
+                onClick={() => {
+                  setAwardImagesShuffled(
+                    allAwardImages?.sort(() => Math.random() - 0.5).slice(0, 50)
+                  );
+                }}
+                variant={"outline"}
+              >
+                <Icons.shuffle className="h-6 w-6" />
+              </Button>
+            </CardTitle>
+            <CardDescription>
+              Click an image to add to your awards.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div className="flex flex-wrap gap-2">
+              {awards
+                ?.filter((award) => !award.imageId)
+                .map((award) => (
+                  <Badge key={award.id} className="text-xl">
+                    {getSimpleTextForAward(award)}
+                  </Badge>
+                ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {(awardImagesShuffled ?? []).map((image) => (
+                <AwardImageChoice
+                  key={image.id}
+                  image={image}
+                  shouldClickToClaim={hasUnclaimedAwards}
+                />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card className="max-w-4xl">
         <CardHeader>
           <CardTitle>Word count awards</CardTitle>
@@ -98,28 +156,17 @@ export default function AwardsPage() {
           <AwardList awards={wordMasteryAwards} />
         </CardContent>
       </Card>
-
-      {hasUnclaimedAwards && (
-        <Card className="max-w-4xl">
-          <CardHeader>
-            <CardTitle>Pick new awards</CardTitle>
-            <CardDescription>
-              Click an image to add to your awards.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {(allAwardImages ?? []).map((image) => (
-                <AwardImageChoice
-                  key={image.id}
-                  image={image}
-                  shouldClickToClaim={hasUnclaimedAwards}
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
+}
+
+function getSimpleTextForAward(award: Award) {
+  switch (award.awardType) {
+    case "WORD_COUNT":
+      return `${award.awardValue} words`;
+    case "SENTENCE_COUNT":
+      return `${award.awardValue} sentences`;
+    case "WORD_MASTERY":
+      return `${award.word?.word}`;
+  }
 }

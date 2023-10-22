@@ -34,6 +34,7 @@ import {
   type LucideIcon,
   ListPlus,
   Baseline,
+  Shuffle,
   ArrowLeft,
   Star,
   Trophy,
@@ -42,6 +43,7 @@ import {
 export type Icon = LucideIcon;
 
 export const Icons = {
+  shuffle: Shuffle,
   trophy: Trophy,
   star: Star,
   circle: Circle,
