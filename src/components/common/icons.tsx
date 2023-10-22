@@ -14,6 +14,7 @@ import {
   Loader2,
   type LucideProps,
   Moon,
+  Menu,
   MoreVertical,
   Pizza,
   Plus,
@@ -43,6 +44,7 @@ import {
 export type Icon = LucideIcon;
 
 export const Icons = {
+  menu: Menu,
   shuffle: Shuffle,
   trophy: Trophy,
   star: Star,
