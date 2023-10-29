@@ -25,6 +25,9 @@ export const awardRouter = createTRPCRouter({
         image: true,
         word: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
   }),
 
@@ -77,6 +80,24 @@ export const awardRouter = createTRPCRouter({
       await prisma.awardImages.delete({
         where: {
           id: input.imageId,
+        },
+      });
+    }),
+
+  removeImageFromAward: protectedProcedure
+    .input(
+      z.object({
+        awardId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // find any awards using that id and set to blank
+      await prisma.profileAward.update({
+        where: {
+          id: input.awardId,
+        },
+        data: {
+          imageId: null,
         },
       });
     }),

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { trpc } from "~/lib/trpc/client";
 import { type AwardImage } from "~/app/awards/page";
 import { ButtonLoading } from "~/components/common/ButtonLoading";
+import { Icons } from "~/components/common/icons";
 
 export function AwardImageChoice({
   image,
@@ -18,6 +19,8 @@ export function AwardImageChoice({
   const utils = trpc.useContext();
 
   const addImageIdToAward = trpc.awardRouter.addImageIdToAward.useMutation();
+
+  const isLoading = addImageIdToAward.isLoading;
 
   const handleAddImageIdToAward = async (imageId: string) => {
     // confirm add
@@ -46,14 +49,21 @@ export function AwardImageChoice({
   };
 
   return (
-    <div>
+    <div className="relative">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Icons.spinner className="h-16 w-16 animate-spin rounded-full bg-white" />
+        </div>
+      )}
       <Image
         key={image.id}
         src={image.imageUrl}
         alt={"Award image"}
         width={256}
         height={256}
-        onClick={() => shouldClickToClaim && handleAddImageIdToAward(image.id)}
+        onClick={() =>
+          !isLoading && shouldClickToClaim && handleAddImageIdToAward(image.id)
+        }
       />
       {shouldShowDelete && (
         <ButtonLoading

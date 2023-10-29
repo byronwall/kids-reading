@@ -39,11 +39,15 @@ import {
   ArrowLeft,
   Star,
   Trophy,
+  BadgeDollarSign,
+  BadgeCent,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  badgeCent: BadgeCent,
+  badgeDollarSign: BadgeDollarSign,
   menu: Menu,
   shuffle: Shuffle,
   trophy: Trophy,
