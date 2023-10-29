@@ -94,7 +94,7 @@ export default function AwardsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <div className="flex flex-wrap gap-2">
+            <div className="sticky top-0 flex flex-wrap justify-center gap-2 bg-gray-100 p-2">
               {awards
                 ?.filter((award) => !award.imageId)
                 .map((award) => (
@@ -117,45 +117,49 @@ export default function AwardsPage() {
         </Card>
       )}
 
-      <Card className="max-w-4xl">
-        <CardHeader>
-          <CardTitle>Word count awards</CardTitle>
-          <CardDescription>
-            Word count awards are given every 100 correct words.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>Current word count: {currentWordCount}</p>
-          <p>Next award at: {nextWordAward}</p>
-          <AwardList awards={wordCountAwards} />
-        </CardContent>
-      </Card>
+      {!hasUnclaimedAwards && (
+        <>
+          <Card className="max-w-4xl">
+            <CardHeader>
+              <CardTitle>Word count awards</CardTitle>
+              <CardDescription>
+                Word count awards are given every 100 correct words.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Current word count: {currentWordCount}</p>
+              <p>Next award at: {nextWordAward}</p>
+              <AwardList awards={wordCountAwards} />
+            </CardContent>
+          </Card>
 
-      <Card className="max-w-4xl">
-        <CardHeader>
-          <CardTitle>Sentence count awards</CardTitle>
-          <CardDescription>
-            Awards are given every 10 sentences.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>Current sentence count: {currentSentenceCount}</p>
-          <p>Next award at: {nextSentenceAward}</p>
-          <AwardList awards={sentenceCountAwards} />
-        </CardContent>
-      </Card>
+          <Card className="max-w-4xl">
+            <CardHeader>
+              <CardTitle>Sentence count awards</CardTitle>
+              <CardDescription>
+                Awards are given every 10 sentences.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Current sentence count: {currentSentenceCount}</p>
+              <p>Next award at: {nextSentenceAward}</p>
+              <AwardList awards={sentenceCountAwards} />
+            </CardContent>
+          </Card>
 
-      <Card className="max-w-4xl">
-        <CardHeader>
-          <CardTitle>Word mastery awards</CardTitle>
-          <CardDescription>
-            Given when the interval on a word reaches the max: 60d.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <AwardList awards={wordMasteryAwards} />
-        </CardContent>
-      </Card>
+          <Card className="max-w-4xl">
+            <CardHeader>
+              <CardTitle>Word mastery awards</CardTitle>
+              <CardDescription>
+                Given when the interval on a word reaches the max: 60d.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AwardList awards={wordMasteryAwards} />
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
 }

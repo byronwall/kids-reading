@@ -81,6 +81,24 @@ export const awardRouter = createTRPCRouter({
       });
     }),
 
+  removeImageFromAward: protectedProcedure
+    .input(
+      z.object({
+        awardId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // find any awards using that id and set to blank
+      await prisma.profileAward.update({
+        where: {
+          id: input.awardId,
+        },
+        data: {
+          imageId: null,
+        },
+      });
+    }),
+
   getAllAwardImages: protectedProcedure
     .input(
       z.object({
