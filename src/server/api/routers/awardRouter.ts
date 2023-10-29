@@ -25,6 +25,9 @@ export const awardRouter = createTRPCRouter({
         image: true,
         word: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
   }),
 
