@@ -2,10 +2,18 @@
 
 import { useParams } from "next/navigation";
 
+import { getSyllables } from "~/lib/splitArpabet";
+
 export default function WordPage() {
   const params = useParams();
 
   const word = params?.word ?? "";
+
+  if (typeof word !== "string") {
+    throw new Error("Word is not a string");
+  }
+
+  const { syllables, stressLevels, arpabet } = getSyllables(word);
 
   const phonicsInfo = [
     { label: "Syllables", value: "2" },
@@ -47,64 +55,75 @@ export default function WordPage() {
     </svg>
   );
 
+  // Define utility classes
+  const sectionStyles = "py-12 md:py-24 lg:py-32";
+  const titleStyles = "mb-2 text-3xl font-semibold";
+  const textStyles = "text-lg text-gray-700";
+
   return (
-    <div>
+    <div className="container mx-auto max-w-2xl">
       <h1>Word Page</h1>
       <p>word: {word}</p>
 
-      <section className="w-full py-12 md:py-24 lg:py-32">
-        <div className="container px-4 md:px-6">
-          <div className="grid gap-6 lg:grid-cols-2 lg:gap-12">
-            <div className="flex flex-col space-y-4">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                Phonics
-              </h2>
-              <p className="max-w-[600px] text-zinc-500 dark:text-zinc-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Pronounced as /fɒnɪks/
-              </p>
-              <ul className="grid gap-2 py-4">
-                {phonicsInfo.map((info) => (
-                  <li key={info.label}>
-                    {renderIcon()}
-                    {info.label}: {info.value}
-                  </li>
-                ))}
-              </ul>
-              <p className="max-w-[600px] text-zinc-500 dark:text-zinc-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Phonics is a method of teaching reading and spelling that
-                stresses symbol-sound relationships.
-              </p>
-            </div>
+      <pre>
+        <code>
+          {JSON.stringify({ arpabet, syllables, stressLevels }, null, 2)}
+        </code>
+      </pre>
+
+      <section className={`${sectionStyles} px-4 md:px-6`}>
+        <div className="grid gap-6 lg:grid-cols-2 lg:gap-12">
+          <div className="flex flex-col space-y-4">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+              Phonics
+            </h2>
+            <p className="max-w-[600px] text-zinc-500 dark:text-zinc-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+              Pronounced as /fɒnɪks/
+            </p>
+            <ul className="grid gap-2 py-4">
+              {phonicsInfo.map((info) => (
+                <li key={info.label}>
+                  {renderIcon()}
+                  {info.label}: {info.value}
+                </li>
+              ))}
+            </ul>
+            <p className="max-w-[600px] text-zinc-500 dark:text-zinc-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+              Phonics is a method of teaching reading and spelling that stresses
+              symbol-sound relationships.
+            </p>
           </div>
         </div>
       </section>
 
       <section className="p-8">
         <div className="mx-auto max-w-3xl">
-          <h1 className="mb-2 text-4xl font-semibold">{wordInfo.title}</h1>
+          <h1 className={`${titleStyles} text-4xl`}>{wordInfo.title}</h1>
           <p className="mb-4 text-lg font-semibold text-gray-500">
             {wordInfo.pronunciation}
           </p>
           <hr className="mb-6" />
           <div className="mb-8">
-            <h2 className="mb-2 text-3xl font-semibold">Definition:</h2>
-            <p className="text-lg text-gray-700">{wordInfo.definition}</p>
+            <h2 className={titleStyles}>Definition:</h2>
+            <p className={textStyles}>{wordInfo.definition}</p>
           </div>
           <div className="mb-8">
-            <h2 className="mb-2 text-3xl font-semibold">Examples:</h2>
-            <ul className="ml-5 list-disc text-lg text-gray-700">
+            <h2 className={titleStyles}>Examples:</h2>
+            <ul className="ml-5 list-disc">
               {wordInfo.examples.map((example, index) => (
-                <li key={index}>{example}</li>
+                <li key={index} className={textStyles}>
+                  {example}
+                </li>
               ))}
             </ul>
           </div>
           <div className="mb-8">
-            <h2 className="mb-2 text-3xl font-semibold">
-              Related Phonics Rules:
-            </h2>
-            <ul className="ml-5 list-disc text-lg text-gray-700">
+            <h2 className={titleStyles}>Related Phonics Rules:</h2>
+            <ul className="ml-5 list-disc">
               {wordInfo.relatedPhonics.map((rule, index) => (
-                <li key={index}>{rule}</li>
+                <li key={index} className={textStyles}>
+                  {rule}
+                </li>
               ))}
             </ul>
           </div>
