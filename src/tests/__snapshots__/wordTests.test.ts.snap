@@ -1,0 +1,249 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`syllables for attention 1`] = `
+{
+  "arpabet": "AH0 T EH1 N SH AH0 N",
+  "stressLevels": [
+    0,
+    1,
+    0,
+  ],
+  "syllables": [
+    "AH",
+    "T EH N",
+    "SH AH N",
+  ],
+}
+`;
+
+exports[`syllables for believe 1`] = `
+{
+  "arpabet": "B IH0 L IY1 V",
+  "stressLevels": [
+    0,
+    1,
+  ],
+  "syllables": [
+    "B IH",
+    "L IY V",
+  ],
+}
+`;
+
+exports[`syllables for church 1`] = `
+{
+  "arpabet": "CH ER1 CH",
+  "stressLevels": [
+    1,
+  ],
+  "syllables": [
+    "CH ER CH",
+  ],
+}
+`;
+
+exports[`syllables for comfortable 1`] = `
+{
+  "arpabet": "K AH1 M F ER0 T AH0 B AH0 L",
+  "stressLevels": [
+    1,
+    0,
+    0,
+    0,
+  ],
+  "syllables": [
+    "K AH M",
+    "F ER",
+    "T AH",
+    "B AH L",
+  ],
+}
+`;
+
+exports[`syllables for constable 1`] = `
+{
+  "arpabet": "K AA1 N S T AH0 B AH0 L",
+  "stressLevels": [
+    1,
+    0,
+    0,
+  ],
+  "syllables": [
+    "K AA N",
+    "S T AH",
+    "B AH L",
+  ],
+}
+`;
+
+exports[`syllables for couch 1`] = `
+{
+  "arpabet": "K AW1 CH",
+  "stressLevels": [
+    1,
+  ],
+  "syllables": [
+    "K AW CH",
+  ],
+}
+`;
+
+exports[`syllables for dictatorship 1`] = `
+{
+  "arpabet": "D IH0 K T EY1 T ER0 SH IH2 P",
+  "stressLevels": [
+    0,
+    1,
+    0,
+    2,
+  ],
+  "syllables": [
+    "D IH K",
+    "T EY",
+    "T ER",
+    "SH IH P",
+  ],
+}
+`;
+
+exports[`syllables for dog 1`] = `
+{
+  "arpabet": "D AO1 G",
+  "stressLevels": [
+    1,
+  ],
+  "syllables": [
+    "D AO G",
+  ],
+}
+`;
+
+exports[`syllables for happiness 1`] = `
+{
+  "arpabet": "HH AE1 P IY0 N AH0 S",
+  "stressLevels": [
+    1,
+    0,
+    0,
+  ],
+  "syllables": [
+    "HH AE",
+    "P IY",
+    "N AH S",
+  ],
+}
+`;
+
+exports[`syllables for journey 1`] = `
+{
+  "arpabet": "JH ER1 N IY0",
+  "stressLevels": [
+    1,
+    0,
+  ],
+  "syllables": [
+    "JH ER",
+    "N IY",
+  ],
+}
+`;
+
+exports[`syllables for kitten 1`] = `
+{
+  "arpabet": "K IH1 T AH0 N",
+  "stressLevels": [
+    1,
+    0,
+  ],
+  "syllables": [
+    "K IH",
+    "T AH N",
+  ],
+}
+`;
+
+exports[`syllables for loyal 1`] = `
+{
+  "arpabet": "L OY1 AH0 L",
+  "stressLevels": [
+    1,
+    0,
+  ],
+  "syllables": [
+    "L OY",
+    "AH L",
+  ],
+}
+`;
+
+exports[`syllables for ocean 1`] = `
+{
+  "arpabet": "OW1 SH AH0 N",
+  "stressLevels": [
+    1,
+    0,
+  ],
+  "syllables": [
+    "OW",
+    "SH AH N",
+  ],
+}
+`;
+
+exports[`syllables for potato 1`] = `
+{
+  "arpabet": "P AH0 T EY1 T OW2",
+  "stressLevels": [
+    0,
+    1,
+    2,
+  ],
+  "syllables": [
+    "P AH",
+    "T EY",
+    "T OW",
+  ],
+}
+`;
+
+exports[`syllables for squirrel 1`] = `
+{
+  "arpabet": "S K W ER1 AH0 L",
+  "stressLevels": [
+    1,
+    0,
+  ],
+  "syllables": [
+    "S K W ER",
+    "AH L",
+  ],
+}
+`;
+
+exports[`syllables for suffering 1`] = `
+{
+  "arpabet": "S AH1 F ER0 IH0 NG",
+  "stressLevels": [
+    1,
+    0,
+    0,
+  ],
+  "syllables": [
+    "S AH",
+    "F ER",
+    "IH NG",
+  ],
+}
+`;
+
+exports[`syllables for throat 1`] = `
+{
+  "arpabet": "TH R OW1 T",
+  "stressLevels": [
+    1,
+  ],
+  "syllables": [
+    "TH R OW T",
+  ],
+}
+`;
