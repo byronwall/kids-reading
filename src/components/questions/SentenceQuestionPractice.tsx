@@ -27,7 +27,7 @@ type WordWithSentence =
 export type WordToRender = {
   displayWord: string;
   word: WordWithSentence["words"][0] | undefined;
-  score: number | undefined;
+  score: number;
 };
 
 export function SentenceQuestionPractice() {
@@ -50,7 +50,7 @@ export function SentenceQuestionPractice() {
     setActiveQuestionIndex((prevIndex) => prevIndex - 1);
   };
 
-  const [fontSize, setFontSize] = useLocalStorage("sentenceFontSize", 5);
+  const [fontSize, setFontSize] = useLocalStorage("sentenceFontSize", 3.5);
 
   const { data: minTimeForNextQuestion } =
     trpc.questionRouter.getMinTimeForNextQuestion.useQuery();
@@ -74,7 +74,7 @@ export function SentenceQuestionPractice() {
         return {
           displayWord: _word,
           word: undefined,
-          score: undefined,
+          score: 0,
         };
       }
 
@@ -96,7 +96,7 @@ export function SentenceQuestionPractice() {
 
   // link the word to the words in the sentence
 
-  const handleScore = (word: WordToRender, score: number | undefined) => {
+  const handleScore = (word: WordToRender, score: number) => {
     // update the score
     const newWordsToRender = wordsToRender.map((wordToRender) => {
       if (wordToRender.word?.word === word.word?.word) {
