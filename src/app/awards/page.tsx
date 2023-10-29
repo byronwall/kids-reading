@@ -70,7 +70,7 @@ export default function AwardsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <div className="sticky top-0 flex flex-wrap justify-center gap-2 bg-gray-100 p-2">
+            <div className="sticky top-0 z-10 flex flex-wrap justify-center gap-2 bg-gray-100 p-2">
               {awards
                 ?.filter((award) => !award.imageId)
                 .map((award) => (
