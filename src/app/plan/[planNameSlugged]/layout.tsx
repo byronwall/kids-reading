@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <div className="grid-sidebar w-full">
       <div
-        className="sticky top-0 flex flex-col gap-2 overflow-y-auto text-left"
+        className=" top-0 flex flex-col gap-2 overflow-y-auto text-left sm:sticky"
         style={{
           maxHeight: "calc(100vh - 4rem)",
         }}
@@ -54,23 +54,25 @@ export default function RootLayout({
           </span>
         </Link>
 
-        {links.map(({ href, label, icon }) => {
-          const Icon = Icons[icon ?? "arrowRight"];
+        <div className="hidden sm:block">
+          {links.map(({ href, label, icon }) => {
+            const Icon = Icons[icon ?? "arrowRight"];
 
-          return (
-            <Link href={href} key={href}>
-              <span
-                className={cn(
-                  path === href ? "bg-gray-200" : "transparent",
-                  "hover:text-accent-foreground group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100"
-                )}
-              >
-                <Icon className="mr-2 h-4 w-4 shrink-0" />
-                <span>{label}</span>
-              </span>
-            </Link>
-          );
-        })}
+            return (
+              <Link href={href} key={href}>
+                <span
+                  className={cn(
+                    path === href ? "bg-gray-200" : "transparent",
+                    "hover:text-accent-foreground group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100"
+                  )}
+                >
+                  <Icon className="mr-2 h-4 w-4 shrink-0" />
+                  <span>{label}</span>
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
       <div className="flex-1">{children}</div>
     </div>
