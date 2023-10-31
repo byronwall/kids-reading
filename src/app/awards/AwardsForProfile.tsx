@@ -44,7 +44,7 @@ export function AwardsForProfile() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
         <Card>
           <CardHeader>
             <CardTitle>Words</CardTitle>
