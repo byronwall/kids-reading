@@ -28,6 +28,7 @@ import { Icons } from "~/components/common/icons";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
 import { useSentenceAdder } from "~/hooks/useSentenceAdder";
+import { Button } from "~/components/ui/button";
 
 import type * as z from "zod";
 
@@ -96,17 +97,15 @@ export function SentenceCreatorForm(props: Props) {
   const __rawWordGroups = form.watch("__rawWordGroups");
 
   useEffect(() => {
-    if (form.formState.touchedFields.__rawWordGroups) {
-      const wordGroups = (__rawWordGroups ?? "").split("\n").map((line) =>
-        line
-          .trim()
-          .split(/\s+/)
-          .map((word) => word.trim())
-      );
+    const wordGroups = (__rawWordGroups ?? "").split("\n").map((line) =>
+      line
+        .trim()
+        .split(/\s+/)
+        .map((word) => word.trim())
+    );
 
-      form.setValue("wordGroups", wordGroups);
-    }
-  }, [__rawWordGroups, form.formState, form.setValue]);
+    form.setValue("wordGroups", wordGroups);
+  }, [__rawWordGroups, form.setValue]);
 
   const [newSentences, setNewSentences] = useState<string[]>([]);
 
@@ -150,6 +149,54 @@ export function SentenceCreatorForm(props: Props) {
                   <FormLabel>Word List</FormLabel>
                   <FormDescription>
                     Add words separated by spaces. Put on lines to group.
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(evt) => {
+                        evt.preventDefault();
+
+                        const newLocal = form.getValues("wordGroups");
+                        // shuffle into new groups of 3
+
+                        const newGroups =
+                          newLocal?.flatMap((group) =>
+                            group.map((c) => c.split(" "))
+                          ) ?? [];
+
+                        newGroups.sort(() => Math.random() - 0.5);
+
+                        const newGroups3 = [];
+
+                        while (newGroups.length > 0) {
+                          newGroups3.push(newGroups.splice(0, 3));
+                        }
+
+                        form.setValue(
+                          "__rawWordGroups",
+                          newGroups3.map((c) => c.join(" ")).join("\n")
+                        );
+                      }}
+                    >
+                      <Icons.shuffle className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(evt) => {
+                        evt.preventDefault();
+
+                        const newLocal = form.getValues("wordGroups");
+
+                        const newGroups =
+                          newLocal?.flatMap((group) => group) ?? [];
+
+                        newGroups.sort(() => Math.random() - 0.5);
+
+                        form.setValue("__rawWordGroups", newGroups.join(" "));
+                      }}
+                    >
+                      <Icons.combine className="h-4 w-4" />
+                    </Button>
                   </FormDescription>
                 </div>
                 <FormControl>

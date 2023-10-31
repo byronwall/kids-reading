@@ -41,11 +41,13 @@ import {
   Trophy,
   BadgeDollarSign,
   BadgeCent,
+  Combine,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  combine: Combine,
   badgeCent: BadgeCent,
   badgeDollarSign: BadgeDollarSign,
   menu: Menu,

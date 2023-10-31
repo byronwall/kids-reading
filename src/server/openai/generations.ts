@@ -116,10 +116,12 @@ export async function generateSentencesWithSettings(
     wordGroups.length == 0
       ? "Please give me 10 very simple sentences using long vowels, short vowels, and rhyming.  First grade level."
       : wordGroups.length == 1
-      ? `Please give me ${sentenceCount} very simple sentences using these words: ${wordGroups[0]!.join(
-          ", "
-        )}.`
-      : `Create a sentence for each line using the words given:\n ${wordGroups
+      ? `Please give me ${sentenceCount} sentences with a Fountas & Pinnell reading level of "${
+          settings.readingLevel
+        }" using these words: ${wordGroups[0]!.join(", ")}.`
+      : `Create a sentence with a Fountas & Pinnell reading level of "${
+          settings.readingLevel
+        }" for each line using the words given:\n ${wordGroups
           .map(
             (wordGroup, idx) => `Sentence ${idx + 1}: ${wordGroup.join(", ")}`
           )
@@ -140,7 +142,6 @@ export async function generateSentencesWithSettings(
     settings.includeAlliteration
       ? "Try to use alliterations with the target words."
       : "",
-    `Aim for a Fountas & Pinnell reading level of ${settings.readingLevel}.`,
   ];
 
   const messages: ChatCompletionMessageParam[] = [
