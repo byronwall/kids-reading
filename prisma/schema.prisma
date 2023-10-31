@@ -161,6 +161,9 @@ model ProfileWordSummary {
 
     // interval stored in days
     interval Int @default(1)
+
+    // unqiue const on profileId and wordId
+    @@unique([profileId, wordId])
 }
 
 // ---- LESSON PLANS ---- //
