@@ -43,7 +43,34 @@ export function AwardsForProfile() {
   const recentFiftyAwards = awards?.slice(0, 30);
 
   return (
-    <div>
+    <div className="flex flex-col items-center gap-4">
+      <div className="flex gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Words</CardTitle>
+          </CardHeader>
+          <CardContent className="text-4xl font-bold">
+            {currentWordCount}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Sentences</CardTitle>
+          </CardHeader>
+          <CardContent className="text-4xl font-bold">
+            {currentSentenceCount}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Mastered</CardTitle>
+          </CardHeader>
+          <CardContent className="text-4xl font-bold">
+            {wordMasteryAwards?.length}
+          </CardContent>
+        </Card>
+      </div>
+
       <Tabs defaultValue="recent">
         <TabsList>
           <TabsTrigger value="recent">Recent First</TabsTrigger>
