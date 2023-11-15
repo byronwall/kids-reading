@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   AlertTriangle,
   ArrowRight,
@@ -9,7 +10,6 @@ import {
   File,
   FileText,
   HelpCircle,
-  Image,
   Laptop,
   Loader2,
   type LucideProps,
@@ -24,7 +24,6 @@ import {
   Twitter,
   User,
   X,
-  BookOpen as Book,
   ChevronDown,
   ZoomIn,
   ZoomOut,
@@ -61,7 +60,9 @@ export const Icons = {
   userPlus: UserPlus,
   thumbsUp: ThumbsUp,
   thumbsDown: ThumbsDown,
-  logo: Book,
+  logo: () => (
+    <Image src="/favicon-32x32.png" alt="fawnix.rocks" width={32} height={32} />
+  ),
   close: X,
   spinner: Loader2,
   chevronLeft: ChevronLeft,
@@ -69,7 +70,6 @@ export const Icons = {
   trash: Trash,
   post: FileText,
   page: File,
-  media: Image,
   settings: Settings,
   billing: CreditCard,
   ellipsis: MoreVertical,
