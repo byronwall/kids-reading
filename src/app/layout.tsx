@@ -17,13 +17,14 @@ import { NextAuthProvider } from "~/lib/auth/authProvider";
 import { GlobalNotifications } from "~/components/awards/GlobalNotifications";
 
 export const metadata: Metadata = {
-  title: "Kids Reading",
+  title: "fawnix.rocks",
   description: "A site to help practice reading with a kid.",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
+  manifest: "/site.webmanifest",
 };
 
 export default async function RootLayout({
