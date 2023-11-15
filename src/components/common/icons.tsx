@@ -61,7 +61,12 @@ export const Icons = {
   thumbsUp: ThumbsUp,
   thumbsDown: ThumbsDown,
   logo: () => (
-    <Image src="/favicon-32x32.png" alt="fawnix.rocks" width={32} height={32} />
+    <Image
+      src="/android-chrome-512x512.png"
+      alt="fawnix.rocks"
+      width={32}
+      height={32}
+    />
   ),
   close: X,
   spinner: Loader2,
