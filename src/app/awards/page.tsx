@@ -69,7 +69,7 @@ export default function AwardsPage() {
               Click an image to add to your awards.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4">
+          <CardContent className="flex flex-col gap-4 p-1 sm:p-2 md:p-4">
             <div className="sticky top-0 z-10 flex flex-wrap justify-center gap-2 bg-gray-100 p-2">
               {awards
                 ?.filter((award) => !award.imageId)
@@ -80,7 +80,7 @@ export default function AwardsPage() {
                 ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
               {(awardImagesShuffled ?? []).map((image) => (
                 <AwardImageChoice
                   key={image.id}

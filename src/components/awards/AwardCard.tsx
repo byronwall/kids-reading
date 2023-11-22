@@ -58,8 +58,8 @@ export function AwardCard({ award }: { award: Award }) {
           key={award.id}
           src={award.image?.imageUrl ?? "/placeholder.jpeg"}
           alt={"Award image"}
-          width={256}
-          height={256}
+          width={512}
+          height={512}
           className={cn("rounded-md", {
             "border-4 border-yellow-400": !award.imageId,
           })}
