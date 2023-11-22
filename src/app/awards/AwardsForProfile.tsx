@@ -83,7 +83,7 @@ export function AwardsForProfile() {
               <CardTitle>Recent Awards</CardTitle>
               <CardDescription></CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-1 sm:p-2 md:p-4">
               <AwardList awards={recentFiftyAwards} />
             </CardContent>
           </Card>
