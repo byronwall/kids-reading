@@ -70,6 +70,10 @@ model Profile {
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String
 
+    // use these to filter sentences for reading levels
+    minimumWordCount Int @default(0)
+    maximumWordCount Int @default(1000)
+
     results   ProfileQuestionResult[]
     summaries ProfileWordSummary[]
     lessons   ProfileLessonFocus[]
@@ -115,6 +119,9 @@ model Sentence {
 
     // track deletion so sentences are not displayed in new questions
     isDeleted Boolean @default(false)
+
+    // word count used for basic filtering - will maintained by applicaiton logic
+    wordCount Int @default(0)
 }
 
 model ProfileQuestionResult {
