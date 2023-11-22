@@ -108,7 +108,8 @@ export const questionRouter = createTRPCRouter({
   }),
 
   getPossibleSentences: protectedProcedure.query(async ({ ctx }) => {
-    const profileId = ctx.session.user.activeProfile.id;
+    const activeProfile = ctx.session.user.activeProfile;
+    const profileId = activeProfile.id;
     const wordsToFind = await getWordsForProfile(profileId);
 
     const focusedLessons = await prisma.profileLessonFocus.findMany({
@@ -138,6 +139,10 @@ export const questionRouter = createTRPCRouter({
               in: wordsToFind.map((word) => word.wordId),
             },
           },
+        },
+        wordCount: {
+          gte: activeProfile.minimumWordCount,
+          lte: activeProfile.maximumWordCount,
         },
         isDeleted: false,
       },

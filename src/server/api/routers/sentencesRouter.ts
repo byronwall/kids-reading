@@ -17,6 +17,39 @@ import {
 const prisma = new PrismaClient();
 
 export const sentencesRouter = createTRPCRouter({
+  updateWordCountForAllSentences: protectedProcedure.mutation(async () => {
+    const sentences = await prisma.sentence.findMany({
+      where: {
+        wordCount: {
+          lte: 0,
+        },
+      },
+      include: {
+        words: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    for (const sentence of sentences) {
+      console.log("sentence", sentence);
+      await prisma.sentence.update({
+        where: {
+          id: sentence.id,
+        },
+        data: {
+          wordCount: sentence.words.length,
+        },
+      });
+    }
+
+    return {
+      message: "Successfully updated word count for all sentences",
+    };
+  }),
+
   getAllSentences: protectedProcedure.query(async () => {
     const sentences = await prisma.sentence.findMany({
       include: {
@@ -179,6 +212,7 @@ async function processSentencesIntoDb(sentences: string[]) {
       data: {
         fullSentence: sentence.sentence,
         metaInfo: {},
+        wordCount: sentence.words.length,
         words: {
           connectOrCreate: sentence.words.map((word) => ({
             where: {

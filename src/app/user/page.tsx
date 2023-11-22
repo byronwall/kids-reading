@@ -15,6 +15,7 @@ import { Button } from "~/components/ui/button";
 import { useActiveProfile } from "~/hooks/useActiveProfile";
 import { cn } from "~/lib/utils";
 import { trpc } from "~/lib/trpc/client";
+import { type RouterInputs } from "~/utils/api";
 
 export default function UserPage() {
   const utils = trpc.useContext();
@@ -39,6 +40,20 @@ export default function UserPage() {
     await utils.userRouter.getAllProfiles.invalidate();
   };
 
+  const updateProfileMutation = trpc.userRouter.updateProfile.useMutation();
+
+  const handleUpdateProfile = async (
+    id: string,
+    data: Partial<RouterInputs["userRouter"]["updateProfile"]>
+  ) => {
+    await updateProfileMutation.mutateAsync({
+      ...data,
+      profileId: id,
+    });
+
+    await utils.userRouter.getAllProfiles.invalidate();
+  };
+
   const { setActiveProfile, activeProfile } = useActiveProfile();
 
   return (
@@ -53,7 +68,7 @@ export default function UserPage() {
         <CardContent>
           <section>
             <form className="flex items-center gap-2">
-              <div className="grid w-full max-w-sm items-center gap-1.5">
+              <div className="grid w-full  items-center gap-1.5">
                 <Label htmlFor="profileName">Add profile name</Label>
                 <Input
                   type="profileName"
@@ -74,33 +89,83 @@ export default function UserPage() {
           </section>
           <section className="mt-8">
             <h3 className="mb-2 text-lg font-medium">Profiles</h3>
-            <ul className="divide-y divide-gray-200 rounded-md border border-gray-200">
-              {allProfiles?.map((profile) => (
-                <li
-                  key={profile.id}
-                  className="flex items-center justify-between py-3 pl-3 pr-4 text-sm"
-                >
-                  <div className="flex w-0 flex-1 items-center">
-                    <span
-                      className={cn("ml-2 w-0 flex-1 truncate", {
-                        "bg-slate-400": profile.id === activeProfile?.id,
-                      })}
+            <table className="divide-y divide-gray-200 border border-gray-200">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-sm">Name</th>
+                  <th className="px-4 py-2 text-sm">Min Word Count</th>
+                  <th className="px-4 py-2 text-sm">Max Word Count</th>
+                  <th className="px-4 py-2 text-sm">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allProfiles?.map((profile) => (
+                  <tr key={profile.id}>
+                    <td
+                      className={cn(
+                        "cursor-pointer py-3 pl-3 pr-4 text-sm underline",
+                        {
+                          "bg-slate-400": profile.id === activeProfile?.id,
+                        }
+                      )}
+                      onClick={() => {
+                        const newName = prompt("Enter new name", profile.name);
+                        if (newName) {
+                          void handleUpdateProfile(profile.id, {
+                            profileName: newName,
+                          });
+                        }
+                      }}
                     >
                       {profile.name}
-                    </span>
-                    <Button
-                      type="button"
+                    </td>
+                    <td
+                      className="cursor-pointer py-3 pl-3 pr-4 text-sm underline"
                       onClick={() => {
-                        void setActiveProfile(profile);
+                        const newMin = prompt(
+                          "Enter new minimum word count",
+                          String(profile.minimumWordCount)
+                        );
+                        if (newMin) {
+                          void handleUpdateProfile(profile.id, {
+                            minimumWordCount: parseInt(newMin),
+                          });
+                        }
                       }}
-                      className="ml-2"
                     >
-                      Set Active
-                    </Button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                      {profile.minimumWordCount}
+                    </td>
+                    <td
+                      className="cursor-pointer py-3 pl-3 pr-4 text-sm underline"
+                      onClick={() => {
+                        const newMax = prompt(
+                          "Enter new maximum word count",
+                          String(profile.maximumWordCount)
+                        );
+                        if (newMax) {
+                          void handleUpdateProfile(profile.id, {
+                            maximumWordCount: parseInt(newMax),
+                          });
+                        }
+                      }}
+                    >
+                      {profile.maximumWordCount}
+                    </td>
+                    <td className="py-3 pl-3 pr-4 text-sm">
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          void setActiveProfile(profile);
+                        }}
+                        className="ml-2"
+                      >
+                        Set Active
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </section>
         </CardContent>
       </Card>
