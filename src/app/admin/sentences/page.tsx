@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { AddSentenceForm } from "~/components/sentences/AddSentenceForm";
 import { EditSentenceForm } from "~/components/sentences/EditSentenceForm";
 import { useSentenceAdder } from "~/hooks/useSentenceAdder";
+import { ButtonLoading } from "~/components/common/ButtonLoading";
 
 export default function AdminSentences() {
   const utils = trpc.useContext();
@@ -45,12 +46,30 @@ export default function AdminSentences() {
     await utils.sentencesRouter.getAllSentences.invalidate();
   };
 
+  const updateWordCountMutation =
+    trpc.sentencesRouter.updateWordCountForAllSentences.useMutation();
+
+  const handleUpdateWordCount = async () => {
+    await updateWordCountMutation.mutateAsync();
+
+    // invalidate the query so that it will refetch
+    await utils.sentencesRouter.getAllSentences.invalidate();
+  };
+
   return (
     <div>
       <div>
         <h1>add sentence</h1>
         <AddSentenceForm />
       </div>
+
+      <ButtonLoading
+        onClick={() => handleUpdateWordCount()}
+        isLoading={updateWordCountMutation.isLoading}
+      >
+        Add word count to all sentences
+        <Icons.add className="ml-2 h-5 w-5" />
+      </ButtonLoading>
 
       <div>
         <h1>GPT create sentences</h1>
