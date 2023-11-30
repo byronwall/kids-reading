@@ -7,3 +7,5 @@ export type DetailedLearningPlan =
   RouterOutputs["planRouter"]["getSingleLearningPlan"];
 
 export type DetailedLesson = DetailedLearningPlan["lessons"][0];
+
+export type Profile = RouterOutputs["userRouter"]["getAllProfiles"][number];

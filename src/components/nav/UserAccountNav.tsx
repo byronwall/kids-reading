@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Icons } from "~/components/common/icons";
+import { useQuerySsr } from "~/hooks/useQuerySsr";
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
   user: Pick<User, "name" | "image" | "email">;
@@ -23,7 +24,7 @@ interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
 export function UserAccountNav({ user }: UserAccountNavProps) {
   const { activeProfile, setActiveProfile } = useActiveProfile();
 
-  const { data: allProfiles } = trpc.userRouter.getAllProfiles.useQuery();
+  const { data: allProfiles } = useQuerySsr(trpc.userRouter.getAllProfiles);
 
   return (
     <div className="flex gap-2">
