@@ -15,7 +15,7 @@ type DashLink = {
 // TODO: improve the icons
 const links: DashLink[] = [
   { href: "/admin", label: "Home", icon: "check" },
-  { href: "/admin/sentences", label: "Sentences", icon: "logo" },
+  { href: "/admin/sentences", label: "Sentences", icon: "book" },
   { href: "/admin/words", label: "Words", icon: "pencil" },
   { href: "/admin/awards", label: "Awards", icon: "trophy" },
 ];
