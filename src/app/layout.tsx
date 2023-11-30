@@ -36,6 +36,7 @@ export default async function RootLayout({
 
   await callQuerySsrServer(appRouter.awardRouter.getAllAwardsForProfile);
   await callQuerySsrServer(appRouter.questionRouter.getFocusedWords);
+  await callQuerySsrServer(appRouter.userRouter.getAllProfiles);
 
   return (
     <html>

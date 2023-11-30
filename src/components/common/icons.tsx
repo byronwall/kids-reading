@@ -2,6 +2,7 @@ import Image from "next/image";
 import {
   AlertTriangle,
   ArrowRight,
+  Book,
   Check,
   Circle,
   ChevronLeft,
@@ -46,6 +47,7 @@ import {
 export type Icon = LucideIcon;
 
 export const Icons = {
+  book: Book,
   combine: Combine,
   badgeCent: BadgeCent,
   badgeDollarSign: BadgeDollarSign,

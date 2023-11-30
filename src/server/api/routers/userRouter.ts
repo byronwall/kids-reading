@@ -51,11 +51,19 @@ export const userRouter = createTRPCRouter({
         profileName: z.string().optional(),
         minimumWordCount: z.coerce.number().optional(),
         maximumWordCount: z.coerce.number().optional(),
+        sentenceThresholdForAward: z.coerce.number().optional(),
+        wordThresholdForAward: z.coerce.number().optional(),
       })
     )
     .mutation(async ({ input }) => {
-      const { profileId, profileName, minimumWordCount, maximumWordCount } =
-        input;
+      const {
+        profileId,
+        profileName,
+        minimumWordCount,
+        maximumWordCount,
+        sentenceThresholdForAward,
+        wordThresholdForAward,
+      } = input;
 
       const updatedProfile = await prisma.profile.update({
         where: {
@@ -65,6 +73,8 @@ export const userRouter = createTRPCRouter({
           name: profileName,
           minimumWordCount,
           maximumWordCount,
+          sentenceThresholdForAward,
+          wordThresholdForAward,
         },
       });
 

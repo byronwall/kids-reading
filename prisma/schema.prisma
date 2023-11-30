@@ -74,6 +74,10 @@ model Profile {
     minimumWordCount Int @default(0)
     maximumWordCount Int @default(1000)
 
+    // award related 
+    wordThresholdForAward     Int @default(100)
+    sentenceThresholdForAward Int @default(10)
+
     results   ProfileQuestionResult[]
     summaries ProfileWordSummary[]
     lessons   ProfileLessonFocus[]
