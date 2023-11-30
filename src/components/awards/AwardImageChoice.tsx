@@ -36,6 +36,7 @@ export function AwardImageChoice({
     });
 
     await utils.awardRouter.getAllAwardsForProfile.invalidate();
+    await utils.awardRouter.getAllAwardImages.invalidate();
   };
 
   const deleteImage = trpc.awardRouter.deleteImage.useMutation();
@@ -45,6 +46,7 @@ export function AwardImageChoice({
       imageId,
     });
 
+    await utils.awardRouter.getAllAwardImages.invalidate();
     await utils.awardRouter.getAllAwardImages.invalidate();
   };
 
