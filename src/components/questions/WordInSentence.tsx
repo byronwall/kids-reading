@@ -34,7 +34,7 @@ export function WordInSentence(props: {
     <>
       <div className={cn("cursor-pointer", color)} onClick={toggleScoreGoodBad}>
         <div
-          className={cn({
+          className={cn("font-serif", {
             "border-b-2 border-yellow-500": isFocused,
           })}
         >
