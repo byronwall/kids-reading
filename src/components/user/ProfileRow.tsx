@@ -63,6 +63,12 @@ export function ProfileRow(props: { profile: Profile }) {
     processFunc: (value) => parseInt(value),
   });
 
+  const confettiEvent = handlerFactory({
+    fieldName: "confettiWordTarget",
+    promptMessage: "Enter new confetti word target",
+    processFunc: (value) => parseInt(value),
+  });
+
   return (
     <tr key={profile.id}>
       <td
@@ -98,6 +104,13 @@ export function ProfileRow(props: { profile: Profile }) {
         onClick={bbb}
       >
         {profile.wordThresholdForAward}
+      </td>
+
+      <td
+        className="cursor-pointer py-3 pl-3 pr-4 text-sm underline"
+        onClick={confettiEvent}
+      >
+        {profile.confettiWordTarget}
       </td>
 
       <td className="py-3 pl-3 pr-4 text-sm">

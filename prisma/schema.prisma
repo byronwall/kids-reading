@@ -78,6 +78,9 @@ model Profile {
     wordThresholdForAward     Int @default(100)
     sentenceThresholdForAward Int @default(10)
 
+    // confetti related
+    confettiWordTarget Int @default(5000)
+
     results   ProfileQuestionResult[]
     summaries ProfileWordSummary[]
     lessons   ProfileLessonFocus[]

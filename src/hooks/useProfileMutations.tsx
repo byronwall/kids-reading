@@ -1,4 +1,5 @@
 "use client";
+
 import { trpc } from "~/lib/trpc/client";
 import { type RouterInputs } from "~/utils/api";
 
@@ -16,7 +17,8 @@ export function useProfileMutations() {
       profileId: id,
     });
 
-    await utils.userRouter.getAllProfiles.invalidate();
+    // force all to update
+    await utils.invalidate();
   };
 
   return { handleUpdateProfile };
