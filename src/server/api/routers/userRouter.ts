@@ -4,6 +4,18 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
 
 export const userRouter = createTRPCRouter({
+  getActiveProfile: protectedProcedure.query(async ({ ctx }) => {
+    const profileId = ctx.session.user.activeProfile.id;
+
+    const activeProfile = await prisma.profile.findFirst({
+      where: {
+        id: profileId,
+      },
+    });
+
+    return activeProfile;
+  }),
+
   addProfile: protectedProcedure
     .input(
       z.object({
@@ -53,6 +65,7 @@ export const userRouter = createTRPCRouter({
         maximumWordCount: z.coerce.number().optional(),
         sentenceThresholdForAward: z.coerce.number().optional(),
         wordThresholdForAward: z.coerce.number().optional(),
+        confettiWordTarget: z.coerce.number().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -63,6 +76,7 @@ export const userRouter = createTRPCRouter({
         maximumWordCount,
         sentenceThresholdForAward,
         wordThresholdForAward,
+        confettiWordTarget,
       } = input;
 
       const updatedProfile = await prisma.profile.update({
@@ -75,6 +89,7 @@ export const userRouter = createTRPCRouter({
           maximumWordCount,
           sentenceThresholdForAward,
           wordThresholdForAward,
+          confettiWordTarget,
         },
       });
 

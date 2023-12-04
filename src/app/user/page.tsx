@@ -80,6 +80,7 @@ export default function UserPage() {
                   <th className="px-4 py-2 text-sm">Max Word Count</th>
                   <th className="px-4 py-2 text-sm">Sentence Award</th>
                   <th className="px-4 py-2 text-sm">Word Award</th>
+                  <th className="px-4 py-2 text-sm">Confetti Word Target</th>
                   <th className="px-4 py-2 text-sm">Actions</th>
                 </tr>
               </thead>
