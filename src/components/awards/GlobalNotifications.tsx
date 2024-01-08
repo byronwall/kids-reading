@@ -25,7 +25,8 @@ export function GlobalNotifications() {
   const showConfetti = awards.some(
     (award) =>
       award.awardType === "WORD_COUNT" &&
-      award.awardValue === confettiWordTarget
+      award.awardValue === confettiWordTarget &&
+      !award.imageId
   );
 
   return (
