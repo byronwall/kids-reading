@@ -131,6 +131,7 @@ export async function generateSentencesWithSettings(
     "You are an assistant for a phonics learning program.",
     "Your task is to generate sentences for young kids to read aloud.",
     "The user will give you a list of words to use in the sentences.",
+    "The user will include a target reading level.  It's CRITICAL that you use words that are appropriate for that reading level.",
     "If the user gives you words on separate lines, try to use all words in the same sentences.  Ensure the sentence still makes sense.",
     "Return each sentence on a new line.",
     "Do not add any extra punctuation around the sentence.",
@@ -142,6 +143,7 @@ export async function generateSentencesWithSettings(
     settings.includeAlliteration
       ? "Try to use alliterations with the target words."
       : "",
+    "The user might give additional instructions on sentence length that you should follow.  Do not use their instructions in the sentence.",
   ];
 
   const messages: ChatCompletionMessageParam[] = [
@@ -158,7 +160,7 @@ export async function generateSentencesWithSettings(
 
   const chatCompletion = await openai.chat.completions.create({
     messages,
-    model: "gpt-4",
+    model: "gpt-4-1106-preview",
     presence_penalty: 0.4,
     temperature: 1,
   });
