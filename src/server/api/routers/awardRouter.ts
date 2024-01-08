@@ -147,7 +147,8 @@ export const awardRouter = createTRPCRouter({
         imageId: z.string(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
+      const profileId = ctx.session.user.activeProfile.id;
       let awardId = input.awardId;
 
       // find first null award and assign imageId to it
@@ -155,6 +156,7 @@ export const awardRouter = createTRPCRouter({
         const award = await prisma.profileAward.findFirst({
           where: {
             imageId: null,
+            profileId: profileId,
           },
         });
 
