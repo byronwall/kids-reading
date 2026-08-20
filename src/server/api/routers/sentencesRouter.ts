@@ -211,7 +211,7 @@ async function processSentencesIntoDb(sentences: string[]) {
       },
       data: {
         fullSentence: sentence.sentence,
-        metaInfo: {},
+      metaInfo: JSON.stringify({}),
         wordCount: sentence.words.length,
         words: {
           connectOrCreate: sentence.words.map((word) => ({
@@ -220,7 +220,7 @@ async function processSentencesIntoDb(sentences: string[]) {
             },
             create: {
               word,
-              metaInfo: {},
+        metaInfo: JSON.stringify({}),
             },
           })),
         },

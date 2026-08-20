@@ -261,7 +261,7 @@ export const questionRouter = createTRPCRouter({
         data: newWordIds.map((word) => ({
           profileId,
           wordId: word.id,
-          metaInfo: {},
+          metaInfo: JSON.stringify({}),
         })),
       });
     }),
@@ -289,7 +289,7 @@ export const questionRouter = createTRPCRouter({
       data: wordsToSchedule.map((word) => ({
         profileId,
         wordId: word.id,
-        metaInfo: {},
+        metaInfo: JSON.stringify({}),
       })),
     });
 
@@ -378,7 +378,7 @@ async function submitResultAndUpdateSchedule(
       score: score ?? -1, // will use -1 to flag a skipped entry for now
       profileId,
       groupId,
-      metaInfo: {},
+      metaInfo: JSON.stringify({}),
     },
   });
 
@@ -417,7 +417,7 @@ async function submitResultAndUpdateSchedule(
     create: {
       nextReviewDate: nextReviewDateWithInterval,
       interval: newInterval,
-      metaInfo: {},
+      metaInfo: JSON.stringify({}),
       profileId,
       wordId,
     },

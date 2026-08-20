@@ -45,7 +45,7 @@ export const planRouter = createTRPCRouter({
         data: lesson.words.map((word) => ({
           profileId,
           wordId: word.id,
-          metaInfo: {},
+          metaInfo: JSON.stringify({}),
         })),
         skipDuplicates: true,
       });
@@ -250,7 +250,7 @@ export const planRouter = createTRPCRouter({
                   },
                   create: {
                     word,
-                    metaInfo: {},
+                    metaInfo: JSON.stringify({}),
                   },
                 })),
               },
@@ -277,7 +277,7 @@ export const planRouter = createTRPCRouter({
               },
               create: {
                 word,
-                metaInfo: {},
+                metaInfo: JSON.stringify({}),
               },
             })),
           },

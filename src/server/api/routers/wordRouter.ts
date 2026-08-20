@@ -43,7 +43,7 @@ export const wordRouter = createTRPCRouter({
     await prisma.word.createMany({
       data: newWords.map((word) => ({
         word,
-        metaInfo: {}, // add metaInfo property
+        metaInfo: JSON.stringify({}), // add metaInfo property
       })),
     });
 

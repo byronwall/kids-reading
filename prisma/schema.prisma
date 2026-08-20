@@ -6,11 +6,7 @@ generator client {
 }
 
 datasource db {
-    provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+    provider = "sqlite"
     url      = env("DATABASE_URL")
 }
 
@@ -21,12 +17,12 @@ model Account {
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
+    refresh_token     String?
+    access_token      String?
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? @db.Text
+    id_token          String?
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -94,7 +90,7 @@ model Word {
     word String
 
     // this will grow into columns so it's easier to query?
-    metaInfo Json
+    metaInfo String @default("{}")
 
     summaries ProfileWordSummary[]
     sentences Sentence[]
@@ -111,7 +107,7 @@ model Sentence {
     id String @id @default(cuid())
 
     // this will include things like difficulty, etc
-    metaInfo Json
+    metaInfo String @default("{}")
 
     // this will include punctuation
     fullSentence String
@@ -136,7 +132,7 @@ model ProfileQuestionResult {
     createdAt DateTime @default(now())
 
     // this will grow into columns so it's easier to query?
-    metaInfo Json
+    metaInfo String @default("{}")
 
     // this will be used to group results together
     groupId String @default("")
@@ -159,7 +155,7 @@ model ProfileWordSummary {
     createdAt DateTime @default(now())
 
     // this will grow into columns so it's easier to query?
-    metaInfo Json
+    metaInfo String @default("{}")
 
     profileId String
     profile   Profile @relation(fields: [profileId], references: [id])
@@ -234,13 +230,6 @@ model ProfileLessonFocus {
 
 // ---- AWARD RELATED ---- //
 
-enum AwardType {
-    WORD_COUNT
-    SENTENCE_COUNT
-    WORD_MASTERY
-    LESSON_MASTERY
-}
-
 model ProfileAward {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
@@ -271,7 +260,7 @@ model AwardImages {
 
     imageUrl String
 
-    metaInfo Json
+    metaInfo String @default("{}")
     awards   ProfileAward[]
 
     // unique url

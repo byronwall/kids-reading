@@ -54,7 +54,7 @@ export const awardRouter = createTRPCRouter({
       await prisma.awardImages.createMany({
         data: input.imageUrls.map((url) => ({
           imageUrl: url,
-          metaInfo: {},
+          metaInfo: JSON.stringify({}),
         })),
         skipDuplicates: true,
       });
@@ -193,7 +193,7 @@ export const awardRouter = createTRPCRouter({
       await prisma.awardImages.create({
         data: {
           imageUrl: "/api/images/" + input.filename,
-          metaInfo: {},
+        metaInfo: JSON.stringify({}),
         },
       });
 
