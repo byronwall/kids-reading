@@ -79,16 +79,16 @@ mat
 #### Practice Sentences
 
 ```text
-The man can nap.
-I can tap the pan.
-The pen is in the mug.
-The pot is on the mat.
-The men met.
-The pet can nap.
-I see a tan map.
-The nut is on the top.
-The pig can tap the net.
-The cat is not in the pan.
+lesson-02-01-sentence-01 | The man can nap.
+lesson-02-01-sentence-02 | I can tap the pan.
+lesson-02-01-sentence-03 | The pen is in the mug.
+lesson-02-01-sentence-04 | The pot is on the mat.
+lesson-02-01-sentence-05 | The men met.
+lesson-02-01-sentence-06 | The pet can nap.
+lesson-02-01-sentence-07 | I see a tan map.
+lesson-02-01-sentence-08 | The nut is on the top.
+lesson-02-01-sentence-09 | The pig can tap the net.
+lesson-02-01-sentence-10 | The cat is not in the pan.
 ```
 
 #### Teacher Note
@@ -169,16 +169,16 @@ pot
 #### Practice Sentences
 
 ```text
-Dad did dig.
-The dog dug in the bog.
-A big bag is on the bed.
-I can tag the bag.
-The tag is on the bib.
-The gum is in the bag.
-Dad got the gas.
-The big dog can beg.
-I see a bud.
-The dog did get the gum.
+lesson-02-02-sentence-01 | Dad did dig.
+lesson-02-02-sentence-02 | The dog dug in the bog.
+lesson-02-02-sentence-03 | A big bag is on the bed.
+lesson-02-02-sentence-04 | I can tag the bag.
+lesson-02-02-sentence-05 | The tag is on the bib.
+lesson-02-02-sentence-06 | The gum is in the bag.
+lesson-02-02-sentence-07 | Dad got the gas.
+lesson-02-02-sentence-08 | The big dog can beg.
+lesson-02-02-sentence-09 | I see a bud.
+lesson-02-02-sentence-10 | The dog did get the gum.
 ```
 
 #### Teacher Note
@@ -277,16 +277,16 @@ sat
 #### Practice Sentences
 
 ```text
-The fox can hop.
-A kid can fix the fan.
-The hen had ham.
-The cub is in the cot.
-I see a fin on the cod.
-The yak can run.
-The red lid is on the rug.
-The web is in the fog.
-The kid hid in the cab.
-The fat dog sat.
+lesson-02-03-sentence-01 | The fox can hop.
+lesson-02-03-sentence-02 | A kid can fix the fan.
+lesson-02-03-sentence-03 | The hen had ham.
+lesson-02-03-sentence-04 | The cub is in the cot.
+lesson-02-03-sentence-05 | I see a fin on the cod.
+lesson-02-03-sentence-06 | The yak can run.
+lesson-02-03-sentence-07 | The red lid is on the rug.
+lesson-02-03-sentence-08 | The web is in the fog.
+lesson-02-03-sentence-09 | The kid hid in the cab.
+lesson-02-03-sentence-10 | The fat dog sat.
 ```
 
 #### Teacher Note

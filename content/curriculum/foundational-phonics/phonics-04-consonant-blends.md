@@ -82,16 +82,16 @@ rug
 #### Practice Sentences
 
 ```text
-The black cat is on the sled.
-I can clap.
-The flag is on the plant.
-The clock is by the glass.
-A plum is in the glass.
-The flat plan is on the rug.
-The sled can slip.
-I can flip the flap.
-The slim dog can slip.
-The clip is on the flag.
+lesson-04-01-sentence-01 | The black cat is on the sled.
+lesson-04-01-sentence-02 | I can clap.
+lesson-04-01-sentence-03 | The flag is on the plant.
+lesson-04-01-sentence-04 | The clock is by the glass.
+lesson-04-01-sentence-05 | A plum is in the glass.
+lesson-04-01-sentence-06 | The flat plan is on the rug.
+lesson-04-01-sentence-07 | The sled can slip.
+lesson-04-01-sentence-08 | I can flip the flap.
+lesson-04-01-sentence-09 | The slim dog can slip.
+lesson-04-01-sentence-10 | The clip is on the flag.
 ```
 
 #### Teacher Note
@@ -176,16 +176,16 @@ dog
 #### Practice Sentences
 
 ```text
-The crab can grab the trap.
-I can brush the dog.
-The drum is in the truck.
-The frog can grin.
-The crack is in the brick.
-The crop is fresh.
-The dress is black.
-I can print.
-The truck can drop the brick.
-The cat can bring the brush.
+lesson-04-02-sentence-01 | The crab can grab the trap.
+lesson-04-02-sentence-02 | I can brush the dog.
+lesson-04-02-sentence-03 | The drum is in the truck.
+lesson-04-02-sentence-04 | The frog can grin.
+lesson-04-02-sentence-05 | The crack is in the brick.
+lesson-04-02-sentence-06 | The crop is fresh.
+lesson-04-02-sentence-07 | The dress is black.
+lesson-04-02-sentence-08 | I can print.
+lesson-04-02-sentence-09 | The truck can drop the brick.
+lesson-04-02-sentence-10 | The cat can bring the brush.
 ```
 
 #### Teacher Note
@@ -277,16 +277,16 @@ kid
 #### Practice Sentences
 
 ```text
-I can skip.
-The dog can smell the snack.
-The cat can spot the stick.
-I can spin.
-The stack is on the desk.
-I can snap the stick.
-The kid can swim.
-The lamp is in the tent.
-I can jump in the camp.
-The gift is in my hand.
+lesson-04-03-sentence-01 | I can skip.
+lesson-04-03-sentence-02 | The dog can smell the snack.
+lesson-04-03-sentence-03 | The cat can spot the stick.
+lesson-04-03-sentence-04 | I can spin.
+lesson-04-03-sentence-05 | The stack is on the desk.
+lesson-04-03-sentence-06 | I can snap the stick.
+lesson-04-03-sentence-07 | The kid can swim.
+lesson-04-03-sentence-08 | The lamp is in the tent.
+lesson-04-03-sentence-09 | I can jump in the camp.
+lesson-04-03-sentence-10 | The gift is in my hand.
 ```
 
 #### Teacher Note

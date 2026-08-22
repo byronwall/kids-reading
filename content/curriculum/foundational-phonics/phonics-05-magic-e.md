@@ -73,16 +73,16 @@ tap
 #### Practice Sentences
 
 ```text
-I can bake a cake.
-The game is late.
-The cape is safe.
-I can make a name.
-The tape is on the page.
-The rake is by the gate.
-A cat came to the lake.
-Dad made a cake.
-I can make the base.
-The date is on the page.
+lesson-05-01-sentence-01 | I can bake a cake.
+lesson-05-01-sentence-02 | The game is late.
+lesson-05-01-sentence-03 | The cape is safe.
+lesson-05-01-sentence-04 | I can make a name.
+lesson-05-01-sentence-05 | The tape is on the page.
+lesson-05-01-sentence-06 | The rake is by the gate.
+lesson-05-01-sentence-07 | A cat came to the lake.
+lesson-05-01-sentence-08 | Dad made a cake.
+lesson-05-01-sentence-09 | I can make the base.
+lesson-05-01-sentence-10 | The date is on the page.
 ```
 
 #### Teacher Note
@@ -161,16 +161,16 @@ dog
 #### Practice Sentences
 
 ```text
-I can ride a bike.
-The kite can rise.
-The pipe is by the pine.
-I can hide by the pine.
-The dime is mine.
-The sun can shine.
-It is time to hike.
-The file is on the bike.
-The dog can bite.
-The line is fine.
+lesson-05-02-sentence-01 | I can ride a bike.
+lesson-05-02-sentence-02 | The kite can rise.
+lesson-05-02-sentence-03 | The pipe is by the pine.
+lesson-05-02-sentence-04 | I can hide by the pine.
+lesson-05-02-sentence-05 | The dime is mine.
+lesson-05-02-sentence-06 | The sun can shine.
+lesson-05-02-sentence-07 | It is time to hike.
+lesson-05-02-sentence-08 | The file is on the bike.
+lesson-05-02-sentence-09 | The dog can bite.
+lesson-05-02-sentence-10 | The line is fine.
 ```
 
 #### Teacher Note
@@ -256,18 +256,18 @@ safe
 #### Practice Sentences
 
 ```text
-The mole is by the stone.
-I can poke the cone.
-The rose is by the home.
-The rope is on the pole.
-The note is in the robe.
-I hope the stove is safe.
-The dog is at home.
-The hose is by the stone.
-The cube is in the tube.
-The mule is cute.
-I can use the flute.
-The dune is by the dome.
+lesson-05-03-sentence-01 | The mole is by the stone.
+lesson-05-03-sentence-02 | I can poke the cone.
+lesson-05-03-sentence-03 | The rose is by the home.
+lesson-05-03-sentence-04 | The rope is on the pole.
+lesson-05-03-sentence-05 | The note is in the robe.
+lesson-05-03-sentence-06 | I hope the stove is safe.
+lesson-05-03-sentence-07 | The dog is at home.
+lesson-05-03-sentence-08 | The hose is by the stone.
+lesson-05-03-sentence-09 | The cube is in the tube.
+lesson-05-03-sentence-10 | The mule is cute.
+lesson-05-03-sentence-11 | I can use the flute.
+lesson-05-03-sentence-12 | The dune is by the dome.
 ```
 
 #### Teacher Note

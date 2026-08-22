@@ -72,16 +72,16 @@ I
 #### Practice Sentences
 
 ```text
-The cat sat.
-A rat ran.
-The man had a map.
-Dad had a van.
-The bat is in the bag.
-The ham is in the pan.
-I can tap the mat.
-The sad cat can nap.
-The fan is on.
-The fat rat sat on the mat.
+lesson-01-01-sentence-01 | The cat sat.
+lesson-01-01-sentence-02 | A rat ran.
+lesson-01-01-sentence-03 | The man had a map.
+lesson-01-01-sentence-04 | Dad had a van.
+lesson-01-01-sentence-05 | The bat is in the bag.
+lesson-01-01-sentence-06 | The ham is in the pan.
+lesson-01-01-sentence-07 | I can tap the mat.
+lesson-01-01-sentence-08 | The sad cat can nap.
+lesson-01-01-sentence-09 | The fan is on.
+lesson-01-01-sentence-10 | The fat rat sat on the mat.
 ```
 
 #### Teacher Note
@@ -158,16 +158,16 @@ sat
 #### Practice Sentences
 
 ```text
-The pig is big.
-A kid can dig.
-I can fix the lid.
-The fin is in the bin.
-The pig hid in the bin.
-The kid did sit.
-I see a pin and a lid.
-The bib is on the kid.
-The big pig can sit.
-Dad can fix the van.
+lesson-01-02-sentence-01 | The pig is big.
+lesson-01-02-sentence-02 | A kid can dig.
+lesson-01-02-sentence-03 | I can fix the lid.
+lesson-01-02-sentence-04 | The fin is in the bin.
+lesson-01-02-sentence-05 | The pig hid in the bin.
+lesson-01-02-sentence-06 | The kid did sit.
+lesson-01-02-sentence-07 | I see a pin and a lid.
+lesson-01-02-sentence-08 | The bib is on the kid.
+lesson-01-02-sentence-09 | The big pig can sit.
+lesson-01-02-sentence-10 | Dad can fix the van.
 ```
 
 #### Teacher Note
@@ -260,18 +260,18 @@ sat
 #### Practice Sentences
 
 ```text
-The hen is in the den.
-The bed is wet.
-The red pen is on the bed.
-The dog can hop.
-A fox sat on a log.
-The pot is hot.
-I can mop the mud.
-A bug is on the mug.
-The cub is in the sun.
-The dog dug in the mud.
-I see a bun and a cup.
-The net is on the box.
+lesson-01-03-sentence-01 | The hen is in the den.
+lesson-01-03-sentence-02 | The bed is wet.
+lesson-01-03-sentence-03 | The red pen is on the bed.
+lesson-01-03-sentence-04 | The dog can hop.
+lesson-01-03-sentence-05 | A fox sat on a log.
+lesson-01-03-sentence-06 | The pot is hot.
+lesson-01-03-sentence-07 | I can mop the mud.
+lesson-01-03-sentence-08 | A bug is on the mug.
+lesson-01-03-sentence-09 | The cub is in the sun.
+lesson-01-03-sentence-10 | The dog dug in the mud.
+lesson-01-03-sentence-11 | I see a bun and a cup.
+lesson-01-03-sentence-12 | The net is on the box.
 ```
 
 #### Teacher Note

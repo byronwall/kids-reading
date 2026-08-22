@@ -7,14 +7,17 @@ Copy this prompt into ChatGPT Pro to generate the initial reading curriculum.
 Work directly in the checked-out `kids-reading` repository. Do not only return
 the content in chat.
 
+Repository URL: `https://github.com/byronwall/kids-reading`
+
 - Inspect the repository instructions before editing.
 - Preserve existing user changes.
-- Create the generated files under `arch/content/lesson-plans/`.
+- Create the generated files under `content/curriculum/foundational-phonics/`.
 - Use one file per content chunk.
 - Keep the existing planning notes under `arch/plans/` unchanged.
 - Do not modify application code during content generation.
 - Do not commit secrets, `.env` files, databases, build output, or dependency directories.
-- Do not push to GitHub.
+- Do not commit or push changes unless the user gives explicit approval.
+- Do not force-push or rewrite existing commits.
 - If the repository is not available, stop and report the blocker.
 
 ```text
@@ -123,13 +126,16 @@ a
 #### Practice Sentences
 
 ```text
-The cat sat.
-A cat can nap.
+lesson-01-01-sentence-01 | The cat sat.
+lesson-01-01-sentence-02 | A cat can nap.
 ```
 
 Rules for practice sentences:
 
-- One original sentence per line.
+- One original sentence per line, using the stable format
+  `lesson-XX-YY-sentence-ZZ | Sentence text.`.
+- Use the lesson ID in every sentence ID. Start `ZZ` at `01` and increase it
+  without gaps within each lesson.
 - Use simple punctuation.
 - Keep sentences appropriate for the difficulty level.
 - Prefer words from the current lesson and prior lessons.
@@ -160,6 +166,7 @@ allowed_sight_words:
 - Use lowercase IDs with hyphens.
 - Use unique lesson IDs across all 10 files.
 - Use unique chunk IDs.
+- Use stable sentence IDs in the format `lesson-XX-YY-sentence-ZZ`.
 - Keep lesson order continuous within each chunk.
 - Keep chunk order from 1 through 10.
 - Do not create empty lessons.
@@ -199,15 +206,16 @@ Before returning the files, validate:
 7. No target word is duplicated inside a lesson.
 8. The curriculum progresses from simple to complex.
 
-## Write and Commit Workflow
+## Write and Validation Workflow
 
 Create and validate the files incrementally. After each valid chunk is written:
 
 1. Check the file against the schema and all validation rules.
 2. Inspect the file for duplicate IDs, duplicate words, duplicate sentences, and malformed YAML.
-3. Run the repository's content validation command if one exists.
+3. Run `pnpm curriculum:validate`.
 4. Review `git diff --check` for the file.
-5. Commit that chunk immediately.
+5. Keep the validated changes in the working tree unless the user explicitly
+   approves a commit.
 
 Use commit messages in this format:
 
@@ -219,15 +227,16 @@ Use the actual chunk number in each commit message. Create one commit per
 chunk, or one commit per small validated batch if the repository workflow makes
 that safer. Do not amend commits. Do not reset or discard unrelated changes.
 
-After all chunks are committed:
+After all chunks are validated:
 
-- Confirm that all 10 files exist under `arch/content/lesson-plans/`.
-- Confirm that the working tree contains no generated content that was left uncommitted.
-- Report the commit hashes, files created, and validation results.
-- Do not push the commits.
+- Confirm that all 10 files exist under `content/curriculum/foundational-phonics/`.
+- Report the files created and validation results.
+- If the user explicitly approves commits, commit the validated chunks in small
+  batches using the format above. Push only after separate explicit approval.
+- Otherwise, leave the changes uncommitted and do not push them.
 ```
 
-## Import Notes
+## Import and Sync Notes
 
 The generated files should later map to these application records:
 
@@ -237,5 +246,13 @@ The generated files should later map to these application records:
 - Practice sentences map to `Sentence` records.
 - Lesson-to-word and lesson-to-sentence relationships must be preserved.
 
-The importer should reject malformed YAML, duplicate IDs, duplicate sentences,
-missing required sections, and lessons below the minimum content counts.
+The curriculum loader reads Markdown files from
+`content/curriculum/foundational-phonics/` by default. The validator should
+reject malformed YAML, duplicate IDs, duplicate sentences, missing required
+sections, and lessons below the minimum content counts. Run it with
+`pnpm curriculum:validate`.
+
+Preview database changes with `pnpm curriculum:sync --dry-run`. Apply a
+validated corpus with `pnpm curriculum:sync --apply`. The sync preserves
+canonical plan, chunk, lesson, and sentence IDs, updates word and relationship
+links, and archives managed records that are removed from the source corpus.

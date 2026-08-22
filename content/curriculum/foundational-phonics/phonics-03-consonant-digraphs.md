@@ -75,16 +75,16 @@ leg
 #### Practice Sentences
 
 ```text
-The ship is in the sun.
-I can wash the dish.
-The fish can rush.
-The shell is in the shop.
-The dog can push the mesh.
-The rash is on the leg.
-The bush is by the shed.
-The dish has mash.
-I can hush the dog.
-The cat can dash.
+lesson-03-01-sentence-01 | The ship is in the sun.
+lesson-03-01-sentence-02 | I can wash the dish.
+lesson-03-01-sentence-03 | The fish can rush.
+lesson-03-01-sentence-04 | The shell is in the shop.
+lesson-03-01-sentence-05 | The dog can push the mesh.
+lesson-03-01-sentence-06 | The rash is on the leg.
+lesson-03-01-sentence-07 | The bush is by the shed.
+lesson-03-01-sentence-08 | The dish has mash.
+lesson-03-01-sentence-09 | I can hush the dog.
+lesson-03-01-sentence-10 | The cat can dash.
 ```
 
 #### Teacher Note
@@ -162,16 +162,16 @@ dog
 #### Practice Sentences
 
 ```text
-The chick is on the bench.
-I can chop the peach.
-The coach can chat.
-The chain is on the chair.
-The dog can march.
-I can check the patch.
-The match is in the chest.
-The chip can match the patch.
-The rich coach has lunch.
-The fish is on the bench.
+lesson-03-02-sentence-01 | The chick is on the bench.
+lesson-03-02-sentence-02 | I can chop the peach.
+lesson-03-02-sentence-03 | The coach can chat.
+lesson-03-02-sentence-04 | The chain is on the chair.
+lesson-03-02-sentence-05 | The dog can march.
+lesson-03-02-sentence-06 | I can check the patch.
+lesson-03-02-sentence-07 | The match is in the chest.
+lesson-03-02-sentence-08 | The chip can match the patch.
+lesson-03-02-sentence-09 | The rich coach has lunch.
+lesson-03-02-sentence-10 | The fish is on the bench.
 ```
 
 #### Teacher Note
@@ -254,18 +254,18 @@ cat
 #### Practice Sentences
 
 ```text
-The moth is on the cloth.
-I can think.
-The path is thin.
-The bath is for the cat.
-I can thank them.
-Then I can whisk.
-The white wheel is on the path.
-The whale is by the ship.
-When can I whisk?
-Which whip is white?
-Where is the wheel?
-The cat has a white whisk.
+lesson-03-03-sentence-01 | The moth is on the cloth.
+lesson-03-03-sentence-02 | I can think.
+lesson-03-03-sentence-03 | The path is thin.
+lesson-03-03-sentence-04 | The bath is for the cat.
+lesson-03-03-sentence-05 | I can thank them.
+lesson-03-03-sentence-06 | Then I can whisk.
+lesson-03-03-sentence-07 | The white wheel is on the path.
+lesson-03-03-sentence-08 | The whale is by the ship.
+lesson-03-03-sentence-09 | When can I whisk?
+lesson-03-03-sentence-10 | Which whip is white?
+lesson-03-03-sentence-11 | Where is the wheel?
+lesson-03-03-sentence-12 | The cat has a white whisk.
 ```
 
 #### Teacher Note

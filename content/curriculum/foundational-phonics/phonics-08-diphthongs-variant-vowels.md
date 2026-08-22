@@ -76,16 +76,16 @@ read
 #### Practice Sentences
 
 ```text
-The boy has a toy.
-The coin is in the soil.
-I can boil the corn.
-The oil is on the foil.
-The noise can annoy the boy.
-I can point to the coin.
-The boy can join.
-The soil is moist.
-The coil is in the toy.
-I enjoy the royal toy.
+lesson-08-01-sentence-01 | The boy has a toy.
+lesson-08-01-sentence-02 | The coin is in the soil.
+lesson-08-01-sentence-03 | I can boil the corn.
+lesson-08-01-sentence-04 | The oil is on the foil.
+lesson-08-01-sentence-05 | The noise can annoy the boy.
+lesson-08-01-sentence-06 | I can point to the coin.
+lesson-08-01-sentence-07 | The boy can join.
+lesson-08-01-sentence-08 | The soil is moist.
+lesson-08-01-sentence-09 | The coil is in the toy.
+lesson-08-01-sentence-10 | I enjoy the royal toy.
 ```
 
 #### Teacher Note
@@ -167,16 +167,16 @@ make
 #### Practice Sentences
 
 ```text
-The brown cow is by the house.
-The clown can shout.
-The mouse is on the ground.
-I can count the crowd.
-The owl can make a sound.
-The dog can growl.
-The round house is in town.
-I can frown.
-The loud sound is in town.
-The cloud is over the town.
+lesson-08-02-sentence-01 | The brown cow is by the house.
+lesson-08-02-sentence-02 | The clown can shout.
+lesson-08-02-sentence-03 | The mouse is on the ground.
+lesson-08-02-sentence-04 | I can count the crowd.
+lesson-08-02-sentence-05 | The owl can make a sound.
+lesson-08-02-sentence-06 | The dog can growl.
+lesson-08-02-sentence-07 | The round house is in town.
+lesson-08-02-sentence-08 | I can frown.
+lesson-08-02-sentence-09 | The loud sound is in town.
+lesson-08-02-sentence-10 | The cloud is over the town.
 ```
 
 #### Teacher Note
@@ -264,18 +264,18 @@ bird
 #### Practice Sentences
 
 ```text
-The hawk has a claw.
-The fawn is on the lawn.
-I can draw a paw.
-The dog can crawl.
-The cat can yawn.
-The straw is on the lawn.
-I saw the dawn.
-The awning is over the lawn.
-I can haul the straw.
-The moon is over the house.
-The crew can chew.
-The broom is by the awning.
+lesson-08-03-sentence-01 | The hawk has a claw.
+lesson-08-03-sentence-02 | The fawn is on the lawn.
+lesson-08-03-sentence-03 | I can draw a paw.
+lesson-08-03-sentence-04 | The dog can crawl.
+lesson-08-03-sentence-05 | The cat can yawn.
+lesson-08-03-sentence-06 | The straw is on the lawn.
+lesson-08-03-sentence-07 | I saw the dawn.
+lesson-08-03-sentence-08 | The awning is over the lawn.
+lesson-08-03-sentence-09 | I can haul the straw.
+lesson-08-03-sentence-10 | The moon is over the house.
+lesson-08-03-sentence-11 | The crew can chew.
+lesson-08-03-sentence-12 | The broom is by the awning.
 ```
 
 #### Teacher Note

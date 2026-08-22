@@ -79,16 +79,16 @@ sun
 #### Practice Sentences
 
 ```text
-The cub is by the cube.
-The cute cub can hop.
-I can tap the tape.
-The cap is by the cape.
-The kit has a kite.
-The note is on the cape.
-I hope the cub can ride.
-The mad cat made a cake.
-The dog is not mad.
-I can cut the tape.
+lesson-10-01-sentence-01 | The cub is by the cube.
+lesson-10-01-sentence-02 | The cute cub can hop.
+lesson-10-01-sentence-03 | I can tap the tape.
+lesson-10-01-sentence-04 | The cap is by the cape.
+lesson-10-01-sentence-05 | The kit has a kite.
+lesson-10-01-sentence-06 | The note is on the cape.
+lesson-10-01-sentence-07 | I hope the cub can ride.
+lesson-10-01-sentence-08 | The mad cat made a cake.
+lesson-10-01-sentence-09 | The dog is not mad.
+lesson-10-01-sentence-10 | I can cut the tape.
 ```
 
 #### Teacher Note
@@ -177,16 +177,16 @@ tap
 #### Practice Sentences
 
 ```text
-The chick is by the bench.
-The crab is by the shell.
-I can brush the white dog.
-The fish is by the ship.
-The thick stick is in the camp.
-I can clap at the match.
-The flag is by the shop.
-The thin thorn is by the wheel.
-I can tap with my thumb.
-The white whale is by the boat.
+lesson-10-02-sentence-01 | The chick is by the bench.
+lesson-10-02-sentence-02 | The crab is by the shell.
+lesson-10-02-sentence-03 | I can brush the white dog.
+lesson-10-02-sentence-04 | The fish is by the ship.
+lesson-10-02-sentence-05 | The thick stick is in the camp.
+lesson-10-02-sentence-06 | I can clap at the match.
+lesson-10-02-sentence-07 | The flag is by the shop.
+lesson-10-02-sentence-08 | The thin thorn is by the wheel.
+lesson-10-02-sentence-09 | I can tap with my thumb.
+lesson-10-02-sentence-10 | The white whale is by the boat.
 ```
 
 #### Teacher Note
@@ -278,22 +278,22 @@ horse
 #### Practice Sentences
 
 ```text
-We pack a map and lunch.
-The girl and the boy walk to camp.
-The dog is with them.
-The trail is by the creek.
-We see a frog on a stone.
-A bird is in the tree.
-A cloud is over the creek.
-The rain is on the trail.
-We find a boat by the creek.
-We help the dog cross.
-Then we rest by the tree.
-At night, we light the tent.
-The moon is over the camp.
-We look at the map.
-The boy and girl smile.
-We walk home safe.
+lesson-10-03-sentence-01 | We pack a map and lunch.
+lesson-10-03-sentence-02 | The girl and the boy walk to camp.
+lesson-10-03-sentence-03 | The dog is with them.
+lesson-10-03-sentence-04 | The trail is by the creek.
+lesson-10-03-sentence-05 | We see a frog on a stone.
+lesson-10-03-sentence-06 | A bird is in the tree.
+lesson-10-03-sentence-07 | A cloud is over the creek.
+lesson-10-03-sentence-08 | The rain is on the trail.
+lesson-10-03-sentence-09 | We find a boat by the creek.
+lesson-10-03-sentence-10 | We help the dog cross.
+lesson-10-03-sentence-11 | Then we rest by the tree.
+lesson-10-03-sentence-12 | At night, we light the tent.
+lesson-10-03-sentence-13 | The moon is over the camp.
+lesson-10-03-sentence-14 | We look at the map.
+lesson-10-03-sentence-15 | The boy and girl smile.
+lesson-10-03-sentence-16 | We walk home safe.
 ```
 
 #### Teacher Note

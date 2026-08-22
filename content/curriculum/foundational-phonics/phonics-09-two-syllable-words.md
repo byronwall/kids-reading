@@ -77,16 +77,16 @@ broom
 #### Practice Sentences
 
 ```text
-The rabbit is in the basket.
-The kitten is on the napkin.
-I can see the picnic.
-The magnet is on the helmet.
-The dentist has a jacket.
-The muffin is in the pocket.
-The pumpkin is by the cactus.
-The insect is on the plastic.
-The mitten is in the pocket.
-The button is on the fabric.
+lesson-09-01-sentence-01 | The rabbit is in the basket.
+lesson-09-01-sentence-02 | The kitten is on the napkin.
+lesson-09-01-sentence-03 | I can see the picnic.
+lesson-09-01-sentence-04 | The magnet is on the helmet.
+lesson-09-01-sentence-05 | The dentist has a jacket.
+lesson-09-01-sentence-06 | The muffin is in the pocket.
+lesson-09-01-sentence-07 | The pumpkin is by the cactus.
+lesson-09-01-sentence-08 | The insect is on the plastic.
+lesson-09-01-sentence-09 | The mitten is in the pocket.
+lesson-09-01-sentence-10 | The button is on the fabric.
 ```
 
 #### Teacher Note
@@ -169,16 +169,16 @@ read
 #### Practice Sentences
 
 ```text
-The robot is in the hotel.
-The pilot has a map.
-The tiger is by the zebra.
-I can read the paper.
-The music is at the hotel.
-The pupil can label the paper.
-The baby is cozy.
-The lady has a navy jacket.
-The pony is by the local hotel.
-The raven is silent.
+lesson-09-02-sentence-01 | The robot is in the hotel.
+lesson-09-02-sentence-02 | The pilot has a map.
+lesson-09-02-sentence-03 | The tiger is by the zebra.
+lesson-09-02-sentence-04 | I can read the paper.
+lesson-09-02-sentence-05 | The music is at the hotel.
+lesson-09-02-sentence-06 | The pupil can label the paper.
+lesson-09-02-sentence-07 | The baby is cozy.
+lesson-09-02-sentence-08 | The lady has a navy jacket.
+lesson-09-02-sentence-09 | The pony is by the local hotel.
+lesson-09-02-sentence-10 | The raven is silent.
 ```
 
 #### Teacher Note
@@ -263,18 +263,18 @@ dog
 #### Practice Sentences
 
 ```text
-The catfish is in the bathtub.
-The doghouse is by the sandbox.
-I can see a rainbow at sunset.
-The cupcake is in the backpack.
-The sailboat is by the seashell.
-The snowman is on the hilltop.
-The toothbrush is by the bathtub.
-The football is on the playground.
-The popcorn is in the bedroom.
-The mailbox is by the doghouse.
-The pancake is by the cupcake.
-The starfish is by the seashell.
+lesson-09-03-sentence-01 | The catfish is in the bathtub.
+lesson-09-03-sentence-02 | The doghouse is by the sandbox.
+lesson-09-03-sentence-03 | I can see a rainbow at sunset.
+lesson-09-03-sentence-04 | The cupcake is in the backpack.
+lesson-09-03-sentence-05 | The sailboat is by the seashell.
+lesson-09-03-sentence-06 | The snowman is on the hilltop.
+lesson-09-03-sentence-07 | The toothbrush is by the bathtub.
+lesson-09-03-sentence-08 | The football is on the playground.
+lesson-09-03-sentence-09 | The popcorn is in the bedroom.
+lesson-09-03-sentence-10 | The mailbox is by the doghouse.
+lesson-09-03-sentence-11 | The pancake is by the cupcake.
+lesson-09-03-sentence-12 | The starfish is by the seashell.
 ```
 
 #### Teacher Note

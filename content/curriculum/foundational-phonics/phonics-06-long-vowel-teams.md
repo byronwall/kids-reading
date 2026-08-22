@@ -74,16 +74,16 @@ game
 #### Practice Sentences
 
 ```text
-The rain is on the train.
-I can paint the pail.
-The mail is in the pail.
-I can play.
-I can wait by the train.
-The sail is on the bay.
-The chain is by the train.
-The main train can stay.
-The nail is on the tape.
-We can play all day.
+lesson-06-01-sentence-01 | The rain is on the train.
+lesson-06-01-sentence-02 | I can paint the pail.
+lesson-06-01-sentence-03 | The mail is in the pail.
+lesson-06-01-sentence-04 | I can play.
+lesson-06-01-sentence-05 | I can wait by the train.
+lesson-06-01-sentence-06 | The sail is on the bay.
+lesson-06-01-sentence-07 | The chain is by the train.
+lesson-06-01-sentence-08 | The main train can stay.
+lesson-06-01-sentence-09 | The nail is on the tape.
+lesson-06-01-sentence-10 | We can play all day.
 ```
 
 #### Teacher Note
@@ -163,16 +163,16 @@ cake
 #### Practice Sentences
 
 ```text
-The sheep can sleep.
-I can read by the tree.
-The green leaf is on the seat.
-We can eat a meal.
-The seed is by the bean.
-The team can meet.
-I can clean the seat.
-The sheep can eat the seed.
-The beach is clean.
-Each sheep can sleep.
+lesson-06-02-sentence-01 | The sheep can sleep.
+lesson-06-02-sentence-02 | I can read by the tree.
+lesson-06-02-sentence-03 | The green leaf is on the seat.
+lesson-06-02-sentence-04 | We can eat a meal.
+lesson-06-02-sentence-05 | The seed is by the bean.
+lesson-06-02-sentence-06 | The team can meet.
+lesson-06-02-sentence-07 | I can clean the seat.
+lesson-06-02-sentence-08 | The sheep can eat the seed.
+lesson-06-02-sentence-09 | The beach is clean.
+lesson-06-02-sentence-10 | Each sheep can sleep.
 ```
 
 #### Teacher Note
@@ -257,18 +257,18 @@ eat
 #### Practice Sentences
 
 ```text
-The goat is on the road.
-I can row the boat.
-The soap can float.
-The snow is on the coat.
-The goat can eat the loaf.
-I can soak the coat.
-The light is bright.
-The flight is at night.
-The goat can show the boat.
-The coal is by the stone.
-The foam is on the soap.
-The toad is in the boat.
+lesson-06-03-sentence-01 | The goat is on the road.
+lesson-06-03-sentence-02 | I can row the boat.
+lesson-06-03-sentence-03 | The soap can float.
+lesson-06-03-sentence-04 | The snow is on the coat.
+lesson-06-03-sentence-05 | The goat can eat the loaf.
+lesson-06-03-sentence-06 | I can soak the coat.
+lesson-06-03-sentence-07 | The light is bright.
+lesson-06-03-sentence-08 | The flight is at night.
+lesson-06-03-sentence-09 | The goat can show the boat.
+lesson-06-03-sentence-10 | The coal is by the stone.
+lesson-06-03-sentence-11 | The foam is on the soap.
+lesson-06-03-sentence-12 | The toad is in the boat.
 ```
 
 #### Teacher Note

@@ -75,16 +75,16 @@ tree
 #### Practice Sentences
 
 ```text
-The shark is by the cart.
-I can park the cart.
-The star is in the dark.
-A spark can start.
-The scarf is on my arm.
-The card is in the jar.
-The farm has a barn.
-The dog can bark.
-I can mark the art.
-The yard is by the park.
+lesson-07-01-sentence-01 | The shark is by the cart.
+lesson-07-01-sentence-02 | I can park the cart.
+lesson-07-01-sentence-03 | The star is in the dark.
+lesson-07-01-sentence-04 | A spark can start.
+lesson-07-01-sentence-05 | The scarf is on my arm.
+lesson-07-01-sentence-06 | The card is in the jar.
+lesson-07-01-sentence-07 | The farm has a barn.
+lesson-07-01-sentence-08 | The dog can bark.
+lesson-07-01-sentence-09 | I can mark the art.
+lesson-07-01-sentence-10 | The yard is by the park.
 ```
 
 #### Teacher Note
@@ -164,16 +164,16 @@ dark
 #### Practice Sentences
 
 ```text
-The horse is by the fort.
-The corn is on the fork.
-The storm is in the north.
-The torch is on the porch.
-I can sort the cork.
-The horn is short.
-The dog can snort.
-The scarf is on the porch.
-The pork is on the fork.
-The thorn is by the shore.
+lesson-07-02-sentence-01 | The horse is by the fort.
+lesson-07-02-sentence-02 | The corn is on the fork.
+lesson-07-02-sentence-03 | The storm is in the north.
+lesson-07-02-sentence-04 | The torch is on the porch.
+lesson-07-02-sentence-05 | I can sort the cork.
+lesson-07-02-sentence-06 | The horn is short.
+lesson-07-02-sentence-07 | The dog can snort.
+lesson-07-02-sentence-08 | The scarf is on the porch.
+lesson-07-02-sentence-09 | The pork is on the fork.
+lesson-07-02-sentence-10 | The thorn is by the shore.
 ```
 
 #### Teacher Note
@@ -258,18 +258,18 @@ shore
 #### Practice Sentences
 
 ```text
-The bird is on the fern.
-The girl can stir.
-The nurse has a purse.
-The bird can chirp.
-The shirt is on the skirt.
-I can read the term.
-The fur can curl.
-The herd is by the fern.
-The first bird can perch.
-The girl can turn.
-The burn can hurt.
-The surf is by the shore.
+lesson-07-03-sentence-01 | The bird is on the fern.
+lesson-07-03-sentence-02 | The girl can stir.
+lesson-07-03-sentence-03 | The nurse has a purse.
+lesson-07-03-sentence-04 | The bird can chirp.
+lesson-07-03-sentence-05 | The shirt is on the skirt.
+lesson-07-03-sentence-06 | I can read the term.
+lesson-07-03-sentence-07 | The fur can curl.
+lesson-07-03-sentence-08 | The herd is by the fern.
+lesson-07-03-sentence-09 | The first bird can perch.
+lesson-07-03-sentence-10 | The girl can turn.
+lesson-07-03-sentence-11 | The burn can hurt.
+lesson-07-03-sentence-12 | The surf is by the shore.
 ```
 
 #### Teacher Note
