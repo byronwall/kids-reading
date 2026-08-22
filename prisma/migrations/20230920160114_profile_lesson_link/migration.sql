@@ -6,11 +6,7 @@ CREATE TABLE "ProfileLessonFocus" (
     "isFocused" BOOLEAN NOT NULL DEFAULT false,
     "isCompleted" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "ProfileLessonFocus_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "ProfileLessonFocus_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "ProfileLessonFocus_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "Profile"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "ProfileLessonFocus_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
-
--- AddForeignKey
-ALTER TABLE "ProfileLessonFocus" ADD CONSTRAINT "ProfileLessonFocus_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "Profile"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ProfileLessonFocus" ADD CONSTRAINT "ProfileLessonFocus_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

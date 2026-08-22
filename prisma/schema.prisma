@@ -2,267 +2,417 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 // ---- AUTH RELATED THINGS ---- //
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String?
-    access_token      String?
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String?
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    password      String?
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
 
-    accounts Account[]
-    sessions Session[]
-    profiles Profile[]
+  accounts Account[]
+  sessions Session[]
+  profiles Profile[]
 }
 
 // ---- USER DATA RELATED THINGS ---- //
 
 model Profile {
-    id     String @id @default(cuid())
-    name   String
-    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId String
+  id     String @id @default(cuid())
+  name   String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 
-    // use these to filter sentences for reading levels
-    minimumWordCount Int @default(0)
-    maximumWordCount Int @default(1000)
+  // use these to filter sentences for reading levels
+  minimumWordCount Int @default(0)
+  maximumWordCount Int @default(1000)
 
-    // award related 
-    wordThresholdForAward     Int @default(100)
-    sentenceThresholdForAward Int @default(10)
+  // award related
+  wordThresholdForAward     Int @default(100)
+  sentenceThresholdForAward Int @default(10)
 
-    // confetti related
-    confettiWordTarget Int @default(5000)
+  // confetti related
+  confettiWordTarget Int @default(5000)
 
-    results   ProfileQuestionResult[]
-    summaries ProfileWordSummary[]
-    lessons   ProfileLessonFocus[]
-    awards    ProfileAward[]
+  results   ProfileQuestionResult[]
+  summaries ProfileWordSummary[]
+  lessons   ProfileLessonFocus[]
+  awards    ProfileAward[]
 }
 
 // ---- WORD and CORE DATA ---- //
 
 model Word {
-    id   String @id @default(cuid())
-    word String
+  id   String @id @default(cuid())
+  word String
 
-    // this will grow into columns so it's easier to query?
-    metaInfo String @default("{}")
+  // this will grow into columns so it's easier to query?
+  metaInfo String @default("{}")
 
-    summaries ProfileWordSummary[]
-    sentences Sentence[]
-    results   ProfileQuestionResult[]
+  summaries ProfileWordSummary[]
+  sentences Sentence[]
+  results   ProfileQuestionResult[]
 
-    // implicitly connect to lessons using a many words : many lessons
-    lesson Lesson[]
-    awards ProfileAward[]
+  // Legacy implicit relation. New managed curriculum uses LessonWord.
+  lesson      Lesson[]
+  lessonWords LessonWord[]   @relation("CurriculumLessonWords")
+  awards      ProfileAward[]
 
-    @@unique([word])
+  @@unique([word])
 }
 
 model Sentence {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    // this will include things like difficulty, etc
-    metaInfo String @default("{}")
+  // this will include things like difficulty, etc
+  metaInfo String @default("{}")
 
-    // this will include punctuation
-    fullSentence String
+  // this will include punctuation
+  fullSentence String
 
-    // asume that words will be in the database -- application error if not
-    // connect to words using a many sentences : many words
-    words   Word[]
-    results ProfileQuestionResult[]
+  // asume that words will be in the database -- application error if not
+  // connect to words using a many sentences : many words
+  words   Word[]
+  results ProfileQuestionResult[]
 
-    // implicitly connect to lessons using a many sentences : many lessons
-    lesson Lesson[]
+  // Legacy implicit relation. New managed curriculum uses LessonSentence.
+  lesson          Lesson[]
+  lessonSentences LessonSentence[] @relation("CurriculumLessonSentences")
 
-    // track deletion so sentences are not displayed in new questions
-    isDeleted Boolean @default(false)
+  // A managed sentence keeps one canonical identity across immutable revisions.
+  sentenceIdentityId String?
+  sentenceIdentity   SentenceIdentity? @relation(fields: [sentenceIdentityId], references: [id], onDelete: SetNull)
+  canonicalId        String?
+  sourcePath         String?
+  sourceHash         String?
+  revision           Int               @default(1)
+  isCurrentRevision  Boolean           @default(true)
+  isManaged          Boolean           @default(false)
+  isArchived         Boolean           @default(false)
 
-    // word count used for basic filtering - will maintained by applicaiton logic
-    wordCount Int @default(0)
+  // track deletion so sentences are not displayed in new questions
+  isDeleted Boolean @default(false)
+
+  // word count used for basic filtering - will maintained by applicaiton logic
+  wordCount Int @default(0)
+
+  @@unique([canonicalId, revision])
+  @@index([sentenceIdentityId, isCurrentRevision])
+  @@index([canonicalId])
 }
 
 model ProfileQuestionResult {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
 
-    // this will grow into columns so it's easier to query?
-    metaInfo String @default("{}")
+  // this will grow into columns so it's easier to query?
+  metaInfo String @default("{}")
 
-    // this will be used to group results together
-    groupId String @default("")
+  // this will be used to group results together
+  groupId String @default("")
 
-    profileId String
-    profile   Profile @relation(fields: [profileId], references: [id])
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
 
-    wordId String?
-    word   Word?   @relation(fields: [wordId], references: [id])
+  wordId String?
+  word   Word?   @relation(fields: [wordId], references: [id])
 
-    sentenceId String?
-    sentence   Sentence? @relation(fields: [sentenceId], references: [id])
+  sentenceId String?
+  sentence   Sentence? @relation(fields: [sentenceId], references: [id])
 
-    // score will range from 0 to 100, 100 being the best
-    score Int @default(0)
+  // score will range from 0 to 100, 100 being the best
+  score Int @default(0)
 }
 
 model ProfileWordSummary {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
 
-    // this will grow into columns so it's easier to query?
-    metaInfo String @default("{}")
+  // this will grow into columns so it's easier to query?
+  metaInfo String @default("{}")
 
-    profileId String
-    profile   Profile @relation(fields: [profileId], references: [id])
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
 
-    wordId String
-    word   Word   @relation(fields: [wordId], references: [id])
+  wordId String
+  word   Word   @relation(fields: [wordId], references: [id])
 
-    // score will start at 100 and increment/decrement when right wrong?
-    totalScore Int @default(0)
+  // score will start at 100 and increment/decrement when right wrong?
+  totalScore Int @default(0)
 
-    // will be determined from a spaced repetition algorithm
-    nextReviewDate DateTime @default(now())
+  // will be determined from a spaced repetition algorithm
+  nextReviewDate DateTime @default(now())
 
-    // interval stored in days
-    interval Int @default(1)
+  // interval stored in days
+  interval Int @default(1)
 
-    // unqiue const on profileId and wordId
-    @@unique([profileId, wordId])
+  // unqiue const on profileId and wordId
+  @@unique([profileId, wordId])
 }
 
 // ---- LESSON PLANS ---- //
 
 model LearningPlan {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    name        String
-    description String
+  name        String
+  description String
+  ageRange    String?
 
-    order Int
+  order Int
 
-    lessons Lesson[]
+  // Legacy direct plan-to-lesson relation. Managed content uses chunks.
+  lessons Lesson[]            @relation("LegacyPlanLessons")
+  chunks  LearningPlanChunk[]
 
-    // names must be unique
-    @@unique([name])
+  canonicalId String?
+  sourcePath  String?
+  sourceHash  String?
+  isManaged   Boolean @default(false)
+  isArchived  Boolean @default(false)
+
+  // names must be unique
+  @@unique([name])
+  @@unique([canonicalId])
+}
+
+model LearningPlanChunk {
+  id String @id @default(cuid())
+
+  learningPlanId String
+  learningPlan   LearningPlan @relation(fields: [learningPlanId], references: [id], onDelete: Cascade)
+
+  canonicalId String?
+  sourcePath  String?
+  sourceHash  String?
+  title       String
+  description String
+  goalsJson   String  @default("[]")
+  order       Int
+  difficulty  Int?
+  isManaged   Boolean @default(false)
+  isArchived  Boolean @default(false)
+
+  lessons Lesson[] @relation("CurriculumChunkLessons")
+
+  @@unique([canonicalId])
+  @@unique([learningPlanId, order])
+  @@index([learningPlanId])
 }
 
 model Lesson {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    name        String
-    description String
+  name        String
+  description String
 
-    order Int
+  order Int
 
-    LearningPlan   LearningPlan? @relation(fields: [learningPlanId], references: [id])
-    learningPlanId String?
+  // Legacy direct plan-to-lesson relation. Managed lessons use chunk.
+  LearningPlan   LearningPlan? @relation("LegacyPlanLessons", fields: [learningPlanId], references: [id])
+  learningPlanId String?
 
-    // implicitly connect to words using a many lessons : many words
-    words Word[]
+  chunkId String?
+  chunk   LearningPlanChunk? @relation("CurriculumChunkLessons", fields: [chunkId], references: [id], onDelete: SetNull)
 
-    // implicitly connect to sentences using a many lessons : many sentences
-    sentences          Sentence[]
-    ProfileLessonFocus ProfileLessonFocus[]
-    awards             ProfileAward[]
+  canonicalId           String?
+  sourcePath            String?
+  sourceHash            String?
+  focus                 String?
+  difficulty            Int?
+  targetPatternsJson    String  @default("[]")
+  teacherNote           String?
+  allowedSightWordsJson String  @default("[]")
+  isManaged             Boolean @default(false)
+  isArchived            Boolean @default(false)
+
+  // Legacy implicit relation. New managed curriculum uses LessonWord.
+  words       Word[] // Legacy implicit relation; managed content uses LessonWord.
+  lessonWords LessonWord[] @relation("CurriculumLessonWords")
+
+  // Legacy implicit relation. New managed curriculum uses LessonSentence.
+  sentences          Sentence[] // Legacy implicit relation; managed content uses LessonSentence.
+  lessonSentences    LessonSentence[]     @relation("CurriculumLessonSentences")
+  prerequisites      LessonPrerequisite[] @relation("LessonPrerequisites")
+  prerequisiteFor    LessonPrerequisite[] @relation("PrerequisiteFor")
+  reviewSources      LessonReviewSource[] @relation("LessonReviewSources")
+  usedAsReviewSource LessonReviewSource[] @relation("ReviewedLessonSources")
+  ProfileLessonFocus ProfileLessonFocus[]
+  awards             ProfileAward[]
+
+  @@unique([canonicalId])
+  @@index([chunkId, order])
+}
+
+model LessonWord {
+  id String @id @default(cuid())
+
+  lessonId String
+  lesson   Lesson @relation("CurriculumLessonWords", fields: [lessonId], references: [id], onDelete: Cascade)
+
+  wordId String
+  word   Word   @relation("CurriculumLessonWords", fields: [wordId], references: [id], onDelete: Cascade)
+
+  // SQLite has no Prisma enum support. The migration constrains this to TARGET or REVIEW.
+  role  String
+  order Int    @default(0)
+
+  @@unique([lessonId, wordId])
+  @@unique([lessonId, role, order])
+  @@index([wordId])
+}
+
+model LessonSentence {
+  id String @id @default(cuid())
+
+  lessonId String
+  lesson   Lesson @relation("CurriculumLessonSentences", fields: [lessonId], references: [id], onDelete: Cascade)
+
+  sentenceId String
+  sentence   Sentence @relation("CurriculumLessonSentences", fields: [sentenceId], references: [id], onDelete: Cascade)
+
+  order Int @default(0)
+
+  @@unique([lessonId, sentenceId])
+  @@unique([lessonId, order])
+  @@index([sentenceId])
+}
+
+model LessonPrerequisite {
+  id String @id @default(cuid())
+
+  lessonId String
+  lesson   Lesson @relation("LessonPrerequisites", fields: [lessonId], references: [id], onDelete: Cascade)
+
+  prerequisiteLessonId String
+  prerequisiteLesson   Lesson @relation("PrerequisiteFor", fields: [prerequisiteLessonId], references: [id], onDelete: Cascade)
+
+  @@unique([lessonId, prerequisiteLessonId])
+  @@index([prerequisiteLessonId])
+}
+
+model LessonReviewSource {
+  id String @id @default(cuid())
+
+  lessonId String
+  lesson   Lesson @relation("LessonReviewSources", fields: [lessonId], references: [id], onDelete: Cascade)
+
+  reviewLessonId String
+  reviewLesson   Lesson @relation("ReviewedLessonSources", fields: [reviewLessonId], references: [id], onDelete: Cascade)
+
+  order Int @default(0)
+
+  @@unique([lessonId, reviewLessonId])
+  @@unique([lessonId, order])
+  @@index([reviewLessonId])
+}
+
+model SentenceIdentity {
+  id String @id @default(cuid())
+
+  canonicalId String  @unique
+  sourcePath  String?
+  sourceHash  String?
+  isManaged   Boolean @default(false)
+  isArchived  Boolean @default(false)
+
+  revisions Sentence[]
 }
 
 model ProfileLessonFocus {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    profileId String
-    profile   Profile @relation(fields: [profileId], references: [id])
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
 
-    lessonId String
-    lesson   Lesson @relation(fields: [lessonId], references: [id])
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
 
-    isFocused   Boolean @default(false)
-    isCompleted Boolean @default(false)
+  isFocused   Boolean @default(false)
+  isCompleted Boolean @default(false)
 
-    // unique constraint
-    @@unique([profileId, lessonId])
+  // unique constraint
+  @@unique([profileId, lessonId])
 }
 
 // ---- AWARD RELATED ---- //
 
 model ProfileAward {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
 
-    profileId String
-    profile   Profile @relation(fields: [profileId], references: [id])
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
 
-    awardType String
+  awardType String
 
-    // value used for WORD_COUNT and SENTENCE_COUNT
-    awardValue Int?
+  // value used for WORD_COUNT and SENTENCE_COUNT
+  awardValue Int?
 
-    // used for WORD_MASTERY 
-    wordId String?
-    word   Word?   @relation(fields: [wordId], references: [id])
+  // used for WORD_MASTERY
+  wordId String?
+  word   Word?   @relation(fields: [wordId], references: [id])
 
-    // used for LESSON_MASTERY
-    lessonId String?
-    lesson   Lesson? @relation(fields: [lessonId], references: [id])
+  // used for LESSON_MASTERY
+  lessonId String?
+  lesson   Lesson? @relation(fields: [lessonId], references: [id])
 
-    // will start blank before user makes a choice
-    imageId String?
-    image   AwardImages? @relation(fields: [imageId], references: [id])
+  // will start blank before user makes a choice
+  imageId String?
+  image   AwardImages? @relation(fields: [imageId], references: [id])
 }
 
 model AwardImages {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    imageUrl String
+  imageUrl String
 
-    metaInfo String @default("{}")
-    awards   ProfileAward[]
+  metaInfo String         @default("{}")
+  awards   ProfileAward[]
 
-    // unique url
-    @@unique([imageUrl])
+  // unique url
+  @@unique([imageUrl])
 }

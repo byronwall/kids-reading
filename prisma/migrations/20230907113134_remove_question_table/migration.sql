@@ -5,28 +5,30 @@
   - You are about to drop the `Question` table. If the table is not empty, all the data it contains will be lost.
 
 */
--- DropForeignKey
-ALTER TABLE "ProfileQuestionResult" DROP CONSTRAINT "ProfileQuestionResult_questionId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Question" DROP CONSTRAINT "Question_sentenceId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Question" DROP CONSTRAINT "Question_wordId_fkey";
-
--- AlterTable
-ALTER TABLE "ProfileQuestionResult" DROP COLUMN "questionId",
-ADD COLUMN     "sentenceId" TEXT,
-ADD COLUMN     "wordId" TEXT;
+-- SQLite cannot remove a column that is part of a foreign key in place.
+-- Rebuild the table while preserving all columns that remain in the model.
+PRAGMA foreign_keys=OFF;
+CREATE TABLE "new_ProfileQuestionResult" (
+    "id" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "metaInfo" TEXT NOT NULL DEFAULT '{}',
+    "profileId" TEXT NOT NULL,
+    "sentenceId" TEXT,
+    "wordId" TEXT,
+    "score" INTEGER NOT NULL DEFAULT 0,
+    CONSTRAINT "new_ProfileQuestionResult_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "new_ProfileQuestionResult_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "Profile"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "new_ProfileQuestionResult_wordId_fkey" FOREIGN KEY ("wordId") REFERENCES "Word"("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "new_ProfileQuestionResult_sentenceId_fkey" FOREIGN KEY ("sentenceId") REFERENCES "Sentence"("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+-- Resolve the old question relation before removing the Question table.
+INSERT INTO "new_ProfileQuestionResult" ("id", "createdAt", "metaInfo", "profileId", "sentenceId", "wordId", "score")
+SELECT pqr."id", pqr."createdAt", pqr."metaInfo", pqr."profileId", q."sentenceId", q."wordId", pqr."score"
+FROM "ProfileQuestionResult" AS pqr
+LEFT JOIN "Question" AS q ON q."id" = pqr."questionId";
+DROP TABLE "ProfileQuestionResult";
+ALTER TABLE "new_ProfileQuestionResult" RENAME TO "ProfileQuestionResult";
+PRAGMA foreign_keys=ON;
 
 -- DropTable
 DROP TABLE "Question";
-
--- DropEnum
-DROP TYPE "QuestionType";
-
--- AddForeignKey
-ALTER TABLE "ProfileQuestionResult" ADD CONSTRAINT "ProfileQuestionResult_wordId_fkey" FOREIGN KEY ("wordId") REFERENCES "Word"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ProfileQuestionResult" ADD CONSTRAINT "ProfileQuestionResult_sentenceId_fkey" FOREIGN KEY ("sentenceId") REFERENCES "Sentence"("id") ON DELETE SET NULL ON UPDATE CASCADE;
