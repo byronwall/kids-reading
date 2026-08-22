@@ -16,13 +16,13 @@ describe("foundational phonics curriculum", () => {
   it("loads and validates the complete authored corpus", async () => {
     const chunks = await loadCurriculum();
 
-    expect(chunks).toHaveLength(10);
-    expect(chunks.flatMap((chunk) => chunk.lessons)).toHaveLength(30);
+    expect(chunks).toHaveLength(11);
+    expect(chunks.flatMap((chunk) => chunk.lessons)).toHaveLength(33);
     expect(
       chunks.flatMap((chunk) =>
         chunk.lessons.flatMap((lesson) => lesson.sentences)
       )
-    ).toHaveLength(320);
+    ).toHaveLength(367);
   });
 
   it("rejects a sentence without the deterministic sentence ID", () => {
