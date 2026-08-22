@@ -1,11 +1,12 @@
 import { z } from "zod";
-import { PrismaClient } from "@prisma/client";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { prisma } from "~/server/db";
 import {
   generateSentenceWithWords,
   generateSentencesWithSettings,
 } from "~/server/openai/generations";
+import { assertSentenceCanBeMutated } from "~/server/content/managedContentGuards";
 
 import { getWordsForSentence } from "./getWordsForSentence";
 import {
@@ -14,14 +15,16 @@ import {
   GptSentenceSchema,
 } from "./inputSchemas";
 
-const prisma = new PrismaClient();
-
 export const sentencesRouter = createTRPCRouter({
   updateWordCountForAllSentences: protectedProcedure.mutation(async () => {
     const sentences = await prisma.sentence.findMany({
       where: {
         wordCount: {
           lte: 0,
+        },
+        isManaged: false,
+        lessonSentences: {
+          none: {},
         },
       },
       include: {
@@ -34,7 +37,6 @@ export const sentencesRouter = createTRPCRouter({
     });
 
     for (const sentence of sentences) {
-      console.log("sentence", sentence);
       await prisma.sentence.update({
         where: {
           id: sentence.id,
@@ -46,7 +48,8 @@ export const sentencesRouter = createTRPCRouter({
     }
 
     return {
-      message: "Successfully updated word count for all sentences",
+      message:
+        "Successfully updated word count for custom sentences. Managed curriculum sentences were skipped.",
     };
   }),
 
@@ -57,6 +60,7 @@ export const sentencesRouter = createTRPCRouter({
       },
       where: {
         isDeleted: false,
+        isArchived: false,
       },
     });
 
@@ -67,7 +71,7 @@ export const sentencesRouter = createTRPCRouter({
     // input array is string or undefined
     .input(z.array(z.string().optional()))
     .query(async ({ input }) => {
-      const words = input.filter((word) => word !== undefined) as string[];
+      const words = input.filter((word): word is string => word !== undefined);
 
       const sentences = await generateSentenceWithWords(words);
 
@@ -77,7 +81,6 @@ export const sentencesRouter = createTRPCRouter({
   getGptSentences: protectedProcedure
     .input(GptSentenceSchema)
     .mutation(async ({ input }) => {
-      console.log("input", input);
       // TODO: connect real logic to GPT
 
       const sentences = await generateSentencesWithSettings(input);
@@ -117,6 +120,27 @@ export const sentencesRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const { id, newFullSentence } = input;
 
+      const sentence = await prisma.sentence.findUnique({
+        where: {
+          id,
+        },
+        select: {
+          id: true,
+          isManaged: true,
+          lessonSentences: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      if (!sentence) {
+        throw new Error(`Sentence with ID ${id} not found`);
+      }
+
+      assertSentenceCanBeMutated(sentence, "edited");
+
       // set the isDeleted flag to true for current sentence
       await prisma.sentence.update({
         where: {
@@ -143,6 +167,27 @@ export const sentencesRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       const { sentenceId } = input;
+
+      const sentence = await prisma.sentence.findUnique({
+        where: {
+          id: sentenceId,
+        },
+        select: {
+          id: true,
+          isManaged: true,
+          lessonSentences: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      if (!sentence) {
+        throw new Error(`Sentence with ID ${sentenceId} not found`);
+      }
+
+      assertSentenceCanBeMutated(sentence, "deleted");
 
       // set the isDeleted flag to true
 
@@ -211,7 +256,7 @@ async function processSentencesIntoDb(sentences: string[]) {
       },
       data: {
         fullSentence: sentence.sentence,
-      metaInfo: JSON.stringify({}),
+        metaInfo: JSON.stringify({}),
         wordCount: sentence.words.length,
         words: {
           connectOrCreate: sentence.words.map((word) => ({
@@ -220,7 +265,7 @@ async function processSentencesIntoDb(sentences: string[]) {
             },
             create: {
               word,
-        metaInfo: JSON.stringify({}),
+              metaInfo: JSON.stringify({}),
             },
           })),
         },

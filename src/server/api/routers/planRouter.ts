@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -11,226 +12,216 @@ import {
 } from "./inputSchemas";
 import { getWordsForSentence } from "./getWordsForSentence";
 
+function managedContentError(): never {
+  throw new TRPCError({ code: "FORBIDDEN", message: "Managed curriculum content is read-only." });
+}
+
+const NO_ACTIVE_PROFILE_ID = "__no_active_profile__";
+
+function requireActiveProfileId(ctx: { session: { user: { activeProfile?: { id: string } | null } } }) {
+  const profileId = ctx.session.user.activeProfile?.id;
+  if (!profileId) {
+    throw new TRPCError({
+      code: "PRECONDITION_FAILED",
+      message: "Select a learner to track progress.",
+    });
+  }
+  return profileId;
+}
+
+const wordScoreInclude = (profileId: string) => ({
+  include: {
+    results: { select: { score: true }, where: { profileId } },
+  },
+});
+
+const lessonInclude = (profileId: string) => ({
+  words: wordScoreInclude(profileId),
+  lessonWords: {
+    orderBy: { order: "asc" as const },
+    include: { word: wordScoreInclude(profileId) },
+  },
+  lessonSentences: {
+    orderBy: { order: "asc" as const },
+    where: {
+      sentence: {
+        isCurrentRevision: true,
+        isArchived: false,
+        isDeleted: false,
+      },
+    },
+    include: { sentence: { include: { words: true } } },
+  },
+  prerequisites: {
+    where: { prerequisiteLesson: { isArchived: false } },
+    include: { prerequisiteLesson: { select: { id: true, name: true, order: true } } },
+  },
+  reviewSources: {
+    orderBy: { order: "asc" as const },
+    where: { reviewLesson: { isArchived: false } },
+    include: { reviewLesson: { select: { id: true, name: true, order: true } } },
+  },
+  ProfileLessonFocus: { take: 1, where: { profileId } },
+});
+
 export const planRouter = createTRPCRouter({
   linkProfileToLesson: protectedProcedure
-    .input(
-      z.object({
-        lessonId: z.string(),
-      })
-    )
+    .input(z.object({ lessonId: z.string() }))
     .mutation(async ({ input: { lessonId }, ctx }) => {
-      const profileId = ctx.session.user.activeProfile.id;
-
-      await prisma.profileLessonFocus.create({
-        data: {
-          lessonId,
-          profileId,
-        },
-      });
-
-      // now linked, add all lesson words to the profile summary too
+      const profileId = requireActiveProfileId(ctx);
       const lesson = await prisma.lesson.findUnique({
-        where: {
-          id: lessonId,
-        },
+        where: { id: lessonId },
         include: {
           words: true,
+          lessonWords: { include: { word: true } },
+          LearningPlan: { select: { isArchived: true } },
+          chunk: { select: { isArchived: true } },
         },
       });
+      if (
+        !lesson ||
+        [lesson.isArchived, lesson.LearningPlan?.isArchived, lesson.chunk?.isArchived].some(Boolean)
+      ) {
+        throw new Error(`Lesson not found: ${lessonId}`);
+      }
 
-      if (!lesson) throw new Error(`Lesson not found: ${lessonId}`);
+      await prisma.profileLessonFocus.create({ data: { lessonId, profileId } });
 
-      // do an upsert to add the words to the profile summary if new
-      await prisma.profileWordSummary.createMany({
-        data: lesson.words.map((word) => ({
-          profileId,
-          wordId: word.id,
-          metaInfo: JSON.stringify({}),
-        })),
-        skipDuplicates: true,
-      });
-
+      const words = lesson.isManaged ? lesson.lessonWords.map((link) => link.word) : lesson.words;
+      await Promise.all(
+        words.map((word) =>
+          prisma.profileWordSummary.upsert({
+            where: { profileId_wordId: { profileId, wordId: word.id } },
+            create: { profileId, wordId: word.id, metaInfo: JSON.stringify({}) },
+            update: {},
+          })
+        )
+      );
       return true;
     }),
 
   setProfileLessonFocus: protectedProcedure
-    .input(
-      z.object({
-        lessonId: z.string(),
-        isFocused: z.boolean(),
-      })
-    )
+    .input(z.object({ lessonId: z.string(), isFocused: z.boolean() }))
     .mutation(async ({ input: { lessonId, isFocused }, ctx }) => {
-      const profileId = ctx.session.user.activeProfile.id;
-
-      // this will fail if the link does not exist
-
-      await prisma.profileLessonFocus.update({
-        where: {
-          profileId_lessonId: {
-            lessonId,
-            profileId,
-          },
-        },
-        data: {
-          isFocused,
+      const profileId = requireActiveProfileId(ctx);
+      const lesson = await prisma.lesson.findUnique({
+        where: { id: lessonId },
+        include: {
+          LearningPlan: { select: { isArchived: true } },
+          chunk: { select: { isArchived: true } },
         },
       });
+      if (
+        !lesson ||
+        [lesson.isArchived, lesson.LearningPlan?.isArchived, lesson.chunk?.isArchived].some(Boolean)
+      ) {
+        throw new Error(`Lesson not found: ${lessonId}`);
+      }
 
+      await prisma.profileLessonFocus.update({
+        where: { profileId_lessonId: { lessonId, profileId } },
+        data: { isFocused },
+      });
       return true;
     }),
 
   getSingleLearningPlan: protectedProcedure
-    .input(
-      z.object({
-        learningPlanName: z.string(),
-      })
-    )
+    .input(z.object({ learningPlanName: z.string() }))
     .query(async ({ input: { learningPlanName }, ctx }) => {
-      const profileId = ctx.session.user.activeProfile.id;
-
+      const profileId = ctx.session.user.activeProfile?.id;
       const plan = await prisma.learningPlan.findUnique({
-        where: {
-          name: learningPlanName,
-        },
+        where: { name: learningPlanName, isArchived: false },
         include: {
-          lessons: {
-            orderBy: {
-              order: "asc",
-            },
+          chunks: {
+            where: { isArchived: false },
+            orderBy: { order: "asc" },
             include: {
-              words: {
-                // include the count of good and bad from results
-                include: {
-                  results: {
-                    select: {
-                      score: true,
-                    },
-                    where: {
-                      profileId,
-                    },
-                  },
-                },
+              lessons: {
+                where: { isArchived: false },
+                orderBy: { order: "asc" },
+                include: lessonInclude(profileId ?? NO_ACTIVE_PROFILE_ID),
               },
-              ProfileLessonFocus: {
-                where: {
-                  profileId,
-                },
-              }
             },
+          },
+          lessons: {
+            where: { chunkId: null, isArchived: false },
+            orderBy: { order: "asc" },
+            include: lessonInclude(profileId ?? NO_ACTIVE_PROFILE_ID),
           },
         },
       });
-
       if (!plan) throw new Error(`Plan not found: ${learningPlanName}`);
 
-      // get sentences that include those words
-      const sentences = await prisma.sentence.findMany({
-        where: {
-          words: {
-            some: {
-              id: {
-                in: plan.lessons.flatMap((lesson) =>
-                  lesson.words.map((word) => word.id)
-                ),
-              },
+      const chunks = plan.chunks.map((chunk) => ({
+        ...chunk,
+        goals: parseJsonArray(chunk.goalsJson),
+        lessons: chunk.lessons.map(augmentLessonWithScores),
+      }));
+      const lessons = plan.lessons.map(augmentLessonWithScores);
+      const legacyWordIds = lessons.flatMap((lesson) => lesson.words.map((word) => word.id));
+      const sentences = plan.isManaged || plan.chunks.length > 0
+        ? []
+        : await prisma.sentence.findMany({
+            where: {
+              isArchived: false,
+              isDeleted: false,
+              words: { some: { id: { in: legacyWordIds } } },
             },
-          },
-        },
-        include: {
-          words: true,
-        },
-      });
+            include: { words: true },
+          });
 
-      const augmentedPlan = augmentPlanWithScores(plan);
-
-      return {
-        ...augmentedPlan,
-        sentences,
-      };
+      return { ...plan, chunks, lessons, sentences };
     }),
 
   getAllLearningPlans: protectedProcedure.query(async ({ ctx }) => {
-    const profileId = ctx.session.user.activeProfile.id;
-
-    const plans = await getDetailedPlansForProfile(profileId);
-
-    // process the results to create a good count and bad count for each word
-    const plansWithAugmentedResults = plans.map(augmentPlanWithScores);
-
-    return plansWithAugmentedResults;
+    const plans = await getDetailedPlansForProfile(ctx.session.user.activeProfile?.id);
+    return plans.map((plan) => ({
+      ...plan,
+      // The relation query orders chunks and their lessons. Keep that nesting
+      // order when flattening so cards do not interleave lessons from chunks.
+      lessons: [...plan.lessons, ...plan.chunks.flatMap((chunk) => chunk.lessons)].map(augmentLessonWithScores),
+    }));
   }),
 
   createLearningPlan: protectedProcedure
     .input(LearningPlanCreateSchema)
     .mutation(async ({ input: { name, description } }) => {
-      const maxOrder = await prisma.learningPlan.findFirst({
-        orderBy: { order: "desc" },
-      });
-
-      const plan = await prisma.learningPlan.create({
-        data: {
-          name,
-          description,
-          order: (maxOrder?.order ?? 0) + 10,
-        },
-      });
-
-      return plan;
+      const maxOrder = await prisma.learningPlan.findFirst({ orderBy: { order: "desc" } });
+      return prisma.learningPlan.create({ data: { name, description, order: (maxOrder?.order ?? 0) + 10 } });
     }),
 
   createLesson: protectedProcedure
     .input(LessonCreateSchema)
     .mutation(async ({ input: { name, description, learningPlanId } }) => {
-      const maxOrder = await prisma.lesson.findFirst({
-        where: {
-          learningPlanId,
-        },
-        orderBy: { order: "desc" },
-      });
-
-      const lesson = await prisma.lesson.create({
+      const plan = await prisma.learningPlan.findUnique({ where: { id: learningPlanId } });
+      if (!plan) throw new TRPCError({ code: "NOT_FOUND", message: "Plan not found." });
+      if (plan.isArchived) throw new TRPCError({ code: "NOT_FOUND", message: "Plan not found." });
+      if (plan.isManaged) managedContentError();
+      const maxOrder = await prisma.lesson.findFirst({ where: { learningPlanId }, orderBy: { order: "desc" } });
+      return prisma.lesson.create({
         data: {
           name,
           description,
           order: (maxOrder?.order ?? 0) + 10,
-          LearningPlan: {
-            connect: {
-              id: learningPlanId,
-            },
-          },
+          LearningPlan: { connect: { id: learningPlanId } },
         },
       });
-
-      return lesson;
     }),
 
   bulkImportLesson: protectedProcedure
     .input(LessonBulkImportWordsSchema)
     .mutation(async ({ input: { contents, learningPlanId } }) => {
-      // contents should be split into lines
+      const plan = await prisma.learningPlan.findUnique({ where: { id: learningPlanId } });
+      if (!plan) throw new TRPCError({ code: "NOT_FOUND", message: "Plan not found." });
+      if (plan.isArchived) throw new TRPCError({ code: "NOT_FOUND", message: "Plan not found." });
+      if (plan.isManaged) managedContentError();
+
       const lines = contents.split("\n").filter((line) => line.length > 0);
-
-      // contents are encoded: | topic | sub topic | words
-
-      // combine the topic and sub topic into a single string
-      // also get the words
       const data = lines.map((line) => {
-        const [topic, subTopic, words] = line
-          .split("|")
-          .map((s) => s.trim())
-          .filter((c) => c.length > 0);
-
-        if (!topic || !subTopic || !words)
-          throw new Error(`Invalid line: ${line}`);
-
-        return {
-          topic: `${topic} - ${subTopic}`,
-          words,
-        };
+        const [topic, subTopic, words] = line.split("|").map((s) => s.trim()).filter(Boolean);
+        if (!topic || !subTopic || !words) throw new Error(`Invalid line: ${line}`);
+        return { topic: `${topic} - ${subTopic}`, words };
       });
-
-      // turn those topics into lessons
       await Promise.all(
         data.map(({ topic, words }) =>
           prisma.lesson.create({
@@ -238,119 +229,122 @@ export const planRouter = createTRPCRouter({
               name: topic,
               description: "",
               order: 0,
-              LearningPlan: {
-                connect: {
-                  id: learningPlanId,
-                },
-              },
+              LearningPlan: { connect: { id: learningPlanId } },
               words: {
                 connectOrCreate: getWordsForSentence(words).map((word) => ({
-                  where: {
-                    word,
-                  },
-                  create: {
-                    word,
-                    metaInfo: JSON.stringify({}),
-                  },
+                  where: { word },
+                  create: { word, metaInfo: JSON.stringify({}) },
                 })),
               },
             },
           })
         )
       );
+      return true;
     }),
 
   editLessonWords: protectedProcedure
     .input(LessonEditWordsSchema)
     .mutation(async ({ input: { lessonId, words } }) => {
-      const allWords = getWordsForSentence(words);
-
-      const lesson = await prisma.lesson.update({
-        where: {
-          id: lessonId,
+      const lesson = await prisma.lesson.findUnique({
+        where: { id: lessonId },
+        include: {
+          LearningPlan: { select: { isManaged: true, isArchived: true } },
+          chunk: { select: { isManaged: true, isArchived: true } },
         },
+      });
+      if (!lesson) throw new TRPCError({ code: "NOT_FOUND", message: "Lesson not found." });
+      if ([lesson.isArchived, lesson.LearningPlan?.isArchived, lesson.chunk?.isArchived].some(Boolean)) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Lesson not found." });
+      }
+      if (lesson.isManaged || lesson.LearningPlan?.isManaged === true || lesson.chunk?.isManaged === true) managedContentError();
+
+      return prisma.lesson.update({
+        where: { id: lessonId },
         data: {
           words: {
-            connectOrCreate: allWords.map((word) => ({
-              where: {
-                word,
-              },
-              create: {
-                word,
-                metaInfo: JSON.stringify({}),
-              },
+            connectOrCreate: getWordsForSentence(words).map((word) => ({
+              where: { word },
+              create: { word, metaInfo: JSON.stringify({}) },
             })),
           },
         },
       });
-
-      return lesson;
     }),
 });
 
-type PlanWithAugmentedResults = Awaited<
-  ReturnType<typeof getDetailedPlansForProfile>
->[number];
+function parseJsonArray(value: string): string[] {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+  } catch {
+    return [];
+  }
+}
 
-async function getDetailedPlansForProfile(profileId: string) {
-  return await prisma.learningPlan.findMany({
+type RawLesson = Awaited<ReturnType<typeof getDetailedPlansForProfile>>[number]["lessons"][number];
+type ScoredWord = {
+  id: string;
+  word: string;
+  metaInfo: string;
+  results: { score: number }[];
+  goodCount: number;
+  badCount: number;
+  role?: string;
+  order?: number;
+};
+
+function scoreWord<T extends { results: { score: number }[] }>(word: T) {
+  const goodCount = word.results.filter((result) => result.score > 50).length;
+  const badCount = word.results.filter((result) => result.score <= 50).length;
+  return { ...word, goodCount, badCount };
+}
+
+// The generated Prisma payload is intentionally normalized here. This keeps
+// legacy components on `words` while managed lessons expose role and order.
+function augmentLessonWithScores(lesson: RawLesson) {
+  const links = lesson.lessonWords ?? [];
+  const managed = lesson.isManaged || links.length > 0;
+  const words: ScoredWord[] = managed
+    ? links.map((link) => ({ ...scoreWord(link.word), role: link.role, order: link.order }))
+    : lesson.words.map(scoreWord);
+  const targetWords = words.filter((word) => !managed || word.role === "TARGET");
+  const reviewWords = managed ? words.filter((word) => word.role === "REVIEW") : [];
+  const sentences = (lesson.lessonSentences ?? []).map((link) => link.sentence);
+  return {
+    ...lesson,
+    words,
+    targetWords,
+    reviewWords,
+    targetPatterns: parseJsonArray(lesson.targetPatternsJson),
+    sentences,
+    prerequisites: lesson.prerequisites.map((item) => item.prerequisiteLesson),
+    reviewSources: lesson.reviewSources.map((item) => item.reviewLesson),
+  };
+}
+
+async function getDetailedPlansForProfile(profileId?: string) {
+  const profileQueryId = profileId ?? NO_ACTIVE_PROFILE_ID;
+  return prisma.learningPlan.findMany({
+    where: { isArchived: false },
     include: {
-      lessons: {
-        orderBy: {
-          order: "asc",
-        },
+      chunks: {
+        where: { isArchived: false },
+        orderBy: { order: "asc" },
         include: {
-          words: {
-            // include the count of good and bad from results
-            include: {
-              results: {
-                select: {
-                  score: true,
-                },
-                where: {
-                  profileId,
-                },
-              },
-            },
-          },
-
-          // return only 1 instead of array
-          ProfileLessonFocus: {
-            take: 1,
-            where: {
-              profileId,
-            },
+          lessons: {
+            where: { isArchived: false },
+            orderBy: { order: "asc" },
+            include: lessonInclude(profileQueryId),
           },
         },
       },
+      lessons: {
+        where: { chunkId: null, isArchived: false },
+        orderBy: { order: "asc" },
+        include: lessonInclude(profileQueryId),
+      },
     },
-    orderBy: {
-      order: "asc",
-    },
+    orderBy: { order: "asc" },
   });
-}
-
-function augmentPlanWithScores(plan: PlanWithAugmentedResults) {
-  const lessonsWithAugmentedResults = plan.lessons.map((lesson) => {
-    const wordsWithAugmentedResults = lesson.words.map((word) => {
-      const goodCount = word.results.filter((r) => r.score > 50).length;
-      const badCount = word.results.filter((r) => r.score <= 50).length;
-
-      return {
-        ...word,
-        goodCount,
-        badCount,
-      };
-    });
-
-    return {
-      ...lesson,
-      words: wordsWithAugmentedResults,
-    };
-  });
-
-  return {
-    ...plan,
-    lessons: lessonsWithAugmentedResults,
-  };
 }

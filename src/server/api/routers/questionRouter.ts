@@ -144,6 +144,7 @@ export const questionRouter = createTRPCRouter({
           lte: activeProfile.maximumWordCount,
         },
         isDeleted: false,
+        isArchived: false,
       },
       include: {
         words: {

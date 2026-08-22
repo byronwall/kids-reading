@@ -51,13 +51,18 @@ export const awardRouter = createTRPCRouter({
     )
 
     .mutation(async ({ input }) => {
-      await prisma.awardImages.createMany({
-        data: input.imageUrls.map((url) => ({
-          imageUrl: url,
-          metaInfo: JSON.stringify({}),
-        })),
-        skipDuplicates: true,
-      });
+      await prisma.$transaction(
+        input.imageUrls.map((imageUrl) =>
+          prisma.awardImages.upsert({
+            where: { imageUrl },
+            create: {
+              imageUrl,
+              metaInfo: JSON.stringify({}),
+            },
+            update: {},
+          })
+        )
+      );
     }),
 
   deleteImage: protectedProcedure
