@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
+
 import { trpc } from "~/lib/trpc/client";
+import { buttonVariants } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -14,6 +17,7 @@ import { findWordsNotInSentences } from "~/lib/findWordsNotInSentences";
 import { LessonDetail } from "./LessonDetail";
 import { LessonBulkImportWordsForm } from "./LessonBulkImportForm";
 import { LessonInputForm } from "./LessonInputForm";
+import { ManagedCurriculum } from "./ManagedCurriculum";
 
 export function LearningPlanSingle({ planName }: { planName: string }) {
   const { data: learningPlan } = useQuerySsr(
@@ -24,17 +28,37 @@ export function LearningPlanSingle({ planName }: { planName: string }) {
   );
 
   if (!learningPlan) {
-    return <div>Loading...</div>;
+    return <div role="status" className="container mx-auto p-4 text-sm text-slate-600">Loading plan…</div>;
   }
 
   const wordsNotInSentences = findWordsNotInSentences(learningPlan);
+  const isManagedCurriculum = learningPlan.isManaged || learningPlan.chunks.length > 0;
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="mb-4 text-4xl font-bold">{learningPlan.name}</h1>
-      <p className="mb-4 text-lg">{learningPlan.description}</p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-bold">{learningPlan.name}</h1>
+          <p className="mt-2 text-lg">{learningPlan.description}</p>
+          {learningPlan.ageRange && <p className="mt-1 text-sm text-slate-600">Age range: {learningPlan.ageRange}</p>}
+        </div>
+        <Link
+          href="/"
+          className={buttonVariants()}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter") return;
 
-      <div className="flex-wrap-container mb-4">
+            event.preventDefault();
+            event.currentTarget.click();
+          }}
+        >
+          Continue to Practice
+        </Link>
+      </div>
+
+      {isManagedCurriculum && <ManagedCurriculum plan={learningPlan} />}
+
+      {!isManagedCurriculum && <div className="flex-wrap-container mb-4">
         <h2 className="mb-2 text-2xl font-semibold">Lessons</h2>
         <div className="flex flex-col gap-2">
           {learningPlan.lessons.map((lesson) => (
@@ -45,9 +69,9 @@ export function LearningPlanSingle({ planName }: { planName: string }) {
             />
           ))}
         </div>
-      </div>
+      </div>}
 
-      <div className="flex flex-col">
+      {!isManagedCurriculum && <div className="flex flex-col">
         <h2 className="mb-2 text-2xl font-semibold">Sentences</h2>
         <div className="flex flex-wrap gap-2">
           {learningPlan.sentences.map((sentence) => (
@@ -59,9 +83,9 @@ export function LearningPlanSingle({ planName }: { planName: string }) {
             </div>
           ))}
         </div>
-      </div>
+      </div>}
 
-      <div className="flex flex-col">
+      {!isManagedCurriculum && <div className="flex flex-col">
         <h2 className="mb-2 text-2xl font-semibold">Plan Admin</h2>
         <div className="flex flex-wrap gap-2">
           <Card className="w-full max-w-[400px]">
@@ -83,7 +107,7 @@ export function LearningPlanSingle({ planName }: { planName: string }) {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

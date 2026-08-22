@@ -25,3 +25,10 @@ h2 {
 .grid-sidebar {
   @apply grid grid-cols-1 gap-4 sm:grid-cols-[160px_minmax(0,1fr)];
 }
+
+/* The devtools button is a decorative fixed control. Keep it out of reading content on phones. */
+@media (max-width: 639px) {
+  .ReactQueryDevtools {
+    display: none;
+  }
+}

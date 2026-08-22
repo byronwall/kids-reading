@@ -18,7 +18,10 @@ export function useActiveProfile() {
   };
 
   // load session from server instead of relying on JWT
-  const { data: activeProfileDb } = trpc.userRouter.getActiveProfile.useQuery();
+  const { data: activeProfileDb } =
+    trpc.userRouter.getActiveProfile.useQuery(undefined, {
+      enabled: Boolean(session?.user?.activeProfile?.id),
+    });
 
   return {
     activeProfile: activeProfileDb ?? session?.user.activeProfile,

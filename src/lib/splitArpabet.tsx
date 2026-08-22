@@ -117,7 +117,7 @@ export function splitArpabet(arpabet: string): SyllableInfo {
         return p.stressLevel;
       }, undefined)
     )
-    .filter((n) => n !== undefined) as number[];
+    .filter((n) => n !== undefined);
 
   // create groups of syllables from syllable pieces
 

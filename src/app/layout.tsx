@@ -34,9 +34,13 @@ export default async function RootLayout({
 }) {
   const session = await getServerAuthSession();
 
-  await callQuerySsrServer(appRouter.awardRouter.getAllAwardsForProfile);
-  await callQuerySsrServer(appRouter.questionRouter.getFocusedWords);
-  await callQuerySsrServer(appRouter.userRouter.getAllProfiles);
+  if (session?.user?.activeProfile?.id) {
+    await callQuerySsrServer(appRouter.awardRouter.getAllAwardsForProfile);
+    await callQuerySsrServer(appRouter.questionRouter.getFocusedWords);
+  }
+  if (session?.user) {
+    await callQuerySsrServer(appRouter.userRouter.getAllProfiles);
+  }
 
   return (
     <html>

@@ -9,6 +9,7 @@ import {
 } from "@trpc/server";
 import { type TRPCClientErrorLike } from "@trpc/client";
 import { useContext } from "react";
+import { useSession } from "next-auth/react";
 
 import { SsrContext } from "~/lib/trpc/SsrContext";
 import { deepSortObjectByKeys } from "~/lib/deepSortObjectByKeys";
@@ -19,16 +20,20 @@ export function useQuerySsr<
   V extends string
 >(
   proc: DecorateProcedure<QueryProcedure, U, V>,
-  params?: inferProcedureInput<QueryProcedure>
+  params?: inferProcedureInput<QueryProcedure>,
+  options?: { enabled?: boolean }
 ): UseTRPCQueryResult<
   inferProcedureOutput<QueryProcedure>,
   TRPCClientErrorLike<QueryProcedure>
 > {
   // need to get the initialData from context using the correct key name
   const initialData = useContext(SsrContext);
+  const { data: session } = useSession();
 
   // @ts-expect-error - we don't expose _def on the type layer
   const keys = proc._def().path as string[]; // will be ['awardRouter', 'getActiveProfile']
+  const requiresAuthentication = keys[0] === "planRouter";
+  const requiresActiveProfile = keys[0] === "awardRouter" || keys[0] === "questionRouter";
 
   const paramsAsString = params
     ? JSON.stringify(deepSortObjectByKeys(params))
@@ -45,12 +50,6 @@ export function useQuerySsr<
 
     const possibleData = (acc as any)[key];
     if (possibleData === undefined) {
-      // throw error if dev
-      if (process.env.NODE_ENV === "development") {
-        console.error(
-          `Could not find initialData for ${fullQueryKey.join(".")}`
-        );
-      }
       return undefined;
     }
 
@@ -59,5 +58,12 @@ export function useQuerySsr<
 
   //   console.log("useQuery", { keys, initialData, initialDataForProc });
 
-  return proc.useQuery(params, { initialData: initialDataForProc });
+  return proc.useQuery(params, {
+    ...options,
+    enabled:
+      options?.enabled !== false &&
+      (!requiresAuthentication || Boolean(session?.user)) &&
+      (!requiresActiveProfile || Boolean(session?.user?.activeProfile?.id)),
+    initialData: initialDataForProc,
+  });
 }

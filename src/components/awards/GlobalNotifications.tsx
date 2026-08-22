@@ -9,11 +9,13 @@ import { useQuerySsr } from "~/hooks/useQuerySsr";
 import { useActiveProfile } from "~/hooks/useActiveProfile";
 
 export function GlobalNotifications() {
-  const { data: awards = [] } = useQuerySsr(
-    trpc.awardRouter.getAllAwardsForProfile
-  );
-
   const { activeProfile } = useActiveProfile();
+
+  const { data: awards = [] } = useQuerySsr(
+    trpc.awardRouter.getAllAwardsForProfile,
+    undefined,
+    { enabled: Boolean(activeProfile?.id) }
+  );
 
   const hasUnclaimedAwards = awards?.some((award) => !award.imageId) ?? false;
 

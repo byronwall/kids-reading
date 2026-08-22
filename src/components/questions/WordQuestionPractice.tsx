@@ -6,12 +6,15 @@ import { trpc } from "~/lib/trpc/client";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Icons } from "~/components/common/icons";
+import { useActiveProfile } from "~/hooks/useActiveProfile";
 
 export function WordQuestionPractice() {
+  const { activeProfile } = useActiveProfile();
+  const hasActiveProfile = Boolean(activeProfile?.id);
   const utils = trpc.useContext();
 
   const { data: scheduledQuestions } =
-    trpc.questionRouter.getScheduledQuestions.useQuery();
+    trpc.questionRouter.getScheduledQuestions.useQuery(undefined, { enabled: hasActiveProfile });
 
   const firstQuestion = scheduledQuestions?.[0];
 
@@ -42,7 +45,11 @@ export function WordQuestionPractice() {
   };
 
   const { data: minTimeForNextQuestion } =
-    trpc.questionRouter.getMinTimeForNextQuestion.useQuery();
+    trpc.questionRouter.getMinTimeForNextQuestion.useQuery(undefined, { enabled: hasActiveProfile });
+
+  if (!hasActiveProfile) {
+    return <p className="p-4 text-sm text-slate-600">Select a learner to practice words.</p>;
+  }
 
   return (
     <div>

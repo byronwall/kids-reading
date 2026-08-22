@@ -5,7 +5,7 @@ import { type LearningPlan } from "~/types/models";
 
 export type Lesson = LearningPlan["lessons"][0];
 
-export function LessonCard({ lesson }: { lesson: Lesson }) {
+export function LessonCard({ lesson, showProgress = true }: { lesson: Lesson; showProgress?: boolean }) {
   const lessonTotalGood = lesson.words.reduce((acc, c) => acc + c.goodCount, 0);
   const lessonTotalBad = lesson.words.reduce((acc, c) => acc + c.badCount, 0);
 
@@ -14,7 +14,7 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
 
   return (
     <div
-      className={cn("rounded-lg bg-white p-4 pl-2 shadow-lg", {
+      className={cn("min-w-0 rounded-lg bg-white p-4 pl-2 shadow-lg", {
         "bg-green-300": hasLinkedProfile,
         "bg-blue-300": isFocused,
       })}
@@ -22,12 +22,12 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
       <div className="flex">
         <p className="text-xl font-semibold">{lesson.name}</p>
         <p className="text-xs text-gray-500">{lesson.description}</p>
-        <div className="flex items-center justify-center gap-4">
+        {showProgress && <div className="flex items-center justify-center gap-4">
           <p className="text-xl text-blue-800">+{lessonTotalGood}</p>
           <p className={cn("text-xl ", { "text-red-800": lessonTotalBad > 0 })}>
             -{lessonTotalBad}
           </p>
-        </div>
+        </div>}
       </div>
       {/* <p className="flex flex-wrap items-center gap-x-2">
         Words:

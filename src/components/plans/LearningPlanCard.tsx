@@ -16,8 +16,10 @@ import { LessonCard } from "./LessonCard";
 
 export function LearningPlanCard({
   learningPlan,
+  showProgress = true,
 }: {
   learningPlan: LearningPlan;
+  showProgress?: boolean;
 }) {
   const url = slugify(`/plan/${learningPlan.name}`);
 
@@ -34,11 +36,12 @@ export function LearningPlanCard({
   );
 
   return (
-    <Card className="w-96">
+    <Card className="w-full max-w-sm min-w-0">
       <CardHeader>
         <CardTitle>
           <Link href={url} className="hover:underline">
-            {learningPlan.name}[+{totalGood}/-{totalBad}]
+            {learningPlan.name}
+            {showProgress && `[+${totalGood}/-${totalBad}]`}
           </Link>
         </CardTitle>
         <CardDescription>{learningPlan.description}</CardDescription>
@@ -46,7 +49,7 @@ export function LearningPlanCard({
       <CardContent>
         <div className="flex flex-col gap-2 p-1">
           {learningPlan.lessons.slice(0, 5).map((lesson) => (
-            <LessonCard lesson={lesson} key={lesson.id} />
+            <LessonCard lesson={lesson} key={lesson.id} showProgress={showProgress} />
           ))}
           {learningPlan.lessons.length > 5 && (
             <div className="flex flex-col items-center justify-center">

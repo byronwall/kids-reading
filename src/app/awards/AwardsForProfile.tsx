@@ -11,15 +11,22 @@ import { AwardList } from "~/components/awards/AwardList";
 import { trpc } from "~/lib/trpc/client";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { useActiveProfile } from "~/hooks/useActiveProfile";
 
 export function AwardsForProfile() {
+  const { activeProfile } = useActiveProfile();
+  const hasActiveProfile = Boolean(activeProfile?.id);
   const { data: awards } = useQuerySsr(trpc.awardRouter.getAllAwardsForProfile);
 
   const { data: currentWordCount } =
-    trpc.awardRouter.getProfileWordCount.useQuery();
+    trpc.awardRouter.getProfileWordCount.useQuery(undefined, { enabled: hasActiveProfile });
 
   const { data: currentSentenceCount } =
-    trpc.awardRouter.getProfileSentenceCount.useQuery();
+    trpc.awardRouter.getProfileSentenceCount.useQuery(undefined, { enabled: hasActiveProfile });
+
+  if (!hasActiveProfile) {
+    return <p className="text-sm text-slate-600">Select a learner to view awards.</p>;
+  }
 
   const wordCountAwards = awards?.filter(
     (award) => award.awardType === "WORD_COUNT"

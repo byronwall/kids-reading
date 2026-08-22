@@ -18,6 +18,7 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Icons } from "~/components/common/icons";
 import { ButtonLoading } from "~/components/common/ButtonLoading";
+import { useActiveProfile } from "~/hooks/useActiveProfile";
 
 import { WordInSentence } from "./WordInSentence";
 
@@ -31,6 +32,8 @@ export type WordToRender = {
 };
 
 export function SentenceQuestionPractice() {
+  const { activeProfile } = useActiveProfile();
+  const hasActiveProfile = Boolean(activeProfile?.id);
   const utils = trpc.useContext();
 
   const { data: sentencesToUse, isLoading: isLoadingSentences } = useQuerySsr(
@@ -53,7 +56,7 @@ export function SentenceQuestionPractice() {
   const [fontSize, setFontSize] = useLocalStorage("sentenceFontSize", 3.5);
 
   const { data: minTimeForNextQuestion } =
-    trpc.questionRouter.getMinTimeForNextQuestion.useQuery();
+    trpc.questionRouter.getMinTimeForNextQuestion.useQuery(undefined, { enabled: hasActiveProfile });
 
   // split the sentence into words
 
@@ -141,6 +144,10 @@ export function SentenceQuestionPractice() {
     // this is needed to update the award banner
     await utils.awardRouter.getAllAwardsForProfile.invalidate();
   };
+
+  if (!hasActiveProfile) {
+    return <p className="p-4 text-sm text-slate-600">Select a learner to practice sentences.</p>;
+  }
 
   if (isLoadingSentences) {
     return <div>loading...</div>;

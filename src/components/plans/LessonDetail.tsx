@@ -7,6 +7,7 @@ import { useLessonActions } from "~/hooks/useLessonActions";
 import { type DetailedLesson } from "~/types/models";
 import { useSentenceCreatorStore } from "~/stores/sentenceCreatorStore";
 import { Button } from "~/components/ui/button";
+import { useActiveProfile } from "~/hooks/useActiveProfile";
 
 export function LessonDetail({
   lesson,
@@ -15,6 +16,8 @@ export function LessonDetail({
   lesson: DetailedLesson;
   wordsNotInSentences: DetailedLesson["words"];
 }) {
+  const { activeProfile } = useActiveProfile();
+  const showProgress = Boolean(activeProfile?.id);
   const isFocused = lesson.ProfileLessonFocus[0]?.isFocused ?? false;
   const hasLinkedProfile = lesson.ProfileLessonFocus[0]?.profileId != null;
 
@@ -45,14 +48,15 @@ export function LessonDetail({
     >
       <h3 className="text-xl font-semibold">{lesson.name}</h3>
       <p className="text-base">{lesson.description}</p>
-      <div className="flex items-center justify-center gap-4">
+      {showProgress && <div className="flex items-center justify-center gap-4">
         <p className="text-xl text-blue-800">+{lessonTotalGood}</p>
         <p className={cn("text-xl ", { "text-red-800": lessonTotalBad > 0 })}>
           -{lessonTotalBad}
         </p>
-      </div>
+      </div>}
       <div>
-        {!hasLinkedProfile && (
+        {!showProgress && <p className="text-sm text-slate-600">Select a learner to track progress.</p>}
+        {showProgress && !hasLinkedProfile && (
           <ButtonLoading
             variant={"outline"}
             onClick={handleLinkProfileToLesson}
@@ -61,7 +65,7 @@ export function LessonDetail({
             <Icons.userPlus className="h-4 w-4" />
           </ButtonLoading>
         )}
-        {hasLinkedProfile && (
+        {showProgress && hasLinkedProfile && (
           <ButtonLoading
             variant={"outline"}
             onClick={() => handleToggleFocus(!isFocused)}
