@@ -44,18 +44,18 @@ export function LessonInputForm(props: Props) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-sm space-y-4">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Learning Plan Name</FormLabel>
+              <FormLabel>Lesson name</FormLabel>
               <FormControl>
-                <Input placeholder="Short Vowel sounds" {...field} />
+                <Input placeholder="Short a" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                Shown in the lesson list.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -68,10 +68,10 @@ export function LessonInputForm(props: Props) {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input placeholder="Short Vowel sounds" {...field} />
+                <Input placeholder="Practicing the short a sound" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                Optional summary shown under the name.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -84,8 +84,12 @@ export function LessonInputForm(props: Props) {
           value={learningPlanId}
         />
 
-        <ButtonLoading isLoading={createLesson.isLoading} type="submit">
-          <span>Create</span>
+        <ButtonLoading
+          isLoading={createLesson.isLoading}
+          type="submit"
+          className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-700"
+        >
+          <span>Create lesson</span>
         </ButtonLoading>
       </form>
     </Form>

@@ -1,17 +1,23 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
 import { AwardList } from "~/components/awards/AwardList";
 import { trpc } from "~/lib/trpc/client";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useActiveProfile } from "~/hooks/useActiveProfile";
+
+function StatBlock({ label, value }: { label: string; value: number | undefined }) {
+  return (
+    <div className="flex flex-col items-center gap-1 px-4 py-4">
+      <span className="text-3xl font-semibold tabular-nums text-amber-950">
+        {value ?? 0}
+      </span>
+      <span className="text-xs font-medium uppercase tracking-wide text-amber-900">
+        {label}
+      </span>
+    </div>
+  );
+}
 
 export function AwardsForProfile() {
   const { activeProfile } = useActiveProfile();
@@ -25,7 +31,11 @@ export function AwardsForProfile() {
     trpc.awardRouter.getProfileSentenceCount.useQuery(undefined, { enabled: hasActiveProfile });
 
   if (!hasActiveProfile) {
-    return <p className="text-sm text-slate-600">Select a learner to view awards.</p>;
+    return (
+      <p className="rounded-xl border border-dashed border-amber-300 bg-amber-50/50 px-6 py-8 text-center text-sm text-amber-950">
+        Select a learner to view awards.
+      </p>
+    );
   }
 
   const wordCountAwards = awards?.filter(
@@ -50,32 +60,11 @@ export function AwardsForProfile() {
   const recentFiftyAwards = awards?.slice(0, 30);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="flex flex-wrap gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Words</CardTitle>
-          </CardHeader>
-          <CardContent className="text-4xl font-bold">
-            {currentWordCount}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Sentences</CardTitle>
-          </CardHeader>
-          <CardContent className="text-4xl font-bold">
-            {currentSentenceCount}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Mastered</CardTitle>
-          </CardHeader>
-          <CardContent className="text-4xl font-bold">
-            {wordMasteryAwards?.length}
-          </CardContent>
-        </Card>
+    <div className="flex w-full flex-col gap-6">
+      <div className="grid grid-cols-3 divide-x divide-amber-200 rounded-xl border border-amber-200 bg-amber-50/60">
+        <StatBlock label="Words" value={currentWordCount} />
+        <StatBlock label="Sentences" value={currentSentenceCount} />
+        <StatBlock label="Mastered" value={wordMasteryAwards?.length} />
       </div>
 
       <Tabs defaultValue="recent">
@@ -84,58 +73,57 @@ export function AwardsForProfile() {
           <TabsTrigger value="grouped">Grouped</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="recent">
-          <Card className="max-w-4xl">
-            <CardHeader>
-              <CardTitle>Recent Awards</CardTitle>
-              <CardDescription></CardDescription>
-            </CardHeader>
-            <CardContent className="p-1 sm:p-2 md:p-4">
+        <TabsContent value="recent" className="mt-4">
+          <section>
+            <h2 className="text-xl font-semibold tracking-tight text-stone-900">
+              Recent Awards
+            </h2>
+            <div className="mt-4">
               <AwardList awards={recentFiftyAwards} />
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </TabsContent>
 
-        <TabsContent value="grouped">
-          <Card className="max-w-4xl">
-            <CardHeader>
-              <CardTitle>Word count awards</CardTitle>
-              <CardDescription>
-                Word count awards are given every 100 correct words.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Current word count: {currentWordCount}</p>
-              <p>Next award at: {nextWordAward}</p>
-              <AwardList awards={wordCountAwards} />
-            </CardContent>
-          </Card>
+        <TabsContent value="grouped" className="mt-4">
+          <div className="flex flex-col gap-10">
+            <section>
+              <h2 className="border-b pb-2 text-xl font-semibold tracking-tight text-stone-900">
+                Word count awards
+              </h2>
+              <p className="mt-2 text-sm text-stone-600">
+                Word count awards are given every 100 correct words. Current
+                word count: {currentWordCount}. Next award at: {nextWordAward}.
+              </p>
+              <div className="mt-4">
+                <AwardList awards={wordCountAwards} />
+              </div>
+            </section>
 
-          <Card className="max-w-4xl">
-            <CardHeader>
-              <CardTitle>Sentence count awards</CardTitle>
-              <CardDescription>
-                Awards are given every 10 sentences.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Current sentence count: {currentSentenceCount}</p>
-              <p>Next award at: {nextSentenceAward}</p>
-              <AwardList awards={sentenceCountAwards} />
-            </CardContent>
-          </Card>
+            <section>
+              <h2 className="border-b pb-2 text-xl font-semibold tracking-tight text-stone-900">
+                Sentence count awards
+              </h2>
+              <p className="mt-2 text-sm text-stone-600">
+                Awards are given every 10 sentences. Current sentence count:{" "}
+                {currentSentenceCount}. Next award at: {nextSentenceAward}.
+              </p>
+              <div className="mt-4">
+                <AwardList awards={sentenceCountAwards} />
+              </div>
+            </section>
 
-          <Card className="max-w-4xl">
-            <CardHeader>
-              <CardTitle>Word mastery awards</CardTitle>
-              <CardDescription>
+            <section>
+              <h2 className="border-b pb-2 text-xl font-semibold tracking-tight text-stone-900">
+                Word mastery awards
+              </h2>
+              <p className="mt-2 text-sm text-stone-600">
                 Given when the interval on a word reaches the max: 60d.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <AwardList awards={wordMasteryAwards} />
-            </CardContent>
-          </Card>
+              </p>
+              <div className="mt-4">
+                <AwardList awards={wordMasteryAwards} />
+              </div>
+            </section>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

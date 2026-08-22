@@ -36,45 +36,58 @@ export default function RootLayout({
     })) ?? [];
 
   return (
-    <div className="grid-sidebar w-full">
+    <div className="grid-sidebar w-full text-left">
       <div
-        className=" top-0 flex flex-col gap-2 overflow-y-auto text-left sm:sticky"
+        className="top-0 flex flex-col gap-1 overflow-y-auto sm:sticky"
         style={{
           maxHeight: "calc(100vh - 4rem)",
         }}
       >
-        <Link href={"/plan"}>
-          <span
-            className={cn(
-              "hover:text-accent-foreground group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100"
-            )}
-          >
+        <Link href={"/plan"} className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-700">
+          <span className="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-amber-50 hover:text-amber-950">
             <Icons.arrowLeft className="mr-2 h-4 w-4" />
             <span>Back to all plans</span>
           </span>
         </Link>
 
-        <div className="hidden sm:block">
+
+        <nav className="hidden sm:block" aria-label="Learning plans">
+          {links.length > 0 && (
+            <p className="mt-3 px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-stone-400">
+              Plans
+            </p>
+          )}
           {links.map(({ href, label, icon }) => {
             const Icon = Icons[icon ?? "arrowRight"];
 
             return (
-              <Link href={href} key={href}>
+              <Link
+                href={href}
+                key={href}
+                className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-700"
+              >
                 <span
                   className={cn(
-                    path === href ? "bg-gray-200" : "transparent",
-                    "hover:text-accent-foreground group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100"
+                    "group flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    path === href
+                      ? "bg-amber-100 text-amber-950"
+                      : "text-stone-600 hover:bg-amber-50 hover:text-amber-950"
                   )}
                 >
-                  <Icon className="mr-2 h-4 w-4 shrink-0" />
+                  <Icon
+                    className={cn(
+                      "mr-2 h-3.5 w-3.5 shrink-0",
+                      path === href ? "text-amber-600" : "text-stone-400"
+                    )}
+                  />
                   <span>{label}</span>
                 </span>
               </Link>
             );
           })}
-        </div>
+        </nav>
       </div>
-      <div className="flex-1">{children}</div>
+      <div className="min-w-0 flex-1">{children}</div>
     </div>
   );
 }

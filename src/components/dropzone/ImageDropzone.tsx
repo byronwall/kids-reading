@@ -45,7 +45,14 @@ export function ImageDropzone({ children, className }: Props) {
   };
 
   return (
-    <div className={cn({ "ring-primary ring-2": isDragActive }, className)}>
+    <div
+      aria-label="Image drop area"
+      className={cn(
+        "rounded-xl transition-all",
+        isDragActive && "bg-green-50/60 ring-2 ring-green-700 ring-offset-2",
+        className
+      )}
+    >
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -65,7 +72,6 @@ export function ImageDropzone({ children, className }: Props) {
   );
 }
 
-// Function to extract base64 data from a Blob
 async function extractBase64WithoutMimeFromBlob(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -92,7 +98,6 @@ async function getImageResultFromUrl(url: string): Promise<ImageResult> {
 
   // use mime type to guess file extension
   const fileExtGuess = blob.type.split("/")[1];
-
   // only keep the data part of the base64 string
 
   return {

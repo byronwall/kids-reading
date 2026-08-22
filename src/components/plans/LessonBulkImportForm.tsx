@@ -47,15 +47,15 @@ export function LessonBulkImportWordsForm(props: Props) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
         <FormField
           control={form.control}
           name="contents"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Words</FormLabel>
+              <FormLabel>Lesson plan</FormLabel>
               <FormControl>
-                <Textarea placeholder="Contents" {...field} />
+                <Textarea placeholder="| topic | sub topic | words |" {...field} />
               </FormControl>
               <FormDescription>
                 Expected format is <code>| topic | sub topic | words |</code>
@@ -67,8 +67,12 @@ export function LessonBulkImportWordsForm(props: Props) {
 
         <input type="hidden" {...form.register("learningPlanId")} />
 
-        <ButtonLoading isLoading={bulkImportMutation.isLoading} type="submit">
-          <span>Create</span>
+        <ButtonLoading
+          isLoading={bulkImportMutation.isLoading}
+          type="submit"
+          className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-700"
+        >
+          <span>Import lessons</span>
         </ButtonLoading>
       </form>
     </Form>

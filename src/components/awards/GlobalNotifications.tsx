@@ -32,9 +32,15 @@ export function GlobalNotifications() {
   );
 
   return (
-    <div className="my-2 bg-yellow-300 p-2 text-yellow-800">
+    <div
+      role="status"
+      className="w-full border-b border-celebration-border bg-celebration-surface px-4 py-3 text-sm text-celebration"
+    >
       <p className="text-center">
-        <Link href="/awards">
+        <Link
+          href="/awards"
+          className="rounded-lg font-semibold underline decoration-celebration/40 underline-offset-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-celebration focus-visible:ring-offset-2 focus-visible:ring-offset-celebration-surface hover:decoration-celebration"
+        >
           <strong>You have unclaimed awards!</strong> Go to the awards page to
           claim them.
         </Link>

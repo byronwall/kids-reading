@@ -2,13 +2,6 @@
 
 import Link from "next/link";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
 import { slugify } from "~/lib/utils";
 import { type LearningPlan } from "~/types/models";
 
@@ -36,28 +29,63 @@ export function LearningPlanCard({
   );
 
   return (
-    <Card className="w-full max-w-sm min-w-0">
-      <CardHeader>
-        <CardTitle>
-          <Link href={url} className="hover:underline">
-            {learningPlan.name}
-            {showProgress && `[+${totalGood}/-${totalBad}]`}
-          </Link>
-        </CardTitle>
-        <CardDescription>{learningPlan.description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-2 p-1">
+    <div className="flex w-full min-w-0 flex-col rounded-xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+      <div className="flex flex-col gap-1 p-5 pb-3">
+        <Link
+          href={url}
+          className="text-lg font-semibold leading-snug text-stone-900 hover:text-green-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2"
+        >
+          {learningPlan.name}
+        </Link>
+        {learningPlan.description && (
+          <p className="line-clamp-2 text-sm text-stone-600">
+            {learningPlan.description}
+          </p>
+        )}
+        {showProgress && (
+          <div className="mt-1 flex items-center gap-2 text-xs font-medium tabular-nums">
+            <span className="rounded-full bg-green-100 px-2 py-0.5 text-green-800">
+              +{totalGood}
+            </span>
+            <span
+              className={`rounded-full px-2 py-0.5 ${
+                totalBad > 0
+                  ? "bg-rose-100 text-rose-800"
+                  : "bg-stone-100 text-stone-500"
+              }`}
+            >
+              −{totalBad}
+            </span>
+            <span className="text-stone-500">
+              {learningPlan.lessons.length}{" "}
+              {learningPlan.lessons.length === 1 ? "lesson" : "lessons"}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {learningPlan.lessons.length > 0 && (
+        <div className="flex min-w-0 flex-col gap-1 border-t border-stone-100 px-4 py-3">
           {learningPlan.lessons.slice(0, 5).map((lesson) => (
-            <LessonCard lesson={lesson} key={lesson.id} showProgress={showProgress} />
+            <LessonCard
+              lesson={lesson}
+              key={lesson.id}
+              showProgress={showProgress}
+            />
           ))}
-          {learningPlan.lessons.length > 5 && (
-            <div className="flex flex-col items-center justify-center">
-              <Link href={url}>See all</Link>
-            </div>
-          )}
         </div>
-      </CardContent>
-    </Card>
+      )}
+
+      {learningPlan.lessons.length > 5 && (
+        <div className="border-t border-stone-100 px-5 py-3">
+          <Link
+            href={url}
+            className="text-sm font-medium text-green-800 hover:text-green-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2"
+          >
+            See all {learningPlan.lessons.length} lessons →
+          </Link>
+        </div>
+      )}
+    </div>
   );
 }

@@ -43,21 +43,21 @@ export default async function RootLayout({
   }
 
   return (
-    <html>
+    <html lang="en">
       <body>
         <NextAuthProvider session={session}>
           <Provider>
             <SsrContextServer>
-              <div className="flex min-h-screen flex-col pb-20">
-                <header className="bg-background container z-40">
-                  <div className="flex h-20 items-center justify-between py-6">
+              <div className="flex min-h-screen w-full flex-col">
+                <header className="sticky top-0 z-40 w-full border-b border-border bg-background">
+                  <div className="flex h-16 w-full items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
                     <MainNav items={marketingConfig.mainNav} />
                     <UserMenuOrLogin />
                   </div>
                 </header>
                 <GlobalNotifications />
-                <main className="flex-1">
-                  <div className="container flex max-w-full  flex-col items-center gap-4 text-center">
+                <main className="flex w-full flex-1 flex-col">
+                  <div className="flex w-full flex-col items-center gap-6 px-4 py-8 text-center sm:px-6 md:py-12 lg:px-8">
                     {children}
                   </div>
                 </main>

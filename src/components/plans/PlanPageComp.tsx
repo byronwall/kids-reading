@@ -1,11 +1,4 @@
 "use client";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
 import { useQuerySsr } from "~/hooks/useQuerySsr";
 import { trpc } from "~/lib/trpc/client";
 import { useActiveProfile } from "~/hooks/useActiveProfile";
@@ -21,38 +14,59 @@ export function PlanPageComp() {
     undefined
   );
 
-  return (
-    <div className="w-full min-w-0">
-      <h1>Plan</h1>
+  const hasPlans = (learningPlans?.length ?? 0) > 0;
 
-      <h2>All Learning Plans</h2>
+  return (
+    <div className="w-full max-w-5xl text-left">
+      <header className="mb-8">
+        <h1 className="text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
+          Plan
+        </h1>
+        <p className="mt-2 max-w-prose text-base text-stone-600">
+          Browse learning plans and lessons. Practice happens on the home page
+          once a learner is selected.
+        </p>
+      </header>
+
       {!activeProfile && (
-        <p className="mx-auto mt-3 max-w-prose px-4 text-sm text-slate-600">
-          Browse the curriculum now. Select a learner when you are ready to track progress.
+        <p className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Browse the curriculum now. Select a learner when you are ready to
+          track progress.
         </p>
       )}
-      <div className="flex w-full min-w-0 flex-wrap justify-center gap-4 p-4 sm:justify-start">
-        {learningPlans?.map((learningPlan) => (
-          <LearningPlanCard
-            key={learningPlan.id}
-            learningPlan={learningPlan}
-            showProgress={Boolean(activeProfile?.id)}
-          />
-        ))}
-      </div>
 
-      <Card className="mx-auto w-full max-w-sm text-left">
-        <CardHeader>
-          <CardTitle>Add Learning Plan</CardTitle>
-          <CardDescription>
-            Use this section to create a new learning plan. You can add lessons
-            and linked words later.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      {hasPlans ? (
+        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {learningPlans?.map((learningPlan) => (
+            <LearningPlanCard
+              key={learningPlan.id}
+              learningPlan={learningPlan}
+              showProgress={Boolean(activeProfile?.id)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50/50 px-6 py-10 text-center">
+          <p className="text-sm font-medium text-stone-700">
+            No learning plans yet.
+          </p>
+          <p className="mt-1 text-sm text-stone-500">
+            Create your first plan below to start adding lessons.
+          </p>
+        </div>
+      )}
+
+      <section className="mt-10 rounded-xl border border-amber-200/80 bg-amber-50/60 p-5 sm:p-6">
+        <h2 className="text-xl font-semibold tracking-tight text-stone-900">
+          Add a learning plan
+        </h2>
+        <p className="mt-1 text-sm text-stone-600">
+          Create an empty plan now. You can add lessons and linked words later.
+        </p>
+        <div className="mt-4 max-w-md">
           <LearningPlanInputForm />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

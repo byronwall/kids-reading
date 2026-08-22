@@ -5,62 +5,51 @@ import { type LearningPlan } from "~/types/models";
 
 export type Lesson = LearningPlan["lessons"][0];
 
-export function LessonCard({ lesson, showProgress = true }: { lesson: Lesson; showProgress?: boolean }) {
+export function LessonCard({
+  lesson,
+  showProgress = true,
+}: {
+  lesson: Lesson;
+  showProgress?: boolean;
+}) {
   const lessonTotalGood = lesson.words.reduce((acc, c) => acc + c.goodCount, 0);
   const lessonTotalBad = lesson.words.reduce((acc, c) => acc + c.badCount, 0);
 
   const isFocused = lesson.ProfileLessonFocus[0]?.isFocused ?? false;
   const hasLinkedProfile = lesson.ProfileLessonFocus[0]?.profileId != null;
-
   return (
     <div
-      className={cn("min-w-0 rounded-lg bg-white p-4 pl-2 shadow-lg", {
-        "bg-green-300": hasLinkedProfile,
-        "bg-blue-300": isFocused,
-      })}
+      className={cn(
+        "flex min-w-0 items-center gap-3 rounded-lg border px-3 py-2",
+        isFocused
+          ? "border-amber-300 bg-amber-50"
+          : hasLinkedProfile
+            ? "border-green-200 bg-green-50/70"
+            : "border-stone-100 bg-stone-50"
+      )}
     >
-      <div className="flex">
-        <p className="text-xl font-semibold">{lesson.name}</p>
-        <p className="text-xs text-gray-500">{lesson.description}</p>
-        {showProgress && <div className="flex items-center justify-center gap-4">
-          <p className="text-xl text-blue-800">+{lessonTotalGood}</p>
-          <p className={cn("text-xl ", { "text-red-800": lessonTotalBad > 0 })}>
-            -{lessonTotalBad}
-          </p>
-        </div>}
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-stone-900">
+          {lesson.name}
+        </p>
+        {lesson.description && (
+          <p className="truncate text-xs text-stone-500">{lesson.description}</p>
+        )}
       </div>
-      {/* <p className="flex flex-wrap items-center gap-x-2">
-        Words:
-        {lesson.words.slice(0, 5).map((c) => (
-          <span
-            key={c.word}
-            className={cn("text-sm", {
-              "text-blue-800": c.goodCount > c.badCount,
-              "text-red-800": c.badCount > c.goodCount,
-              "font-semibold": c.goodCount + c.badCount > 0,
-            })}
-          >
-            {c.word}
+      {showProgress && (
+        <div className="flex shrink-0 items-center gap-2 text-xs font-medium tabular-nums text-stone-600">
+          <span className={lessonTotalGood > 0 ? "text-green-700" : undefined}>
+            +{lessonTotalGood}
           </span>
-        ))}
-      </p>
-
-      <Dialog>
-        <DialogTrigger>
-          <Icons.pencil />
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit words in this lesson.</DialogTitle>
-            <DialogDescription>
-              <LessonEditWordsForm
-                lessonId={lesson.id}
-                defaultWords={wordList}
-              />
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog> */}
+          <span
+            className={cn(
+              lessonTotalBad > 0 ? "text-rose-700" : "text-stone-400"
+            )}
+          >
+            −{lessonTotalBad}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

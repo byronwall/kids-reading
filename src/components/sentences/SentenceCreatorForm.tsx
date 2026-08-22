@@ -28,7 +28,6 @@ import { Icons } from "~/components/common/icons";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
 import { useSentenceAdder } from "~/hooks/useSentenceAdder";
-import { Button } from "~/components/ui/button";
 
 import type * as z from "zod";
 
@@ -63,14 +62,15 @@ const readingLevelExamples = {
   Z: "Existential questions often concern the nature of life, freedom, and choice.",
 };
 
+const iconButtonClass =
+  "inline-flex h-9 w-9 items-center justify-center rounded-md text-stone-500 transition-colors hover:bg-amber-50 hover:text-amber-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-700";
+
 type Props = {
   initialWordTargets?: string[];
 };
 
 export function SentenceCreatorForm(props: Props) {
   const { initialWordTargets } = props;
-
-  const utils = trpc.useContext();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -89,7 +89,7 @@ export function SentenceCreatorForm(props: Props) {
     if (initialWordTargets) {
       form.setValue("__rawWordGroups", initialWordTargets.join("\n"));
     }
-  }, [form.setValue, initialWordTargets]);
+  }, [form, form.setValue, initialWordTargets]);
 
   const createNewSentencesMutation =
     trpc.sentencesRouter.getGptSentences.useMutation();
@@ -105,7 +105,7 @@ export function SentenceCreatorForm(props: Props) {
     );
 
     form.setValue("wordGroups", wordGroups);
-  }, [__rawWordGroups, form.setValue]);
+  }, [form, form.setValue, __rawWordGroups]);
 
   const [newSentences, setNewSentences] = useState<string[]>([]);
 
@@ -136,72 +136,73 @@ export function SentenceCreatorForm(props: Props) {
     setNewSentences((sentences) => sentences.filter((s) => s !== sentence));
   };
 
+  const handleShuffleGroups = () => {
+    const newLocal = form.getValues("wordGroups");
+    // shuffle into new groups of 3
+
+    const words =
+      newLocal?.flatMap((group) => group.flatMap((c) => c.split(" "))) ?? [];
+
+    words.sort(() => Math.random() - 0.5);
+
+    const groups: string[][] = [];
+
+    while (words.length > 0) {
+      groups.push(words.splice(0, 3));
+    }
+
+    form.setValue(
+      "__rawWordGroups",
+      groups.map((group) => group.join(" ")).join("\n")
+    );
+  };
+
+  const handleCombineWords = () => {
+    const newLocal = form.getValues("wordGroups");
+
+    const newGroups = newLocal?.flatMap((group) => group) ?? [];
+
+    newGroups.sort(() => Math.random() - 0.5);
+
+    form.setValue("__rawWordGroups", newGroups.join(" "));
+  };
+
   return (
-    <div className="grid  grid-cols-1 gap-4  md:grid-cols-[1.5fr,1fr]">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-[1.5fr_1fr]">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <FormField
             control={form.control}
             name="__rawWordGroups"
             render={({ field }) => (
               <FormItem>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <FormLabel>Word List</FormLabel>
-                  <FormDescription>
-                    Add words separated by spaces. Put on lines to group.
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(evt) => {
-                        evt.preventDefault();
-
-                        const newLocal = form.getValues("wordGroups");
-                        // shuffle into new groups of 3
-
-                        const newGroups =
-                          newLocal?.flatMap((group) =>
-                            group.map((c) => c.split(" "))
-                          ) ?? [];
-
-                        newGroups.sort(() => Math.random() - 0.5);
-
-                        const newGroups3 = [];
-
-                        while (newGroups.length > 0) {
-                          newGroups3.push(newGroups.splice(0, 3));
-                        }
-
-                        form.setValue(
-                          "__rawWordGroups",
-                          newGroups3.map((c) => c.join(" ")).join("\n")
-                        );
-                      }}
-                    >
-                      <Icons.shuffle className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(evt) => {
-                        evt.preventDefault();
-
-                        const newLocal = form.getValues("wordGroups");
-
-                        const newGroups =
-                          newLocal?.flatMap((group) => group) ?? [];
-
-                        newGroups.sort(() => Math.random() - 0.5);
-
-                        form.setValue("__rawWordGroups", newGroups.join(" "));
-                      }}
-                    >
-                      <Icons.combine className="h-4 w-4" />
-                    </Button>
-                  </FormDescription>
+                  <button
+                    type="button"
+                    onClick={handleShuffleGroups}
+                    aria-label="Shuffle words into groups of three"
+                    title="Shuffle into groups of three"
+                    className={iconButtonClass}
+                  >
+                    <Icons.shuffle className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCombineWords}
+                    aria-label="Combine all words into one list"
+                    title="Combine into one list"
+                    className={iconButtonClass}
+                  >
+                    <Icons.combine className="h-4 w-4" />
+                  </button>
                 </div>
                 <FormControl>
                   <Textarea placeholder="Words" {...field} />
                 </FormControl>
+                <FormDescription>
+                  Add words separated by spaces. Put on lines to group.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -219,20 +220,16 @@ export function SentenceCreatorForm(props: Props) {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a verified email to display" />
+                      <SelectValue placeholder="Select a reading level" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="max-h-[240px] overflow-y-auto">
                     {Object.entries(readingLevelExamples).map(
                       ([level, example]) => (
-                        <SelectItem
-                          key={level}
-                          value={level}
-                          className="hover:bg-gray-100"
-                        >
-                          <div className="flex items-center gap-4 rounded-md  p-2 ">
+                        <SelectItem key={level} value={level}>
+                          <div className="flex items-center gap-4 py-1">
                             <span className="font-bold">{level}</span>
-                            <span className="text-sm">{example}</span>
+                            <span className="text-sm text-stone-600">{example}</span>
                           </div>
                         </SelectItem>
                       )
@@ -250,13 +247,13 @@ export function SentenceCreatorForm(props: Props) {
             name="numberOfSentences"
             render={({ field }) => (
               <FormItem>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <FormLabel>Number of sentences</FormLabel>
                   <FormDescription>
                     Will be ignored if you supply multiple word groups.
                   </FormDescription>
                 </div>
-                <Input type="number" {...field} />
+                <Input type="number" min={1} {...field} className="max-w-[8rem]" />
                 <FormMessage />
               </FormItem>
             )}
@@ -266,7 +263,7 @@ export function SentenceCreatorForm(props: Props) {
             control={form.control}
             name="includeProperNames"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-stone-200 bg-white p-4 transition-colors focus-within:border-amber-300 hover:border-amber-300">
                 <FormControl>
                   <Checkbox
                     checked={field.value}
@@ -285,7 +282,7 @@ export function SentenceCreatorForm(props: Props) {
             control={form.control}
             name="includeRhyming"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-stone-200 bg-white p-4 transition-colors focus-within:border-amber-300 hover:border-amber-300">
                 <FormControl>
                   <Checkbox
                     checked={field.value}
@@ -304,7 +301,7 @@ export function SentenceCreatorForm(props: Props) {
             control={form.control}
             name="includeAlliteration"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-stone-200 bg-white p-4 transition-colors focus-within:border-amber-300 hover:border-amber-300">
                 <FormControl>
                   <Checkbox
                     checked={field.value}
@@ -320,21 +317,26 @@ export function SentenceCreatorForm(props: Props) {
             )}
           />
 
-          <ButtonLoading isLoading={isLoadingSentences} type="submit">
+          <ButtonLoading isLoading={isLoadingSentences} type="submit" className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-700">
             <span>Get sentences</span>
           </ButtonLoading>
         </form>
       </Form>
-      <div className="max-h-[80vh] overflow-y-auto">
-        <h2>Results</h2>
-        <div>
+      <div className="max-h-[80vh] overflow-y-auto pr-1">
+        <h3 className="text-base font-semibold tracking-tight text-stone-900">
+          Results
+        </h3>
+        <div className="mt-3">
           {isLoadingSentences && (
-            <p>
-              <Icons.spinner />{" "}
+            <p className="flex items-center gap-2 text-sm text-stone-500" role="status">
+              <Icons.spinner className="h-4 w-4 animate-spin" />
+              Generating…
             </p>
           )}
           {!isLoadingSentences && newSentences?.length == 0 && (
-            <p>No sentences yet</p>
+            <p className="rounded-lg border border-dashed border-stone-300 px-3 py-6 text-center text-sm text-stone-500">
+              No sentences yet
+            </p>
           )}
           {!isLoadingSentences && newSentences?.length > 0 && (
             <div>
@@ -342,38 +344,44 @@ export function SentenceCreatorForm(props: Props) {
                 <ButtonLoading
                   onClick={() => handleAddSentences(newSentences)}
                   isLoading={isAddingSentences}
+                  variant="outline"
+                  size="sm"
                 >
                   Add all sentences
-                  <Icons.add className="ml-2 h-5 w-5" />
                 </ButtonLoading>
               </div>
-              <div>
+              <ul className="mt-3 flex flex-col gap-2">
                 {newSentences?.map((sentence) => (
-                  <div
+                  <li
                     key={sentence}
-                    className="flex flex-1 items-center justify-between rounded-md border p-2 hover:bg-gray-100"
+                    className="group flex flex-1 items-center justify-between gap-2 rounded-md border border-stone-200 px-3 py-2 transition-colors hover:border-amber-300 hover:bg-amber-50/60"
                   >
-                    <span className="text-base">{sentence}</span>
-                    <div className="shrink-0">
+                    <span className="text-base text-stone-800 group-hover:text-amber-950">{sentence}</span>
+                    <div className="flex shrink-0 items-center">
                       <ButtonLoading
                         onClick={() => handleAddSingleSentence(sentence)}
                         isLoading={isAddingSentences}
-                        className="text-green-500 hover:text-green-700"
+                        aria-label={`Add sentence: ${sentence}`}
+                        title="Add this sentence"
                         size="sm"
                         variant="ghost"
+                        className="h-9 w-9 p-0 text-green-700 hover:bg-green-50 hover:text-green-800"
                       >
                         <Icons.add className="h-5 w-5" />
                       </ButtonLoading>
                       <button
+                        type="button"
                         onClick={() => handleRemoveSentence(sentence)}
-                        className="text-red-500 hover:text-red-700"
+                        aria-label={`Discard generated sentence: ${sentence}`}
+                        title="Discard this sentence"
+                        className={`${iconButtonClass} hover:bg-rose-50 hover:text-rose-700`}
                       >
-                        <Icons.trash className="h-5 w-5" />
+                        <Icons.trash className="h-4 w-4" />
                       </button>
                     </div>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
         </div>

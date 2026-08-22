@@ -3,8 +3,7 @@
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 
-import { Button, buttonVariants } from "~/components/ui/button";
-import { cn } from "~/lib/utils";
+import { Button } from "~/components/ui/button";
 import { UserAccountNav } from "~/components/nav/UserAccountNav";
 
 export function UserMenuOrLogin() {
@@ -13,16 +12,13 @@ export function UserMenuOrLogin() {
   const needsAuth = session === undefined || session === null;
 
   return (
-    <nav>
+    <nav aria-label="Account" className="flex items-center">
       {needsAuth ? (
-        <div className="flex gap-2">
-          <Button
-            className={cn(buttonVariants({ variant: "secondary" }), "px-4")}
-            onClick={() => signIn()}
-          >
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => signIn()}>
             Login
           </Button>
-          <Button>
+          <Button asChild>
             <Link href="/register">Sign up</Link>
           </Button>
         </div>

@@ -9,24 +9,6 @@ import { Icons } from "~/components/common/icons";
 import { trpc } from "~/lib/trpc/client";
 
 export function AwardCard({ award }: { award: Award }) {
-  const label =
-    award.awardType === "WORD_COUNT" ? (
-      <Icons.badgeCent />
-    ) : (
-      <Icons.badgeDollarSign />
-    );
-
-  const numberAward = (
-    <p className="flex items-center gap-1 text-2xl">
-      <span>{award.awardValue ?? 0}</span>
-      {label}
-    </p>
-  );
-
-  const masteryAward = (
-    <p className="text-2xl">{award.word && <span>{award.word?.word}</span>}</p>
-  );
-
   const utils = trpc.useContext();
 
   const removeAwardMutation =
@@ -42,29 +24,42 @@ export function AwardCard({ award }: { award: Award }) {
     await removeAwardMutation.mutateAsync({ awardId: award.id });
     await utils.awardRouter.getAllAwardsForProfile.invalidate();
   };
+
+  const caption = award.word
+    ? award.word.word
+    : `${award.awardValue ?? 0} ${
+        award.awardType === "WORD_COUNT" ? "words" : "sentences"
+      }`;
+
   return (
-    <div className="flex flex-col items-center bg-gray-200">
-      <span>{award.word ? masteryAward : numberAward}</span>
-      <div className="group relative ">
+    <figure className="flex flex-col items-center gap-2">
+      <div className="group relative">
         {award.image !== null && (
-          <div className="absolute right-0 top-0 hidden group-hover:block">
-            <Button variant="ghost" size="sm" onClick={handleRemoveImage}>
-              <Icons.close />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRemoveImage}
+            aria-label="Remove this picture so a new one can be picked"
+            className="absolute right-1 top-1 z-10 h-9 w-9 rounded-full bg-white/90 p-0 opacity-0 shadow-sm transition-opacity focus-visible:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100"
+          >
+            <Icons.close className="h-4 w-4" />
+          </Button>
         )}
 
         <Image
           key={award.id}
           src={award.image?.imageUrl ?? "/placeholder.jpeg"}
-          alt={"Award image"}
+          alt={award.image ? `Award picture for ${caption}` : `Award placeholder for ${caption}`}
           width={512}
           height={512}
-          className={cn("rounded-md", {
-            "border-4 border-yellow-400": !award.imageId,
+          className={cn("h-40 w-40 rounded-xl object-cover", {
+            "border-4 border-dashed border-amber-400": !award.imageId,
           })}
         />
       </div>
-    </div>
+      <figcaption className="text-sm font-medium text-stone-700">
+        {caption}
+      </figcaption>
+    </figure>
   );
 }

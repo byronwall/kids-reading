@@ -36,18 +36,18 @@ export function LearningPlanInputForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-sm space-y-4">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Learning Plan Name</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Short Vowel sounds" {...field} />
+                <Input placeholder="Short vowel sounds" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                Shown as the plan title everywhere.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -60,18 +60,22 @@ export function LearningPlanInputForm() {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input placeholder="Short Vowel sounds" {...field} />
+                <Input placeholder="CVC words for new readers" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                Optional summary shown under the title.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <ButtonLoading isLoading={createLearningPlan.isLoading} type="submit">
-          <span>Create</span>
+        <ButtonLoading
+          isLoading={createLearningPlan.isLoading}
+          type="submit"
+          className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-700"
+        >
+          <span>Create plan</span>
         </ButtonLoading>
       </form>
     </Form>

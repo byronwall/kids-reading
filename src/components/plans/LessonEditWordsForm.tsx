@@ -49,7 +49,7 @@ export function LessonEditWordsForm(props: Props) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-sm space-y-4">
         <FormField
           control={form.control}
           name="words"
@@ -57,10 +57,10 @@ export function LessonEditWordsForm(props: Props) {
             <FormItem>
               <FormLabel>Words</FormLabel>
               <FormControl>
-                <Input placeholder="Short Vowel sounds" {...field} />
+                <Input placeholder="cat, hat, sat" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                Update the word list for this lesson.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -69,8 +69,12 @@ export function LessonEditWordsForm(props: Props) {
 
         <input type="hidden" {...form.register("lessonId")} />
 
-        <ButtonLoading isLoading={createLearningPlan.isLoading} type="submit">
-          <span>Create</span>
+        <ButtonLoading
+          isLoading={createLearningPlan.isLoading}
+          type="submit"
+          className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-700"
+        >
+          <span>Save words</span>
         </ButtonLoading>
       </form>
     </Form>

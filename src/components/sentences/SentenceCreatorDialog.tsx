@@ -36,17 +36,16 @@ export function SentenceCreatorDialog() {
   }, []);
 
   return (
-    <div>
-      <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="max-h-[90vh] max-w-[800px] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Sentence Creator Helper</DialogTitle>
-            <DialogDescription>
-              <SentenceCreatorForm initialWordTargets={targetWords} />
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    </div>
+    <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
+      <DialogContent className="max-h-[90vh] max-w-[800px] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Sentence Creator Helper</DialogTitle>
+          <DialogDescription>
+            Create practice sentences from word groups.
+          </DialogDescription>
+        </DialogHeader>
+        <SentenceCreatorForm initialWordTargets={targetWords} />
+      </DialogContent>
+    </Dialog>
   );
 }

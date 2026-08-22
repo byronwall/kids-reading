@@ -44,7 +44,7 @@ export function AddSentenceForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl space-y-4">
         <FormField
           control={form.control}
           name="rawInput"
@@ -52,7 +52,10 @@ export function AddSentenceForm() {
             <FormItem>
               <FormLabel>Sentences</FormLabel>
               <FormControl>
-                <Textarea placeholder="Contents" {...field} />
+                <Textarea
+                  placeholder={"The cat sat on the mat.\nThe dog ran fast."}
+                  {...field}
+                />
               </FormControl>
               <FormDescription>
                 Enter sentences on new lines. See preview below.
@@ -62,19 +65,27 @@ export function AddSentenceForm() {
           )}
         />
 
-        <div>
-          preview:
-          {newSentences.map((sentence) => (
-            <div
-              key={sentence}
-              className="rounded-md border border-gray-200 p-2"
-            >
-              {sentence}
-            </div>
-          ))}
-        </div>
+        {newSentences.length > 0 && (
+          <div>
+            <p className="text-sm font-medium text-stone-700">Preview</p>
+            <ol className="mt-2 flex list-decimal flex-col gap-1.5 pl-5">
+              {newSentences.map((sentence) => (
+                <li
+                  key={sentence}
+                  className="rounded-md border border-amber-100 bg-amber-50/70 px-3 py-1.5 text-base text-amber-950"
+                >
+                  {sentence}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
 
-        <ButtonLoading isLoading={addSentencesMutation.isLoading} type="submit">
+        <ButtonLoading
+          isLoading={addSentencesMutation.isLoading}
+          type="submit"
+          className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-700"
+        >
           <span>Create</span>
         </ButtonLoading>
       </form>

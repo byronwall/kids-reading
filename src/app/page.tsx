@@ -15,8 +15,8 @@ export default async function Home() {
 
   if (!session) {
     return (
-      <section className="flex flex-col items-center gap-4">
-        <h1>A site to help with kid's reading.</h1>
+      <section className="flex w-full max-w-xl flex-col items-center gap-4 px-4 py-16 text-center sm:py-24">
+        <h1>A site to help with kid&apos;s reading.</h1>
       </section>
     );
   }
@@ -37,7 +37,7 @@ export default async function Home() {
 
   return (
     <SsrContextServer>
-      <section className="flex flex-col items-center gap-4">
+      <section className="w-full max-w-[46rem]">
         <QuestionPractice />
       </section>
     </SsrContextServer>

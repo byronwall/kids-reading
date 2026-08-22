@@ -50,27 +50,27 @@ export function EditSentenceForm({ sentenceId, originalFullSentence }: Props) {
   const isSameAsOriginal = rawInput === originalFullSentence;
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
         <FormField
           control={form.control}
           name="newFullSentence"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>New Sentence</FormLabel>
+              <FormLabel>New sentence</FormLabel>
               <FormControl>
-                <Textarea placeholder="Contents" {...field} />
+                <Textarea {...field} />
               </FormControl>
               <FormDescription>
-                Enter new sentence. The previous one will be archived so all
-                existing references are OK.
+                The previous sentence will be archived so all existing
+                references are OK.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div>
-          original:
+        <div className="rounded-md border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-600">
+          <span className="font-medium">Original:</span>{" "}
           {originalFullSentence}
         </div>
 
@@ -78,6 +78,7 @@ export function EditSentenceForm({ sentenceId, originalFullSentence }: Props) {
           isLoading={addSentencesMutation.isLoading}
           disabled={isSameAsOriginal}
           type="submit"
+          className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-700"
         >
           <span>{isSameAsOriginal ? "No changes" : "Update"}</span>
         </ButtonLoading>
