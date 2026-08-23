@@ -1,11 +1,12 @@
 ---
 schema_version: 1
 chunk_id: phonics-11
-chunk_order: 11
-plan_id: foundational-phonics
-plan_title: Foundational Phonics
-plan_description: A progressive first-reading curriculum.
-age_range: "5-8"
+chunk_order: 1
+plan_id: word-building
+plan_order: 2
+plan_title: Word Building & Meaning
+plan_description: A compact curriculum for building words with common endings and affixes.
+age_range: "6-9"
 difficulty: 5
 ---
 
@@ -27,16 +28,11 @@ lesson_order: 1
 title: "Read Words with S and ES"
 focus: inflectional_s_es
 difficulty: 5
-prerequisites:
-  - "lesson-10-03"
+prerequisites: []
 target_patterns:
   - "-s"
   - "-es"
-review_lesson_ids:
-  - "lesson-10-03"
-  - "lesson-03-02"
-  - "lesson-04-02"
-  - "lesson-01-03"
+review_lesson_ids: []
 ```
 
 #### Target Words
@@ -123,6 +119,24 @@ allowed_sight_words:
   - "at"
   - "by"
   - "with"
+  - "boy"
+  - "girl"
+  - "camp"
+  - "bench"
+  - "brush"
+  - "mud"
+  - "park"
+  - "shop"
+  - "sit"
+  - "run"
+  - "rest"
+  - "look"
+  - "dog"
+  - "fox"
+  - "log"
+  - "bird"
+  - "dad"
+  - "box"
 ```
 
 ### Lesson: lesson-11-02
@@ -139,8 +153,6 @@ target_patterns:
   - "-ing"
 review_lesson_ids:
   - "lesson-11-01"
-  - "lesson-10-03"
-  - "lesson-10-02"
 ```
 
 #### Target Words
@@ -230,6 +242,21 @@ allowed_sight_words:
   - "by"
   - "it"
   - "with"
+  - "dog"
+  - "kid"
+  - "boat"
+  - "tent"
+  - "tree"
+  - "map"
+  - "dad"
+  - "while"
+  - "pot"
+  - "bug"
+  - "star"
+  - "sheep"
+  - "bird"
+  - "campfire"
+  - "page"
 ```
 
 ### Lesson: lesson-11-03
@@ -248,8 +275,6 @@ target_patterns:
 review_lesson_ids:
   - "lesson-11-02"
   - "lesson-11-01"
-  - "lesson-10-03"
-  - "lesson-10-02"
 ```
 
 #### Target Words
@@ -339,6 +364,16 @@ allowed_sight_words:
   - "by"
   - "it"
   - "with"
+  - "cat"
+  - "while"
+  - "creek"
+  - "dad"
+  - "bug"
+  - "kid"
+  - "bird"
+  - "star"
+  - "page"
+  - "campfire"
 ```
 
 ## File Summary
