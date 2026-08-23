@@ -151,100 +151,123 @@ function validateLesson(
 
 export function validateCurriculum(chunks: CurriculumChunk[]) {
   const errors: string[] = [];
-  const chunkIds = new Set<string>();
-  const lessonIds = new Set<string>();
-  const sentenceIds = new Set<string>();
-  const sentenceTexts = new Set<string>();
   const planMetadata = new Map<string, string>();
 
-  const sortedChunks = [...chunks].sort(
-    (a, b) => a.frontMatter.chunk_order - b.frontMatter.chunk_order
+  const chunksByPlan = new Map<string, CurriculumChunk[]>();
+  for (const chunk of chunks) {
+    const planId = chunk.frontMatter.plan_id;
+    const planChunks = chunksByPlan.get(planId) ?? [];
+    planChunks.push(chunk);
+    chunksByPlan.set(planId, planChunks);
+  }
+
+  const sortedPlans = [...chunksByPlan.entries()].sort(
+    ([planIdA, chunksA], [planIdB, chunksB]) =>
+      chunksA[0]!.frontMatter.plan_order - chunksB[0]!.frontMatter.plan_order ||
+      planIdA.localeCompare(planIdB)
   );
-  sortedChunks.forEach((chunk, chunkIndex) => {
-    const expectedOrder = chunkIndex + 1;
-    const { frontMatter, fileSummary } = chunk;
-    if (frontMatter.chunk_order !== expectedOrder) {
-      errors.push(
-        `${chunk.sourcePath}: chunk_order must be ${expectedOrder}, got ${frontMatter.chunk_order}`
-      );
-    }
-    if (chunkIds.has(frontMatter.chunk_id)) {
-      errors.push(
-        `${chunk.sourcePath}: duplicate chunk_id ${frontMatter.chunk_id}`
-      );
-    }
-    chunkIds.add(frontMatter.chunk_id);
+  const sortedChunks: CurriculumChunk[] = [];
 
-    const planSignature = `${frontMatter.plan_title}|${frontMatter.plan_description}|${frontMatter.age_range}`;
-    const existingPlanSignature = planMetadata.get(frontMatter.plan_id);
-    if (existingPlanSignature && existingPlanSignature !== planSignature) {
-      errors.push(`${chunk.sourcePath}: plan metadata differs across chunks`);
-    }
-    planMetadata.set(frontMatter.plan_id, planSignature);
+  for (const [planId, planChunks] of sortedPlans) {
+    const sortedPlanChunks = [...planChunks].sort(
+      (a, b) => a.frontMatter.chunk_order - b.frontMatter.chunk_order
+    );
+    const chunkIds = new Set<string>();
+    const lessonIds = new Set<string>();
+    const sentenceIds = new Set<string>();
+    const sentenceTexts = new Set<string>();
 
-    if (fileSummary.chunk_id !== frontMatter.chunk_id) {
-      errors.push(
-        `${chunk.sourcePath}: File Summary chunk_id does not match front matter`
-      );
-    }
-    if (fileSummary.lesson_count !== chunk.lessons.length) {
-      errors.push(
-        `${chunk.sourcePath}: File Summary lesson_count is incorrect`
-      );
-    }
-    if (
-      fileSummary.word_count !==
-      chunk.lessons.reduce(
-        (count, lesson) => count + lesson.targetWords.length,
-        0
-      )
-    ) {
-      errors.push(`${chunk.sourcePath}: File Summary word_count is incorrect`);
-    }
-    if (
-      fileSummary.sentence_count !==
-      chunk.lessons.reduce(
-        (count, lesson) => count + lesson.sentences.length,
-        0
-      )
-    ) {
-      errors.push(
-        `${chunk.sourcePath}: File Summary sentence_count is incorrect`
-      );
-    }
+    for (const [chunkIndex, chunk] of sortedPlanChunks.entries()) {
+      const expectedOrder = chunkIndex + 1;
+      const { frontMatter, fileSummary } = chunk;
+      if (frontMatter.chunk_order !== expectedOrder) {
+        errors.push(
+          `${chunk.sourcePath}: chunk_order must be ${expectedOrder}, got ${frontMatter.chunk_order}`
+        );
+      }
+      if (chunkIds.has(frontMatter.chunk_id)) {
+        errors.push(
+          `${chunk.sourcePath}: duplicate chunk_id ${frontMatter.chunk_id} in plan ${planId}`
+        );
+      }
+      chunkIds.add(frontMatter.chunk_id);
 
-    const priorLessons = sortedChunks
-      .slice(0, chunkIndex)
-      .flatMap((priorChunk) => priorChunk.lessons);
-    chunk.lessons.forEach((lesson, lessonIndex) => {
-      const id = lesson.metadata.lesson_id;
-      if (lessonIds.has(id))
-        errors.push(`${chunk.sourcePath}: duplicate lesson_id ${id}`);
-      lessonIds.add(id);
-      lesson.sentences.forEach((sentence) => {
-        if (sentenceIds.has(sentence.sentence_id)) {
+      const planSignature = `${frontMatter.plan_title}|${frontMatter.plan_description}|${frontMatter.age_range}|${frontMatter.plan_order}`;
+      const existingPlanSignature = planMetadata.get(planId);
+      if (existingPlanSignature && existingPlanSignature !== planSignature) {
+        errors.push(`${chunk.sourcePath}: plan metadata differs across chunks`);
+      }
+      planMetadata.set(planId, planSignature);
+
+      if (fileSummary.chunk_id !== frontMatter.chunk_id) {
+        errors.push(
+          `${chunk.sourcePath}: File Summary chunk_id does not match front matter`
+        );
+      }
+      if (fileSummary.lesson_count !== chunk.lessons.length) {
+        errors.push(
+          `${chunk.sourcePath}: File Summary lesson_count is incorrect`
+        );
+      }
+      if (
+        fileSummary.word_count !==
+        chunk.lessons.reduce(
+          (count, lesson) => count + lesson.targetWords.length,
+          0
+        )
+      ) {
+        errors.push(
+          `${chunk.sourcePath}: File Summary word_count is incorrect`
+        );
+      }
+      if (
+        fileSummary.sentence_count !==
+        chunk.lessons.reduce(
+          (count, lesson) => count + lesson.sentences.length,
+          0
+        )
+      ) {
+        errors.push(
+          `${chunk.sourcePath}: File Summary sentence_count is incorrect`
+        );
+      }
+
+      const priorLessons = sortedPlanChunks
+        .slice(0, chunkIndex)
+        .flatMap((priorChunk) => priorChunk.lessons);
+      chunk.lessons.forEach((lesson, lessonIndex) => {
+        const id = lesson.metadata.lesson_id;
+        if (lessonIds.has(id))
           errors.push(
-            `${chunk.sourcePath}: duplicate sentence_id ${sentence.sentence_id}`
+            `${chunk.sourcePath}: duplicate lesson_id ${id} in plan ${planId}`
           );
-        }
-        sentenceIds.add(sentence.sentence_id);
-        const normalizedText = sentence.text.toLowerCase();
-        if (sentenceTexts.has(normalizedText)) {
-          errors.push(
-            `${chunk.sourcePath}: duplicate sentence text '${sentence.text}'`
-          );
-        }
-        sentenceTexts.add(normalizedText);
+        lessonIds.add(id);
+        lesson.sentences.forEach((sentence) => {
+          if (sentenceIds.has(sentence.sentence_id)) {
+            errors.push(
+              `${chunk.sourcePath}: duplicate sentence_id ${sentence.sentence_id} in plan ${planId}`
+            );
+          }
+          sentenceIds.add(sentence.sentence_id);
+          const normalizedText = sentence.text.toLowerCase();
+          if (sentenceTexts.has(normalizedText)) {
+            errors.push(
+              `${chunk.sourcePath}: duplicate sentence text '${sentence.text}'`
+            );
+          }
+          sentenceTexts.add(normalizedText);
+        });
+        validateLesson(
+          lesson,
+          chunk,
+          lessonIndex,
+          [...priorLessons, ...chunk.lessons.slice(0, lessonIndex)],
+          errors
+        );
       });
-      validateLesson(
-        lesson,
-        chunk,
-        lessonIndex,
-        [...priorLessons, ...chunk.lessons.slice(0, lessonIndex)],
-        errors
-      );
-    });
-  });
+    }
+    sortedChunks.push(...sortedPlanChunks);
+  }
 
   if (errors.length > 0) throw new CurriculumValidationError(errors);
   return sortedChunks;

@@ -12,6 +12,7 @@ export const CurriculumFrontMatterSchema = z
     chunk_id: id,
     chunk_order: z.number().int().positive(),
     plan_id: id,
+    plan_order: z.number().int().positive().default(1),
     plan_title: z.string().min(1),
     plan_description: z.string().min(1),
     age_range: z.string().regex(/^\d+-\d+$/),

@@ -1,4 +1,3 @@
-import { deslugify } from "~/lib/utils";
 import { callQuerySsrServer } from "~/hooks/useQuerySsrServer";
 import { appRouter } from "~/server/api/root";
 import { SsrContextServer } from "~/lib/trpc/SsrContextServer";
@@ -14,18 +13,16 @@ type PageProps = {
 export default async function Page({ params }: PageProps) {
   const { planNameSlugged } = params;
 
-  const planName = deslugify(planNameSlugged);
-
   const session = await getServerAuthSession();
   if (session?.user) {
     await callQuerySsrServer(appRouter.planRouter.getSingleLearningPlan, {
-      learningPlanName: planName,
+      learningPlanName: planNameSlugged,
     });
   }
 
   return (
     <SsrContextServer>
-      <LearningPlanSingle planName={planName} />
+      <LearningPlanSingle planName={planNameSlugged} />
     </SsrContextServer>
   );
 }
