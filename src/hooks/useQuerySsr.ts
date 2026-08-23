@@ -32,8 +32,12 @@ export function useQuerySsr<
 
   // @ts-expect-error - we don't expose _def on the type layer
   const keys = proc._def().path as string[]; // will be ['awardRouter', 'getActiveProfile']
-  const requiresAuthentication = keys[0] === "planRouter";
-  const requiresActiveProfile = keys[0] === "awardRouter" || keys[0] === "questionRouter";
+  const isPublicPlanRead =
+    keys[0] === "planRouter" &&
+    (keys[1] === "getAllLearningPlans" || keys[1] === "getSingleLearningPlan");
+  const requiresAuthentication = keys[0] === "planRouter" && !isPublicPlanRead;
+  const requiresActiveProfile =
+    keys[0] === "awardRouter" || keys[0] === "questionRouter";
 
   const paramsAsString = params
     ? JSON.stringify(deepSortObjectByKeys(params))

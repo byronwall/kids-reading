@@ -1,7 +1,11 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { prisma } from "~/server/db";
 
 import {
@@ -148,10 +152,10 @@ export const planRouter = createTRPCRouter({
       return true;
     }),
 
-  getSingleLearningPlan: protectedProcedure
+  getSingleLearningPlan: publicProcedure
     .input(z.object({ learningPlanName: z.string() }))
     .query(async ({ input: { learningPlanName }, ctx }) => {
-      const profileId = ctx.session.user.activeProfile?.id;
+      const profileId = ctx.session?.user.activeProfile?.id;
       const legacyName = learningPlanName.replace(/-/g, " ");
       const plan = await prisma.learningPlan.findFirst({
         where: {
@@ -208,9 +212,9 @@ export const planRouter = createTRPCRouter({
       return { ...plan, chunks, lessons, sentences };
     }),
 
-  getAllLearningPlans: protectedProcedure.query(async ({ ctx }) => {
+  getAllLearningPlans: publicProcedure.query(async ({ ctx }) => {
     const plans = await getDetailedPlansForProfile(
-      ctx.session.user.activeProfile?.id
+      ctx.session?.user.activeProfile?.id
     );
     return plans.map((plan) => ({
       ...plan,
