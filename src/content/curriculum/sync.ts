@@ -1012,29 +1012,34 @@ export async function syncCurriculum(
   const report = newReport(dryRun);
   if (dryRun) {
     try {
-      await prisma.$transaction(async (tx) => {
-        await performSync(
-          tx,
-          chunks,
-          report,
-          options.adoptLegacy === true,
-          archiveMissingPlans
-        );
-        throw new DryRunRollback(report);
-      });
+      await prisma.$transaction(
+        async (tx) => {
+          await performSync(
+            tx,
+            chunks,
+            report,
+            options.adoptLegacy === true,
+            archiveMissingPlans
+          );
+          throw new DryRunRollback(report);
+        },
+        { timeout: 60_000 }
+      );
     } catch (error) {
       if (error instanceof DryRunRollback) return error.report;
       throw error;
     }
   } else {
-    await prisma.$transaction((tx) =>
-      performSync(
-        tx,
-        chunks,
-        report,
-        options.adoptLegacy === true,
-        archiveMissingPlans
-      )
+    await prisma.$transaction(
+      (tx) =>
+        performSync(
+          tx,
+          chunks,
+          report,
+          options.adoptLegacy === true,
+          archiveMissingPlans
+        ),
+      { timeout: 60_000 }
     );
   }
   return report;
