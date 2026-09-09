@@ -5,9 +5,7 @@ import { type z } from "zod";
 import { env } from "~/env.mjs";
 import { type GptSentenceSchema } from "~/server/api/routers/inputSchemas";
 
-const openai = new OpenAI({
-  apiKey: env.OPENAI_API_KEY,
-});
+const getOpenAI = () => new OpenAI({ apiKey: env.OPENAI_API_KEY });
 
 export async function generateSentenceWithWords(words: string[]) {
   const content =
@@ -52,7 +50,7 @@ These sentences are designed to emphasize phonetic similarity, making it easier 
   ];
   console.log("start prompt to OpenAI", { messages });
 
-  const chatCompletion = await openai.chat.completions.create({
+  const chatCompletion = await getOpenAI().chat.completions.create({
     messages,
     model: "gpt-3.5-turbo",
     presence_penalty: 0.4,
@@ -158,7 +156,7 @@ export async function generateSentencesWithSettings(
   ];
   console.log("start prompt to OpenAI", { messages });
 
-  const chatCompletion = await openai.chat.completions.create({
+  const chatCompletion = await getOpenAI().chat.completions.create({
     messages,
     model: "gpt-4-1106-preview",
     presence_penalty: 0.4,
