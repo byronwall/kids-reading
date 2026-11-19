@@ -18,8 +18,9 @@ services:
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?Set S3_SECRET_ACCESS_KEY}
       S3_ENDPOINT: ${S3_ENDPOINT:?Set S3_ENDPOINT}
       S3_BUCKET_NAME: ${S3_BUCKET_NAME:?Set S3_BUCKET_NAME}
-    ports:
-      - "${APP_PORT:-3000}:3000"
+    # Traefik reaches this service on the internal network. No host port in production.
+    expose:
+      - "3000"
     volumes:
       - kids-reading-data:/app/data
 
